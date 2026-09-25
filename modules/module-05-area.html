@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 5: Integral Definida y Área bajo la Curva | DBZ Heroes Edition</title>
+
+    <!-- Fuentes Retro de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js CDN para gráficos interactivos -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <style>
+        /* =========================================================
+           ESTILOS GENERALES RETRO 8-BIT / MINECRAFT
+           ========================================================= */
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background: #0f0d11;
+            background-image: 
+                radial-gradient(#1a2636 15%, transparent 16%),
+                radial-gradient(#16121e 15%, transparent 16%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Nubes Animadas de Fondo */
+        .sky-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, #101c2e 0%, transparent 100%);
+        }
+
+        .pixel-cloud {
+            position: absolute;
+            background: #2a3c53;
+            box-shadow: 
+                8px 0 #2a3c53, -8px 0 #2a3c53, 
+                0 -8px #2a3c53, 0 8px #2a3c53,
+                16px 0 #3a5270, -16px 0 #3a5270;
+            width: 80px;
+            height: 24px;
+            opacity: 0.6;
+            animation: moveCloud 25s linear infinite;
+        }
+
+        @keyframes moveCloud {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(100vw); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Encabezado y Botón Retro */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px dashed #55ffff;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #ffffff;
+            background-color: #388700;
+            text-decoration: none;
+            padding: 12px 18px;
+            display: inline-block;
+            border: 4px solid #55aa55;
+            box-shadow: inset -4px -4px 0px 0px #1e4a00, 4px 4px 0px 0px #000000;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-pixel:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset -2px -2px 0px 0px #1e4a00, 2px 2px 0px 0px #000000;
+        }
+
+        .title-block {
+            text-align: center;
+            background: #1d150c;
+            border: 4px solid #8b5a2b;
+            box-shadow: inset -4px -4px 0px 0px #0d0905, 6px 6px 0px 0px #000000;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .title-block h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #ffaa00;
+            text-shadow: 3px 3px #000000;
+            margin: 0 0 10px 0;
+        }
+
+        /* Tarjetas con Borde de Piedra / Píxel */
+        .pixel-card {
+            background: #181419;
+            border: 4px solid #555555;
+            box-shadow: inset -4px -4px 0px 0px #222222, 6px 6px 0px 0px #000000;
+            padding: 22px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .pixel-card h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #55ffff;
+            text-shadow: 2px 2px #000;
+            margin-top: 0;
+            border-bottom: 4px solid #333;
+            padding-bottom: 12px;
+        }
+
+        /* Personaje Guía */
+        .character-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #111a24;
+            border: 3px solid #3a5270;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pixel-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffaa00;
+            box-shadow: 
+                -12px -8px 0 #000, 12px -8px 0 #000,
+                -12px -8px 0 #fff, 12px -8px 0 #fff,
+                0 12px 0 #8b0000, -8px 12px 0 #8b0000, 8px 12px 0 #8b0000;
+            position: relative;
+            animation: bouncePixel 1.5s infinite alternate ease-in-out;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        @keyframes bouncePixel {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            background: #222b35;
+            border: 3px solid #ffffff;
+            padding: 10px 15px;
+            color: #ffff55;
+            position: relative;
+            font-size: 20px;
+        }
+
+        /* Controles e Inputs Retro */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: #0b090c;
+            border: 3px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #ffaa00;
+            margin-bottom: 8px;
+        }
+
+        .control-group input, .control-group select {
+            width: 100%;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            background: #1d150c;
+            color: #55ffff;
+            border: 3px solid #8b5a2b;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .stats-banner {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #0d1217;
+            border: 3px solid #2e435e;
+            padding: 12px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            color: #55ff55;
+            font-weight: bold;
+        }
+
+        .quest-box {
+            background: #1c180a;
+            border: 4px solid #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #8b5a2b, 4px 4px 0px 0px #000;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .quest-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #ffaa00;
+            margin-top: 0;
+        }
+
+        .hint-box {
+            background: rgba(85, 255, 255, 0.08);
+            border-left: 4px solid #55ffff;
+            padding: 12px 18px;
+            margin-top: 10px;
+            font-size: 22px;
+            color: #55ffff;
+            line-height: 1.5;
+        }
+
+        .formula-display {
+            background: #0d0b0e;
+            border: 2px dashed #ffaa00;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 24px;
+            color: #ffaa00;
+        }
+
+        /* =========================================================
+           SISTEMA DE BATALLA DBZ (TRUNKS, MAESTRO ROSHI, PICCOLO)
+           ========================================================= */
+        .dbz-arena {
+            background: linear-gradient(180deg, #03141d 0%, #082938 60%, #1a3d1c 100%);
+            border: 4px solid #00e5ff;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 20px #000;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arena-title {
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #00e5ff;
+            text-shadow: 2px 2px #ff0055;
+            margin-bottom: 20px;
+        }
+
+        .hp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            width: 140px;
+        }
+
+        .hp-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .hp-bar-outer {
+            width: 100%;
+            height: 14px;
+            background: #330000;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 5px #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hp-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #aaff00);
+            transition: width 0.5s ease-in-out, background 0.3s;
+        }
+
+        .hp-bar-fill.warning {
+            background: linear-gradient(90deg, #ffaa00, #ffff00);
+        }
+
+        .hp-bar-fill.danger {
+            background: linear-gradient(90deg, #ff0000, #ff5500);
+        }
+
+        .fighters-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 260px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .fighter-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s, filter 0.5s;
+        }
+
+        .fighter-card.hit-effect {
+            animation: hitShake 0.4s ease-in-out;
+            filter: brightness(2) drop-shadow(0 0 15px #ff0000) !important;
+        }
+
+        @keyframes hitShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, -5px) rotate(-5deg); }
+            40% { transform: translate(10px, 5px) rotate(5deg); }
+            60% { transform: translate(-8px, 2px) rotate(-3deg); }
+            80% { transform: translate(5px, -2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .fighter-card.defeated {
+            transform: translateY(40px) rotate(90deg) scale(0.8);
+            filter: grayscale(1) opacity(0.3) !important;
+        }
+
+        .ko-badge {
+            position: absolute;
+            top: 40%;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            color: #ff0000;
+            text-shadow: 3px 3px #000, 0 0 10px #ffff00;
+            display: none;
+            z-index: 10;
+        }
+
+        .fighter-card.defeated .ko-badge {
+            display: block;
+            animation: koBounce 0.5s bounce ease-in-out;
+        }
+
+        /* PIXEL ART ANIMATIONS */
+        .trunks-svg {
+            filter: drop-shadow(0 0 12px #00e5ff);
+            animation: floatFighter 1.8s infinite alternate ease-in-out;
+        }
+        .roshi-svg {
+            filter: drop-shadow(0 0 12px #ff9100);
+            animation: floatFighter 2.0s infinite alternate ease-in-out;
+        }
+        .piccolo-svg {
+            filter: drop-shadow(0 0 12px #76ff03);
+            animation: floatFighter 1.7s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatFighter {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-8px); }
+        }
+
+        .floor-grid {
+            height: 16px;
+            background: repeating-linear-gradient(90deg, #00838f, #00838f 16px, #004d40 16px, #004d40 32px);
+            border-top: 4px solid #00e5ff;
+            margin-top: 10px;
+        }
+
+        /* CUESTIONARIO INTERACTIVO DE BATALLA */
+        .quiz-container {
+            background: #0d0912;
+            border: 3px solid #00e5ff;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .quiz-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #55ffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .question-card {
+            background: #16101f;
+            border: 2px solid #332244;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #ffff55;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            background: #251a33;
+            color: #ffffff;
+            border: 2px solid #553377;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #3c2954;
+            border-color: #ffaa00;
+        }
+
+        .option-btn.correct {
+            background: #1e5223 !important;
+            border-color: #55ff55 !important;
+            color: #55ff55 !important;
+        }
+
+        .option-btn.incorrect {
+            background: #521e1e !important;
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+        }
+
+        /* PANTALLA DE VICTORIA FINAL */
+        .victory-screen {
+            display: none;
+            background: rgba(0, 229, 255, 0.15);
+            border: 4px solid #55ff55;
+            box-shadow: 0 0 30px #55ff55;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            animation: victoryGlow 1s infinite alternate;
+        }
+
+        @keyframes victoryGlow {
+            from { box-shadow: 0 0 15px #55ff55; }
+            to { box-shadow: 0 0 40px #ffff00; }
+        }
+
+        .victory-screen h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #55ff55;
+            text-shadow: 3px 3px #000;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nubes Animadas de Fondo -->
+<div class="sky-bg">
+    <div class="pixel-cloud" style="top: 20px; animation-delay: 0s;"></div>
+    <div class="pixel-cloud" style="top: 70px; animation-delay: -10s;"></div>
+    <div class="pixel-cloud" style="top: 40px; animation-delay: -18s;"></div>
+</div>
+
+<div class="container">
+    <!-- Navegación -->
+    <div class="header-nav">
+        <a href="../index.html" class="btn-pixel">◄ VOLVER AL MENU</a>
+        <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00;">UTP | CB215 NIVEL 5</span>
+    </div>
+
+    <!-- Título Principal -->
+    <div class="title-block">
+        <h1>MÓDULO 5: INTEGRAL DEFINIDA Y ÁREA BAJO LA CURVA</h1>
+        <p style="color: #aaa; margin: 5px 0 0 0;">Cálculo Exacto de Áreas y Teorema Fundamental estilo Pixel Art</p>
+    </div>
+
+    <!-- Sección 1: Lore / Teoría -->
+    <section class="pixel-card">
+        <h2>1. MISIÓN TEÓRICA</h2>
+        <p>
+            El <strong>Teorema Fundamental del Cálculo</strong> conecta la derivación con la integración definida, permitiendo evaluar el área exacta bajo una curva continua f(x) mediante su antiderivada F(x):
+        </p>
+        <div class="formula-display">
+            ∫ₐᵇ f(x) dx = F(b) - F(a), donde F'(x) = f(x)
+        </div>
+        <p><strong>Área entre dos curvas f(x) y g(x):</strong></p>
+        <div class="formula-display">
+            Área = ∫ₐᵇ |f(x) - g(x)| dx = ∫ₐᵇ [Arriba(x) - Abajo(x)] dx
+        </div>
+    </section>
+
+    <!-- Sección 2: Laboratorio Interactivo -->
+    <section class="pixel-card">
+        <h2>2. LABORATORIO INTERACTIVO</h2>
+
+        <div class="character-box">
+            <div class="pixel-avatar"></div>
+            <div class="speech-bubble">
+                "¡Bienvenido Guerrero Saiyajin! Selecciona la función y los límites a y b para calcular el área exacta sombreada bajo la curva. ¡Luego enfréntate a Trunks, Maestro Roshi y Piccolo!"
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label for="functionSelect">FUNCIÓN / ÁREA:</label>
+                <select id="functionSelect" onchange="updatePlot()">
+                    <option value="3x^2-2x+1">f(x) = 3x² - 2x + 1</option>
+                    <option value="1/x">f(x) = 1/x</option>
+                    <option value="cos(x)">f(x) = cos(x)</option>
+                    <option value="exp(x)">f(x) = e^x</option>
+                    <option value="between_curves">Área entre f(x)=2x y g(x)=x²</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="aInput">LÍMITE A:</label>
+                <input type="number" id="aInput" value="0" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="bInput">LÍMITE B:</label>
+                <input type="number" id="bInput" value="2" step="0.5" onchange="updatePlot()">
+            </div>
+        </div>
+
+        <div id="plotlyChart" style="width:100%; height:450px; border: 3px solid #333;"></div>
+
+        <div class="stats-banner">
+            <div class="stat-box">
+                <div class="stat-label">ANTIDERIVADA F(X)</div>
+                <div class="stat-value" id="antiderivativeFormula" style="font-size: 20px; color: #55ffff;">F(x) = x³ - x² + x</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ÁREA EXACTA (F(b) - F(a))</div>
+                <div class="stat-value" id="exactAreaValue">6.0000</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 3: Aplicación / Misión Secundaria -->
+    <section class="pixel-card">
+        <div class="quest-box">
+            <h3 class="quest-title">⚔️ MISIÓN SECUNDARIA: FÍSICA Y SIMULACIÓN DE TRABAJO Y ENERGÍA</h3>
+            <p style="margin-bottom: 0;">
+                En simulación de físicas para videojuegos y robótica, el <strong>Trabajo Mecánico W</strong> ejercido por una fuerza variable F(x) al desplazar un objeto desde x = a hasta x = b equivale exactamente al área bajo la curva: W = ∫ₐᵇ F(x) dx.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección 4: EJERCICIOS CON SINTAXIS NATURAL Y LIMPIA -->
+    <section class="pixel-card">
+        <h2>3. EJERCICIOS</h2>
+        
+        <!-- Ejercicio 1 -->
+        <h3 style="color: #ffaa00;">1. Calcule ∫₀² (3x² - 2x + 1) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Integra término a término: ∫ (3x² - 2x + 1) dx = x³ - x² + x. Luego evalúa los límites de integración aplicando el Teorema Fundamental del Cálculo: F(2) - F(0) = (2³ - 2² + 2) - (0³ - 0² + 0) = (8 - 4 + 2) - 0 = 6.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 2 -->
+        <h3 style="color: #ffaa00;">2. Evalúe ∫₁ᵉ (1 / x) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> La antiderivada de 1 / x es ln|x|. Evalúa en los límites de 1 a e: F(e) - F(1) = ln(e) - ln(1) = 1 - 0 = 1.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 3 -->
+        <h3 style="color: #ffaa00;">3. Calcule ∫₀^(π/2) cos(x) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> La antiderivada de cos(x) es sin(x). Evalúa de 0 a π/2: F(π/2) - F(0) = sin(π/2) - sin(0) = 1 - 0 = 1.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 4 -->
+        <h3 style="color: #ffaa00;">4. Determine el área de la región limitada por f(x) = x² y g(x) = 2x.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Encuentra los puntos de intersección igualando x² = 2x, de donde x² - 2x = 0, obteniendo x = 0 y x = 2. Como g(x) = 2x ≥ f(x) = x² en el intervalo [1], calcula el área integrando la diferencia: ∫₀² (2x - x²) dx = [x² - x³/3]₀² = (4 - 8/3) - 0 = 4/3 ≈ 1.3333.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 5 -->
+        <h3 style="color: #ffaa00;">5. Calcule el área bajo la curva f(x) = eˣ entre x = 0 y x = 1.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> La antiderivada de eˣ es eˣ. Evalúa en el intervalo [2]: F(1) - F(0) = e¹ - e⁰ = e - 1 ≈ 2.7183 - 1 = 1.7183.
+        </div>
+    </section>
+
+    <!-- =========================================================
+         ARENA DE BOSSES DBZ (TRUNKS, MAESTRO ROSHI, PICCOLO)
+         ========================================================= -->
+    <div class="dbz-arena">
+        <div class="arena-title">⚡ TORNEO DE GUERREROS: ENFRENTA A TRUNKS, MAESTRO ROSHI Y PICCOLO ⚡</div>
+        
+        <div class="fighters-container">
+            <!-- TRUNKS HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-trunks">
+                <div class="hp-container">
+                    <span class="hp-label">TRUNKS SSJ</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-trunks"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="trunks-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="10,115 0,60 15,20 47,0 80,20 95,60 85,115" fill="rgba(0,229,255,0.25)"/>
+                    <!-- Espada en la espalda -->
+                    <rect x="72" y="10" width="8" height="60" fill="#cccccc" stroke="#000" stroke-width="1.5" transform="rotate(25 72 10)"/>
+                    <rect x="68" y="45" width="22" height="6" fill="#ffd700" stroke="#000" stroke-width="1" transform="rotate(25 68 45)"/>
+                    <!-- Pelo SSJ Dorado de Trunks con corte clásico -->
+                    <path d="M22,32 L10,15 L28,20 L35,5 L48,18 L60,2 L68,22 L85,12 L72,38 L88,40 L66,50 Z" fill="#ffff00" stroke="#ffab00" stroke-width="2"/>
+                    <path d="M26,22 L38,10 L50,18 L62,8 L72,22" fill="#ffffff" opacity="0.6"/>
+                    <!-- Cara -->
+                    <polygon points="26,38 68,38 62,65 47,73 32,65" fill="#ffcc99"/>
+                    <!-- Ojos celestes SSJ -->
+                    <polygon points="28,43 42,46 40,40 28,40" fill="#00e5ff" stroke="#000" stroke-width="1"/>
+                    <polygon points="48,46 62,43 62,40 50,40" fill="#00e5ff" stroke="#000" stroke-width="1"/>
+                    <!-- Chaqueta Capsule Corp Azul/Violeta -->
+                    <path d="M15,68 L30,62 L47,72 L64,62 L79,68 L85,105 L9,105 Z" fill="#283593" stroke="#000" stroke-width="2"/>
+                    <polygon points="35,62 59,62 54,88 40,88" fill="#111111"/>
+                    <circle cx="24" cy="74" r="5" fill="#d50000"/>
+                    <rect x="25" y="88" width="44" height="8" fill="#ff6f00"/>
+                </svg>
+            </div>
+
+            <!-- MAESTRO ROSHI HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-roshi">
+                <div class="hp-container">
+                    <span class="hp-label">MAESTRO ROSHI</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-roshi"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="roshi-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="10,115 0,60 15,18 47,0 80,18 95,60 85,115" fill="rgba(255,145,0,0.25)"/>
+                    <!-- Cabeza calva brillante -->
+                    <ellipse cx="47" cy="28" rx="22" ry="20" fill="#ffcc99" stroke="#d4a000" stroke-width="1.5"/>
+                    <ellipse cx="40" cy="18" rx="8" ry="4" fill="#ffffff" opacity="0.4"/>
+                    <!-- Gafas de sol rojas de Roshi -->
+                    <rect x="25" y="26" width="44" height="14" rx="3" fill="#d50000" stroke="#000" stroke-width="2"/>
+                    <rect x="28" y="28" width="16" height="10" fill="#111111"/>
+                    <rect x="50" y="28" width="16" height="10" fill="#111111"/>
+                    <line x1="28" y1="30" x2="38" y2="36" stroke="#ffffff" stroke-width="2"/>
+                    <line x1="50" y1="30" x2="60" y2="36" stroke="#ffffff" stroke-width="2"/>
+                    <!-- Bigote y Gran Barba Blanca -->
+                    <path d="M20,42 Q47,38 74,42 Q80,72 47,75 Q14,72 20,42 Z" fill="#f5f5f5" stroke="#cccccc" stroke-width="2"/>
+                    <!-- Camiseta Naranja Kame de Roshi -->
+                    <path d="M12,65 L82,65 L88,105 L6,105 Z" fill="#ff6d00" stroke="#bf360c" stroke-width="2"/>
+                    <path d="M30,65 L64,65 L58,92 L36,92 Z" fill="#ffffff"/>
+                    <!-- Caparazón de tortuga morado en la espalda -->
+                    <path d="M2,68 C-5,90 12,110 20,105" fill="none" stroke="#7b1fa2" stroke-width="8"/>
+                    <path d="M93,68 C100,90 83,110 75,105" fill="none" stroke="#7b1fa2" stroke-width="8"/>
+                    <rect x="20" y="105" width="54" height="15" fill="#3e2723"/>
+                </svg>
+            </div>
+
+            <!-- PICCOLO HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-piccolo">
+                <div class="hp-container">
+                    <span class="hp-label">PICCOLO</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-piccolo"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="piccolo-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="10,115 0,60 15,15 47,0 80,15 95,60 85,115" fill="rgba(118,255,3,0.3)"/>
+                    <!-- Turbante blanco clásico de Piccolo -->
+                    <path d="M20,25 Q47,5 74,25 L78,35 Q47,28 16,35 Z" fill="#ffffff" stroke="#ccc" stroke-width="2"/>
+                    <circle cx="47" cy="20" r="5" fill="#d50000" stroke="#000" stroke-width="1"/>
+                    <!-- Orejas puntiagudas namekuseijin -->
+                    <polygon points="12,32 24,38 20,50" fill="#76ff03" stroke="#33691e" stroke-width="1.5"/>
+                    <polygon points="82,32 70,38 74,50" fill="#76ff03" stroke="#33691e" stroke-width="1.5"/>
+                    <!-- Cara verde Namek -->
+                    <polygon points="24,35 70,35 64,62 47,68 30,62" fill="#76ff03"/>
+                    <!-- Antenas en la frente -->
+                    <line x1="36" y1="36" x2="28" y2="22" stroke="#33691e" stroke-width="2.5"/>
+                    <line x1="58" y1="36" x2="66" y2="22" stroke="#33691e" stroke-width="2.5"/>
+                    <!-- Ojos serios -->
+                    <polygon points="28,42 40,44 38,38" fill="#ffffff" stroke="#000" stroke-width="1"/>
+                    <polygon points="66,42 54,44 56,38" fill="#ffffff" stroke="#000" stroke-width="1"/>
+                    <rect x="33" y="41" width="3" height="3" fill="#000"/>
+                    <rect x="58" y="41" width="3" height="3" fill="#000"/>
+                    <!-- Capa blanca y traje morado -->
+                    <path d="M10,55 L84,55 L90,110 L4,110 Z" fill="#ffffff" stroke="#bbb" stroke-width="2"/>
+                    <path d="M28,62 L66,62 L60,110 L34,110 Z" fill="#4a148c"/>
+                    <!-- Cinta/faja roja -->
+                    <rect x="25" y="92" width="44" height="8" fill="#d50000"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="floor-grid"></div>
+
+        <!-- CUESTIONARIO DE ATAQUE -->
+        <div class="quiz-container">
+            <div class="quiz-title">⚔️ RESPONDE CORRECTAMENTE PARA ATACAR A TRUNKS, MAESTRO ROSHI Y PICCOLO:</div>
+
+            <div class="question-card" id="q1-box">
+                <div class="question-text">1. Para el Ejercicio 1 (∫₀² (3x² - 2x + 1) dx), ¿cuál es el resultado exacto obtenido mediante el Teorema Fundamental del Cálculo?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(1, true, this)">A) Área = 6</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">B) Área = 8</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">C) Área = 4</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q2-box">
+                <div class="question-text">2. En el Ejercicio 2 (∫₁ᵉ (1 / x) dx), ¿cuál es el valor exacto de la integral definida?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">A) Valor = e</button>
+                    <button class="option-btn" onclick="checkAnswer(2, true, this)">B) Valor = 1</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">C) Valor = 0</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q3-box">
+                <div class="question-text">3. En el Ejercicio 4 (Área entre f(x) = x² y g(x) = 2x), ¿cuál es el área exacta encerrada entre ambas curvas?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">A) Área = 2.0000</button>
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">B) Área = 0.6667</button>
+                    <button class="option-btn" onclick="checkAnswer(3, true, this)">C) Área = 1.3333 (4/3)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA FINAL -->
+        <div class="victory-screen" id="victory-banner">
+            <h2>🏆 ¡VICTORIA TOTAL! HAS DERROTADO A TRUNKS, MAESTRO ROSHI Y PICCOLO 🏆</h2>
+            <p style="font-size: 24px; color: #ffff55; margin: 0;">
+                Has superado la fuerza de Trunks SSJ, la sabiduría del Maestro Roshi y el poder de Piccolo en el Módulo 5. ¡Has dominado la Integral Definida y el Área bajo la Curva!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript de Gráficos y Combate -->
+<script>
+    function updatePlot() {
+        const funcType = document.getElementById('functionSelect').value;
+        const a = parseFloat(document.getElementById('aInput').value);
+        const b = parseFloat(document.getElementById('bInput').value);
+
+        if (a >= b || (funcType === '1/x' && a <= 0)) return;
+
+        const xCurve = [], yCurve = [], yCurve2 = [];
+        const xFill = [], yFill = [];
+        const steps = 300;
+
+        for (let i = 0; i <= steps; i++) {
+            const x = a + (b - a) * (i / steps);
+            xCurve.push(x);
+
+            let y = 0;
+            if (funcType === '3x^2-2x+1') {
+                y = 3 * x * x - 2 * x + 1;
+            } else if (funcType === '1/x') {
+                y = 1 / x;
+            } else if (funcType === 'cos(x)') {
+                y = Math.cos(x);
+            } else if (funcType === 'exp(x)') {
+                y = Math.exp(x);
+            } else if (funcType === 'between_curves') {
+                const y1 = 2 * x;
+                const y2 = x * x;
+                yCurve.push(y1);
+                yCurve2.push(y2);
+            }
+
+            if (funcType !== 'between_curves') {
+                yCurve.push(y);
+                xFill.push(x);
+                yFill.push(y);
+            }
+        }
+
+        let exactArea = 0;
+        let formulaText = "";
+
+        if (funcType === '3x^2-2x+1') {
+            const Fa = Math.pow(a, 3) - Math.pow(a, 2) + a;
+            const Fb = Math.pow(b, 3) - Math.pow(b, 2) + b;
+            exactArea = Fb - Fa;
+            formulaText = "F(x) = x³ - x² + x";
+        } else if (funcType === '1/x') {
+            exactArea = Math.log(b) - Math.log(a);
+            formulaText = "F(x) = ln|x|";
+        } else if (funcType === 'cos(x)') {
+            exactArea = Math.sin(b) - Math.sin(a);
+            formulaText = "F(x) = sin(x)";
+        } else if (funcType === 'exp(x)') {
+            exactArea = Math.exp(b) - Math.exp(a);
+            formulaText = "F(x) = e^x";
+        } else if (funcType === 'between_curves') {
+            exactArea = (Math.pow(b, 2) - Math.pow(b, 3) / 3) - (Math.pow(a, 2) - Math.pow(a, 3) / 3);
+            formulaText = "A = ∫ (2x - x²) dx = [x² - x³/3]";
+        }
+
+        document.getElementById('exactAreaValue').innerText = exactArea.toFixed(4);
+        document.getElementById('antiderivativeFormula').innerText = formulaText;
+
+        const data = [];
+
+        if (funcType === 'between_curves') {
+            data.push({
+                x: xCurve, y: yCurve2, mode: 'lines', name: 'g(x) = x²',
+                line: { color: '#ffaa00', width: 3 }
+            });
+            data.push({
+                x: xCurve, y: yCurve, mode: 'lines', name: 'f(x) = 2x',
+                fill: 'tonexty', fillcolor: 'rgba(0, 229, 255, 0.35)',
+                line: { color: '#00e5ff', width: 3 }
+            });
+        } else {
+            data.push({
+                x: xCurve, y: yCurve, mode: 'lines', name: 'f(x)',
+                line: { color: '#ffaa00', width: 4 }
+            });
+            data.push({
+                x: [a, ...xFill, b], y: [0, ...yFill, 0], fill: 'tozeroy',
+                fillcolor: 'rgba(0, 229, 255, 0.35)', mode: 'none', showlegend: false
+            });
+        }
+
+        const layout = {
+            paper_bgcolor: '#0d0b0e', plot_bgcolor: '#161218',
+            font: { family: 'VT323, monospace', size: 18, color: '#ffffff' },
+            xaxis: { title: 'X', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            yaxis: { title: 'Y', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            margin: { t: 20, r: 20, l: 50, b: 50 },
+            showlegend: false
+        };
+
+        Plotly.newPlot('plotlyChart', data, layout, {responsive: true});
+    }
+
+    let currentHP = 100;
+    let correctAnswersCount = 0;
+    const answeredQuestions = { 1: false, 2: false, 3: false };
+
+    function checkAnswer(questionNum, isCorrect, btnElement) {
+        if (answeredQuestions[questionNum]) return;
+
+        const parentGrid = btnElement.parentElement;
+        const buttons = parentGrid.querySelectorAll('.option-btn');
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            answeredQuestions[questionNum] = true;
+            correctAnswersCount++;
+
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            dealDamage(33.34);
+        } else {
+            btnElement.classList.add('incorrect');
+        }
+    }
+
+    function dealDamage(amount) {
+        currentHP = Math.max(0, currentHP - amount);
+
+        const hpTrunks = document.getElementById('hp-trunks');
+        const hpRoshi = document.getElementById('hp-roshi');
+        const hpPiccolo = document.getElementById('hp-piccolo');
+
+        [hpTrunks, hpRoshi, hpPiccolo].forEach(bar => {
+            if (bar) {
+                bar.style.width = currentHP + '%';
+                if (currentHP < 60 && currentHP > 25) {
+                    bar.className = 'hp-bar-fill warning';
+                } else if (currentHP <= 25) {
+                    bar.className = 'hp-bar-fill danger';
+                }
+            }
+        });
+
+        const fighters = [
+            document.getElementById('fighter-trunks'),
+            document.getElementById('fighter-roshi'),
+            document.getElementById('fighter-piccolo')
+        ];
+
+        fighters.forEach(f => {
+            if (f) {
+                f.classList.add('hit-effect');
+                setTimeout(() => f.classList.remove('hit-effect'), 400);
+            }
+        });
+
+        if (correctAnswersCount === 3 || currentHP <= 0) {
+            setTimeout(() => {
+                fighters.forEach(f => { if (f) f.classList.add('defeated'); });
+                document.getElementById('victory-banner').style.display = 'block';
+            }, 500);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePlot();
+    });
+</script>
+</body>
+</html>

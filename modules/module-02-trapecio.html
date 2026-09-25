@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 2: Regla del Trapecio | DBZ High-Res Boss Battle Edition</title>
+
+    <!-- Fuentes Retro de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js CDN para gráficos interactivos -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <style>
+        /* =========================================================
+           ESTILOS GENERALES RETRO 8-BIT / MINECRAFT
+           ========================================================= */
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background: #0f0d11;
+            background-image: 
+                radial-gradient(#1a2636 15%, transparent 16%),
+                radial-gradient(#16121e 15%, transparent 16%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Nubes Animadas de Fondo */
+        .sky-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, #101c2e 0%, transparent 100%);
+        }
+
+        .pixel-cloud {
+            position: absolute;
+            background: #2a3c53;
+            box-shadow: 
+                8px 0 #2a3c53, -8px 0 #2a3c53, 
+                0 -8px #2a3c53, 0 8px #2a3c53,
+                16px 0 #3a5270, -16px 0 #3a5270;
+            width: 80px;
+            height: 24px;
+            opacity: 0.6;
+            animation: moveCloud 25s linear infinite;
+        }
+
+        @keyframes moveCloud {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(100vw); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Encabezado y Botón Retro */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px dashed #55ffff;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #ffffff;
+            background-color: #388700;
+            text-decoration: none;
+            padding: 12px 18px;
+            display: inline-block;
+            border: 4px solid #55aa55;
+            box-shadow: inset -4px -4px 0px 0px #1e4a00, 4px 4px 0px 0px #000000;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-pixel:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset -2px -2px 0px 0px #1e4a00, 2px 2px 0px 0px #000000;
+        }
+
+        .title-block {
+            text-align: center;
+            background: #1d150c;
+            border: 4px solid #8b5a2b;
+            box-shadow: inset -4px -4px 0px 0px #0d0905, 6px 6px 0px 0px #000000;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .title-block h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #ffaa00;
+            text-shadow: 3px 3px #000000;
+            margin: 0 0 10px 0;
+        }
+
+        /* Tarjetas con Borde de Piedra / Píxel */
+        .pixel-card {
+            background: #181419;
+            border: 4px solid #555555;
+            box-shadow: inset -4px -4px 0px 0px #222222, 6px 6px 0px 0px #000000;
+            padding: 22px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .pixel-card h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #55ffff;
+            text-shadow: 2px 2px #000;
+            margin-top: 0;
+            border-bottom: 4px solid #333;
+            padding-bottom: 12px;
+        }
+
+        /* Personaje Guía */
+        .character-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #111a24;
+            border: 3px solid #3a5270;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pixel-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffaa00;
+            box-shadow: 
+                -12px -8px 0 #000, 12px -8px 0 #000,
+                -12px -8px 0 #fff, 12px -8px 0 #fff,
+                0 12px 0 #8b0000, -8px 12px 0 #8b0000, 8px 12px 0 #8b0000;
+            position: relative;
+            animation: bouncePixel 1.5s infinite alternate ease-in-out;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        @keyframes bouncePixel {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            background: #222b35;
+            border: 3px solid #ffffff;
+            padding: 10px 15px;
+            color: #ffff55;
+            position: relative;
+            font-size: 20px;
+        }
+
+        /* Controles e Inputs Retro */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: #0b090c;
+            border: 3px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #ffaa00;
+            margin-bottom: 8px;
+        }
+
+        .control-group input, .control-group select {
+            width: 100%;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            background: #1d150c;
+            color: #55ffff;
+            border: 3px solid #8b5a2b;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .control-group input[type=range] {
+            accent-color: #ffaa00;
+            cursor: pointer;
+        }
+
+        .stats-banner {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #0d1217;
+            border: 3px solid #2e435e;
+            padding: 12px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            color: #55ff55;
+            font-weight: bold;
+        }
+
+        .stat-value.error {
+            color: #ff5555;
+        }
+
+        .quest-box {
+            background: #1c180a;
+            border: 4px solid #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #8b5a2b, 4px 4px 0px 0px #000;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .quest-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #ffaa00;
+            margin-top: 0;
+        }
+
+        .hint-box {
+            background: rgba(85, 255, 255, 0.08);
+            border-left: 4px solid #55ffff;
+            padding: 12px 18px;
+            margin-top: 10px;
+            font-size: 22px;
+            color: #55ffff;
+            line-height: 1.5;
+        }
+
+        .formula-display {
+            background: #0d0b0e;
+            border: 2px dashed #ffaa00;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 24px;
+            color: #ffaa00;
+        }
+
+        /* =========================================================
+           SISTEMA DE BATALLA DBZ CON BARRAS DE VIDA Y DAÑO
+           ========================================================= */
+        .dbz-arena {
+            background: linear-gradient(180deg, #07030a 0%, #170724 60%, #3a1905 100%);
+            border: 4px solid #ffaa00;
+            box-shadow: 0 0 25px rgba(255, 170, 0, 0.4), inset 0 0 20px #000;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arena-title {
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #ffaa00;
+            text-shadow: 2px 2px #ff0000;
+            margin-bottom: 20px;
+        }
+
+        .hp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            width: 140px;
+        }
+
+        .hp-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .hp-bar-outer {
+            width: 100%;
+            height: 14px;
+            background: #330000;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 5px #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hp-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #aaff00);
+            transition: width 0.5s ease-in-out, background 0.3s;
+        }
+
+        .hp-bar-fill.warning {
+            background: linear-gradient(90deg, #ffaa00, #ffff00);
+        }
+
+        .hp-bar-fill.danger {
+            background: linear-gradient(90deg, #ff0000, #ff5500);
+        }
+
+        .fighters-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 260px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .fighter-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s, filter 0.5s;
+        }
+
+        .fighter-card.hit-effect {
+            animation: hitShake 0.4s ease-in-out;
+            filter: brightness(2) drop-shadow(0 0 15px #ff0000) !important;
+        }
+
+        @keyframes hitShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, -5px) rotate(-5deg); }
+            40% { transform: translate(10px, 5px) rotate(5deg); }
+            60% { transform: translate(-8px, 2px) rotate(-3deg); }
+            80% { transform: translate(5px, -2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .fighter-card.defeated {
+            transform: translateY(40px) rotate(90deg) scale(0.8);
+            filter: grayscale(1) opacity(0.3) !important;
+        }
+
+        .ko-badge {
+            position: absolute;
+            top: 40%;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            color: #ff0000;
+            text-shadow: 3px 3px #000, 0 0 10px #ffff00;
+            display: none;
+            z-index: 10;
+        }
+
+        .fighter-card.defeated .ko-badge {
+            display: block;
+            animation: koBounce 0.5s bounce ease-in-out;
+        }
+
+        .goku-svg {
+            filter: drop-shadow(0 0 10px #00ffff);
+            animation: floatHero 1.8s infinite alternate ease-in-out;
+        }
+        .vegeta-svg {
+            filter: drop-shadow(0 0 10px #ffff00);
+            animation: floatHero 1.5s infinite alternate ease-in-out;
+        }
+        .bills-svg {
+            filter: drop-shadow(0 0 12px #aa00ff);
+            animation: floatHero 2.2s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatHero {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-8px); }
+        }
+
+        .floor-grid {
+            height: 16px;
+            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 16px, #553311 16px, #553311 32px);
+            border-top: 4px solid #ffaa00;
+            margin-top: 10px;
+        }
+
+        /* CUESTIONARIO INTERACTIVO DE BATALLA */
+        .quiz-container {
+            background: #0d0912;
+            border: 3px solid #ffaa00;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .quiz-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #55ffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .question-card {
+            background: #16101f;
+            border: 2px solid #332244;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #ffff55;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            background: #251a33;
+            color: #ffffff;
+            border: 2px solid #553377;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #3c2954;
+            border-color: #ffaa00;
+        }
+
+        .option-btn.correct {
+            background: #1e5223 !important;
+            border-color: #55ff55 !important;
+            color: #55ff55 !important;
+        }
+
+        .option-btn.incorrect {
+            background: #521e1e !important;
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+        }
+
+        /* PANTALLA DE VICTORIA FINAL */
+        .victory-screen {
+            display: none;
+            background: rgba(255, 170, 0, 0.15);
+            border: 4px solid #55ff55;
+            box-shadow: 0 0 30px #55ff55;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            animation: victoryGlow 1s infinite alternate;
+        }
+
+        @keyframes victoryGlow {
+            from { box-shadow: 0 0 15px #55ff55; }
+            to { box-shadow: 0 0 40px #ffff00; }
+        }
+
+        .victory-screen h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #55ff55;
+            text-shadow: 3px 3px #000;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nubes Animadas de Fondo -->
+<div class="sky-bg">
+    <div class="pixel-cloud" style="top: 20px; animation-delay: 0s;"></div>
+    <div class="pixel-cloud" style="top: 70px; animation-delay: -10s;"></div>
+    <div class="pixel-cloud" style="top: 40px; animation-delay: -18s;"></div>
+</div>
+
+<div class="container">
+    <!-- Navegación -->
+    <div class="header-nav">
+        <a href="../index.html" class="btn-pixel">◄ VOLVER AL MENU</a>
+        <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00;">UTP | CB215 NIVEL 2</span>
+    </div>
+
+    <!-- Título Principal -->
+    <div class="title-block">
+        <h1>MÓDULO 2: REGLA DEL TRAPECIO</h1>
+        <p style="color: #aaa; margin: 5px 0 0 0;">Aproximación por Trapecios Secantes estilo Pixel Art</p>
+    </div>
+
+    <!-- Sección 1: Lore / Teoría -->
+    <section class="pixel-card">
+        <h2>1. MISIÓN TEÓRICA</h2>
+        <p>
+            La <strong>Regla del Trapecio</strong> conecta los puntos contiguos sobre la curva mediante segmentos rectos, aproximando la integral definida mediante trapecios:
+        </p>
+        <div class="formula-display">
+            Tₙ = (Δx / 2) · [ f(x₀) + 2 f(x₁) + 2 f(x₂) + ... + 2 f(xₙ₋₁) + f(xₙ) ], donde Δx = (b - a) / n
+        </div>
+        <p><strong>Cota del Error Teórico:</strong></p>
+        <div class="formula-display">
+            |Eₜ| ≤ K · (b - a)³ / (12 n²), donde K = máx |f''(x)| en [a, b]
+        </div>
+    </section>
+
+    <!-- Sección 2: Laboratorio Interactivo -->
+    <section class="pixel-card">
+        <h2>2. LABORATORIO INTERACTIVO</h2>
+
+        <div class="character-box">
+            <div class="pixel-avatar"></div>
+            <div class="speech-bubble">
+                "¡Bienvenido Guerrero Saiyajin! Mueve los controles para acumular Ki y luego resuelve el Desafío de Batalla para derrotar a los Dioses del Cálculo."
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label for="functionSelect">FUNCIÓN F(X):</label>
+                <select id="functionSelect" onchange="updatePlot()">
+                    <option value="x^2">f(x) = x²</option>
+                    <option value="1/x">f(x) = 1/x</option>
+                    <option value="exp(x)">f(x) = e^x</option>
+                    <option value="sin(x)">f(x) = sin(x)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="aInput">LÍMITE A:</label>
+                <input type="number" id="aInput" value="0" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="bInput">LÍMITE B:</label>
+                <input type="number" id="bInput" value="2" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="nSlider">SUBINTERVALOS (N = <span id="nVal">4</span>):</label>
+                <input type="range" id="nSlider" min="1" max="40" value="4" oninput="document.getElementById('nVal').innerText = this.value; updatePlot()">
+            </div>
+        </div>
+
+        <div id="plotlyChart" style="width:100%; height:450px; border: 3px solid #333;"></div>
+
+        <div class="stats-banner">
+            <div class="stat-box">
+                <div class="stat-label">VALOR EXACTO</div>
+                <div class="stat-value" id="exactValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">APROXIMACIÓN (Tn)</div>
+                <div class="stat-value" id="trapezoidValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ERROR ABSOLUTO</div>
+                <div class="stat-value error" id="errorValue">0.0000</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 3: Aplicación / Misión Secundaria -->
+    <section class="pixel-card">
+        <div class="quest-box">
+            <h3 class="quest-title">⚔️ MISIÓN SECUNDARIA: APLICACIÓN EN INGENIERÍA</h3>
+            <p style="margin-bottom: 0;">
+                En el desarrollo de videojuegos y simulación de físicas, las curvas complejas o datos no analíticos se integran mediante la <strong>Regla del Trapecio Compuesta</strong> para estimar trayectorias, consumos de energía o volúmenes topográficos a intervalos discretos Δx.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección 4: EJERCICIOS CON SINTAXIS NATURAL Y LIMPIA -->
+    <section class="pixel-card">
+        <h2>3. EJERCICIOS</h2>
+        
+        <!-- Ejercicio 1 -->
+        <h3 style="color: #ffaa00;">1. Aproxime ∫₀² x² dx usando la regla del trapecio con n = 4.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Identifica a = 0 y b = 2. Calcula el ancho de subintervalo con Δx = (2 - 0) / 4 = 0.5. Luego, construye los 5 puntos de la malla x₀, x₁, x₂, x₃, x₄ sumando 0.5 sucesivamente a partir de x₀ = 0, y evalúa f(x) = x² en cada uno.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 2 -->
+        <h3 style="color: #ffaa00;">2. Use T₅ para aproximar ∫₁³ (1 / x) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con los límites a = 1 y b = 3, y n = 5, el ancho de cada subintervalo es Δx = (3 - 1) / 5 = 0.4. Determina los puntos de evaluación xᵢ ∈ {1.0, 1.4, 1.8, 2.2, 2.6, 3.0}, evalúa f(x) = 1 / x en cada uno y aplica los coeficientes 1, 2, 2, 2, 2, 1 en la fórmula.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 3 -->
+        <h3 style="color: #ffaa00;">3. Calcule T₆ para ∫₀¹ eˣ dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Divida el intervalo en n = 6 subintervalos iguales para obtener un paso Δx = 1 / 6 ≈ 0.1667. Evalúa la función exponencial f(x) = eˣ en los puntos xᵢ = i / 6 para i = 0, 1, 2, 3, 4, 5, 6.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 4 -->
+        <h3 style="color: #ffaa00;">4. Aproxime ∫₀^(π/2) sin(x) dx usando T₄.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Para el intervalo [0, π/2] dividido en n = 4 partes, la longitud de cada paso es Δx = (π / 2) / 4 = π / 8 ≈ 0.3927. Los puntos a evaluar en la función seno son 0, π/8, π/4, 3π/8 y π/2.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 5 -->
+        <h3 style="color: #ffaa00;">5. Use T₄ para aproximar ∫₁² √x dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con a = 1, b = 2 y n = 4, el incremento constante es Δx = 0.25. Evalúa la función raíz cuadrada f(x) = √x en los valores 1.00, 1.25, 1.50, 1.75 y 2.00.
+        </div>
+    </section>
+
+    <!-- =========================================================
+         ARENA DE BOSSES DBZ HIGH-RES Y CUESTIONARIO
+         ========================================================= -->
+    <div class="dbz-arena">
+        <div class="arena-title">⚡ TORNEO DEL PODER: DERROTA A GOKU, VEGETA Y BILLS ⚡</div>
+        
+        <div class="fighters-container">
+            <!-- GOKU HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-goku">
+                <div class="hp-container">
+                    <span class="hp-label">GOKU SSJ</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-goku"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="goku-svg" width="90" height="120" viewBox="0 0 90 120">
+                    <polygon points="10,110 0,60 15,20 45,0 75,20 90,60 80,110" fill="rgba(0,255,255,0.2)" />
+                    <path d="M20,35 L10,15 L30,22 L35,5 L50,18 L60,0 L65,22 L85,15 L70,40 L88,45 L68,55 Z" fill="#ffff00" stroke="#ffaa00" stroke-width="2"/>
+                    <path d="M25,25 L35,12 L45,22 L55,8 L62,25" fill="#ffffff" opacity="0.6"/>
+                    <polygon points="25,40 65,40 60,65 45,75 30,65" fill="#ffcc99"/>
+                    <polygon points="28,45 42,48 40,42 28,42" fill="#ffff00" stroke="#000" stroke-width="1"/>
+                    <polygon points="48,48 62,45 62,42 50,42" fill="#ffff00" stroke="#000" stroke-width="1"/>
+                    <rect x="34" y="49" width="5" height="5" fill="#00ffff"/>
+                    <rect x="51" y="49" width="5" height="5" fill="#00ffff"/>
+                    <path d="M15,70 L30,65 L45,75 L60,65 L75,70 L80,105 L10,105 Z" fill="#ff5500"/>
+                    <polygon points="35,65 55,65 50,85 40,85" fill="#0000aa"/>
+                    <rect x="25" y="88" width="40" height="8" fill="#0000ff"/>
+                    <rect x="5" y="70" width="12" height="25" fill="#ffcc99"/>
+                    <rect x="73" y="70" width="12" height="25" fill="#ffcc99"/>
+                    <rect x="5" y="90" width="12" height="8" fill="#0000aa"/>
+                    <rect x="73" y="90" width="12" height="8" fill="#0000aa"/>
+                </svg>
+            </div>
+
+            <!-- VEGETA HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-vegeta">
+                <div class="hp-container">
+                    <span class="hp-label">VEGETA</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-vegeta"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="vegeta-svg" width="90" height="120" viewBox="0 0 90 120">
+                    <polygon points="12,110 2,55 20,15 45,2 70,15 88,55 78,110" fill="rgba(255,255,0,0.2)"/>
+                    <path d="M25,40 L10,20 L28,22 L30,0 L50,10 L62,0 L65,22 L82,18 L68,40 Z" fill="#ffff00" stroke="#d4a000" stroke-width="2"/>
+                    <polygon points="25,40 65,40 58,62 45,70 32,62" fill="#ffcc99"/>
+                    <path d="M28,46 L40,50 M62,46 L50,50" stroke="#000" stroke-width="3"/>
+                    <rect x="33" y="50" width="5" height="4" fill="#00ffff"/>
+                    <rect x="52" y="50" width="5" height="4" fill="#00ffff"/>
+                    <path d="M20,65 L70,65 L75,95 L15,95 Z" fill="#ffffff" stroke="#cccccc" stroke-width="2"/>
+                    <rect x="30" y="70" width="30" height="20" fill="#ffaa00"/>
+                    <rect x="8" y="68" width="14" height="28" fill="#0000aa"/>
+                    <rect x="68" y="68" width="14" height="28" fill="#0000aa"/>
+                    <rect x="6" y="88" width="14" height="12" fill="#ffffff"/>
+                    <rect x="70" y="88" width="14" height="12" fill="#ffffff"/>
+                </svg>
+            </div>
+
+            <!-- BILLS HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-bills">
+                <div class="hp-container">
+                    <span class="hp-label">LORD BILLS</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-bills"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="bills-svg" width="90" height="120" viewBox="0 0 90 120">
+                    <polygon points="20,5 35,42 12,42" fill="#7a1fa2" stroke="#4a148c" stroke-width="2"/>
+                    <polygon points="70,5 78,42 55,42" fill="#7a1fa2" stroke="#4a148c" stroke-width="2"/>
+                    <polygon points="23,12 32,38 17,38" fill="#ea80fc"/>
+                    <polygon points="67,12 73,38 60,38" fill="#ea80fc"/>
+                    <polygon points="22,40 68,40 60,68 45,75 30,68" fill="#9c27b0"/>
+                    <polygon points="26,48 38,52 36,46" fill="#ffff00"/>
+                    <polygon points="64,48 52,52 54,46" fill="#ffff00"/>
+                    <rect x="31" y="48" width="3" height="4" fill="#000"/>
+                    <rect x="56" y="48" width="3" height="4" fill="#000"/>
+                    <path d="M18,70 C30,85 60,85 72,70 L78,82 C60,100 30,100 12,82 Z" fill="#00e5ff" stroke="#ffd700" stroke-width="2"/>
+                    <rect x="32" y="82" width="26" height="30" fill="#4a148c"/>
+                    <rect x="25" y="92" width="40" height="8" fill="#ffab00"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="floor-grid"></div>
+
+        <!-- CUESTIONARIO DE ATAQUE -->
+        <div class="quiz-container">
+            <div class="quiz-title">⚔️ RESPONDE CORRECTAMENTE PARA ATACAR Y QUITAR HP A LOS 3 BOSSES:</div>
+
+            <div class="question-card" id="q1-box">
+                <div class="question-text">1. Para el primer ejercicio (∫₀² x² dx con n = 4), ¿cuál es el valor obtenido mediante la regla del trapecio (T₄)?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(1, true, this)">A) T₄ = 2.7500</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">B) T₄ = 2.6667</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">C) T₄ = 3.0000</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q2-box">
+                <div class="question-text">2. En el segundo ejercicio (∫₁³ (1 / x) dx con n = 5), ¿cuál es el ancho de cada subintervalo (Δx)?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">A) Δx = 0.5</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">B) Δx = 0.2</button>
+                    <button class="option-btn" onclick="checkAnswer(2, true, this)">C) Δx = 0.4</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q3-box">
+                <div class="question-text">3. En el cuarto ejercicio (∫₀^(π/2) sin(x) dx con n = 4), ¿cuál es el error absoluto respecto al valor exacto (1.0000)?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">A) Error = 0.0833</button>
+                    <button class="option-btn" onclick="checkAnswer(3, true, this)">B) Error = 0.0129</button>
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">C) Error = 0.0038</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA FINAL -->
+        <div class="victory-screen" id="victory-banner">
+            <h2>🏆 ¡VICTORIA TOTAL! HAS GANADO LA BATALLA 🏆</h2>
+            <p style="font-size: 24px; color: #ffff55; margin: 0;">
+                Has derrotado a Goku, Vegeta y Lord Bills resolviendo todos los ejercicios. ¡Has dominado el Módulo 2 de la Regla del Trapecio!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript de Gráficos y Combate -->
+<script>
+    function getFunction(type, x) {
+        switch(type) {
+            case 'x^2': return Math.pow(x, 2);
+            case '1/x': return 1 / x;
+            case 'exp(x)': return Math.exp(x);
+            case 'sin(x)': return Math.sin(x);
+            default: return Math.pow(x, 2);
+        }
+    }
+
+    function getExactIntegral(type, a, b) {
+        switch(type) {
+            case 'x^2': return (Math.pow(b, 3) - Math.pow(a, 3)) / 3;
+            case '1/x': return Math.log(b) - Math.log(a);
+            case 'exp(x)': return Math.exp(b) - Math.exp(a);
+            case 'sin(x)': return -Math.cos(b) - (-Math.cos(a));
+            default: return 0;
+        }
+    }
+
+    function updatePlot() {
+        const funcType = document.getElementById('functionSelect').value;
+        const a = parseFloat(document.getElementById('aInput').value);
+        const b = parseFloat(document.getElementById('bInput').value);
+        const n = parseInt(document.getElementById('nSlider').value);
+
+        if (a >= b || (funcType === '1/x' && a <= 0)) return;
+
+        const dx = (b - a) / n;
+        const xCurve = [], yCurve = [];
+        const steps = 200;
+        for (let i = 0; i <= steps; i++) {
+            const x = a + (b - a) * (i / steps);
+            xCurve.push(x);
+            yCurve.push(getFunction(funcType, x));
+        }
+
+        const shapes = [];
+        let trapezoidSum = 0;
+
+        for (let i = 0; i < n; i++) {
+            const x0 = a + i * dx;
+            const x1 = a + (i + 1) * dx;
+            const y0 = getFunction(funcType, x0);
+            const y1 = getFunction(funcType, x1);
+
+            trapezoidSum += (y0 + y1) * dx / 2;
+
+            shapes.push({
+                type: 'path',
+                path: `M ${x0},0 L ${x0},${y0} L ${x1},${y1} L ${x1},0 Z`,
+                fillcolor: 'rgba(255, 170, 0, 0.35)',
+                line: { color: '#ffaa00', width: 2 }
+            });
+        }
+
+        const exactVal = getExactIntegral(funcType, a, b);
+        const absError = Math.abs(exactVal - trapezoidSum);
+
+        document.getElementById('exactValue').innerText = exactVal.toFixed(4);
+        document.getElementById('trapezoidValue').innerText = trapezoidSum.toFixed(4);
+        document.getElementById('errorValue').innerText = absError.toFixed(4);
+
+        const data = [{
+            x: xCurve, y: yCurve, mode: 'lines', name: 'f(x)',
+            line: { color: '#55ffff', width: 4 }
+        }];
+
+        const layout = {
+            paper_bgcolor: '#0d0b0e', plot_bgcolor: '#161218',
+            font: { family: 'VT323, monospace', size: 18, color: '#ffffff' },
+            xaxis: { title: 'X', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            yaxis: { title: 'Y', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            margin: { t: 20, r: 20, l: 50, b: 50 },
+            shapes: shapes, showlegend: false
+        };
+
+        Plotly.newPlot('plotlyChart', data, layout, {responsive: true});
+    }
+
+    let currentHP = 100;
+    let correctAnswersCount = 0;
+    const answeredQuestions = { 1: false, 2: false, 3: false };
+
+    function checkAnswer(questionNum, isCorrect, btnElement) {
+        if (answeredQuestions[questionNum]) return;
+
+        const parentGrid = btnElement.parentElement;
+        const buttons = parentGrid.querySelectorAll('.option-btn');
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            answeredQuestions[questionNum] = true;
+            correctAnswersCount++;
+
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            dealDamage(33.34);
+        } else {
+            btnElement.classList.add('incorrect');
+        }
+    }
+
+    function dealDamage(amount) {
+        currentHP = Math.max(0, currentHP - amount);
+
+        const hpGoku = document.getElementById('hp-goku');
+        const hpVegeta = document.getElementById('hp-vegeta');
+        const hpBills = document.getElementById('hp-bills');
+
+        [hpGoku, hpVegeta, hpBills].forEach(bar => {
+            bar.style.width = currentHP + '%';
+            if (currentHP < 60 && currentHP > 25) {
+                bar.className = 'hp-bar-fill warning';
+            } else if (currentHP <= 25) {
+                bar.className = 'hp-bar-fill danger';
+            }
+        });
+
+        const fighters = [
+            document.getElementById('fighter-goku'),
+            document.getElementById('fighter-vegeta'),
+            document.getElementById('fighter-bills')
+        ];
+
+        fighters.forEach(f => {
+            f.classList.add('hit-effect');
+            setTimeout(() => f.classList.remove('hit-effect'), 400);
+        });
+
+        if (correctAnswersCount === 3 || currentHP <= 0) {
+            setTimeout(() => {
+                fighters.forEach(f => f.classList.add('defeated'));
+                document.getElementById('victory-banner').style.display = 'block';
+            }, 500);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePlot();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Extra: Dino Prehistoric Runner | UTP 2026-II</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; image-rendering: pixelated; user-select: none; }
+        body {
+            background: #0d0814;
+            background-image: radial-gradient(#251236 15%, transparent 16%), radial-gradient(#1a0c26 15%, transparent 16%);
+            background-size: 32px 32px;
+            color: #ffffff; font-family: 'VT323', monospace; font-size: 22px;
+            margin: 0; padding: 15px; overflow-x: hidden; text-align: center;
+        }
+        .container { max-width: 920px; margin: 0 auto; position: relative; }
+        
+        .header-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 4px dashed #ff9900;
+        }
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace; font-size: 11px; color: #ffffff; background-color: #388700;
+            text-decoration: none; padding: 10px 16px; border: 4px solid #55aa55;
+            box-shadow: inset -4px -4px 0px 0px #1e4a00, 4px 4px 0px 0px #000000; cursor: pointer; display: inline-block;
+        }
+        .btn-pixel:active { transform: translate(2px, 2px); box-shadow: none; }
+        
+        .title-block {
+            background: #1d0d2b; border: 4px solid #ffaa00; padding: 15px; margin-bottom: 15px;
+            box-shadow: 6px 6px 0px #000;
+        }
+        .title-block h1 { font-family: 'Press Start 2P', monospace; font-size: 18px; color: #ffaa00; margin: 0 0 8px 0; text-shadow: 2px 2px #000; }
+        
+        .game-wrapper {
+            position: relative; background: #1a0f2e; border: 4px solid #ff55aa;
+            box-shadow: inset -4px -4px 0px 0px #000, 8px 8px 0px 0px #000; padding: 12px; margin-bottom: 20px;
+        }
+        
+        canvas {
+            background: #180924; display: block; margin: 0 auto;
+            border: 3px solid #ffaa00; max-width: 100%; height: auto;
+            cursor: pointer;
+        }
+        
+        .hud {
+            display: flex; justify-content: space-between; font-family: 'Press Start 2P', monospace;
+            font-size: 12px; color: #ffea00; margin-top: 10px; padding: 0 10px; text-shadow: 2px 2px #000;
+        }
+
+        /* MODAL DE TRIVIA MATEMÁTICA PREHISTÓRICA */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 8, 20, 0.95); display: none;
+            flex-direction: column; justify-content: center; align-items: center; padding: 20px; z-index: 20;
+        }
+        .modal-card {
+            background: #261038; border: 4px solid #00e5ff; padding: 22px;
+            max-width: 720px; width: 100%; box-shadow: 0 0 25px #00e5ff, inset 0 0 15px #000; text-align: left;
+        }
+        .modal-title { font-family: 'Press Start 2P', monospace; font-size: 11px; color: #ffea00; margin-top: 0; }
+        .question-text { font-size: 23px; color: #ffffff; margin-bottom: 18px; line-height: 1.3; }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option-btn {
+            font-family: 'VT323', monospace; font-size: 22px; background: #3b1854;
+            color: #55ffff; border: 3px solid #ff55aa; padding: 10px 15px; cursor: pointer; text-align: left; transition: 0.15s;
+        }
+        .option-btn:hover { background: #5c2383; border-color: #ffea00; color: #ffffff; }
+
+        /* PANTALLA GAME OVER */
+        .game-over-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88); display: none;
+            flex-direction: column; justify-content: center; align-items: center; z-index: 15;
+        }
+        .game-over-title { font-family: 'Press Start 2P', monospace; font-size: 24px; color: #ff0055; text-shadow: 3px 3px #000, 0 0 10px #ff0055; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-nav">
+        <a href="../index.html" class="btn-pixel">◄ MENÚ PRINCIPAL</a>
+        <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00;">RECURSO EXTRA GAMIFICADO</span>
+    </div>
+
+    <div class="title-block">
+        <h1>🌋 DINO PREHISTORIC RUNNER 🦕</h1>
+        <p style="color: #00e5ff; margin: 0;">Pon a prueba tu conocimiento</p>
+    </div>
+
+    <div class="game-wrapper">
+        <canvas id="gameCanvas" width="800" height="280"></canvas>
+        
+        <div class="hud">
+            <span>RÉCORD: <span id="highScoreText">00000</span></span>
+            <span>PUNTOS: <span id="scoreText">00000</span></span>
+        </div>
+
+        <!-- VENTANA DE TRIVIA MATEMÁTICA -->
+        <div class="modal-overlay" id="triviaModal">
+            <div class="modal-card">
+                <div class="modal-title">🧠 DESAFÍO MATEMÁTICO EN LA PREHISTORIA</div>
+                <div class="question-text" id="qText">¿Pregunta?</div>
+                <div class="options-grid" id="optionsContainer"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA REINTENTAR -->
+        <div class="game-over-screen" id="gameOverModal">
+            <div class="game-over-title">💥 ¡IMPACTO VOLCÁNICO! 💥</div>
+            <p style="color: #ffea00; font-size: 24px; margin-bottom: 20px;">Tropezaste en la era Mesozoica.</p>
+            <button class="btn-pixel" onclick="restartGame()">REINTENTAR JUEGO</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    // Estado del juego
+    let score = 0;
+    let highScore = 0;
+    let baseGameSpeed = 4.2; 
+    let isJumping = false;
+    let isCrouching = false;
+    let gravity = 0.45;
+    let isPaused = false;
+    let isGameOver = false;
+    let bgScroll = 0;
+
+    // Temporizador de Trivias & Cámara Lenta (Exactamente cada 10s)
+    let lastTriviaTime = Date.now();
+    const triviaIntervalMs = 10000; // 10 segundos
+    let slowMoEndTime = 0;          // Fin de la cámara lenta post-trivia
+    let isSlowMo = false;
+
+    // Dinosaurio T-Rex Pixel
+    const dino = {
+        x: 60, y: 195, width: 40, height: 45,
+        velocityY: 0, jumpPower: -10.5, groundY: 195,
+        animFrame: 0
+    };
+
+    // Lista de obstáculos
+    let obstacles = [];
+    let frameCount = 0;
+
+    // BANCO COMPLETO DE 50 PREGUNTAS
+    const triviaQuestions = [
+        { q: "1. ¿Quién es considerado el padre del Cálculo Integral junto a Isaac Newton?", options: ["A) Gottfried Leibniz", "B) Leonhard Euler", "C) René Descartes"], correct: 0 },
+        { q: "2. ¿Qué representa la integral definida de una función positiva f(x)?", options: ["A) La pendiente de la curva", "B) El área bajo la curva", "C) El perímetro de la función"], correct: 1 },
+        { q: "3. ¿Cuál es el valor aproximado de la constante 'e' (número de Euler)?", options: ["A) 3.1416", "B) 2.7182", "C) 1.6180"], correct: 1 },
+        { q: "4. En la regla de Simpson (1/3), ¿cómo debe ser el número de subintervalos n?", options: ["A) Siempre impar", "B) Siempre par", "C) Cualquier número"], correct: 1 },
+        { q: "5. ¿Qué símbolo introdujo Leibniz para representar la integración?", options: ["A) La letra Σ (Sigma)", "B) La letra S alargada (∫)", "C) El símbolo Δ (Delta)"], correct: 1 },
+        { q: "6. ¿Cómo se llama el teorema que conecta la derivada con la integral definida?", options: ["A) Teorema de Pitágoras", "B) Teorema Fundamental del Cálculo", "C) Teorema del Valor Medio"], correct: 1 },
+        { q: "7. ¿Qué método numérico aproxima áreas uniendo puntos con rectas?", options: ["A) Regla del Trapecio", "B) Regla de Simpson", "C) Suma de Riemann"], correct: 0 },
+        { q: "8. ¿A qué matemático se le conoce como 'El Príncipe de los Matemáticos'?", options: ["A) Carl Friedrich Gauss", "B) Isaac Newton", "C) Blaise Pascal"], correct: 0 },
+        { q: "9. ¿Cuál es la antiderivada de f(x) = 1/x para x > 0?", options: ["A) x² + C", "B) ln(x) + C", "C) e^x + C"], correct: 1 },
+        { q: "10. ¿Cuál es la integral indefinida de la función exponencial e^x?", options: ["A) e^x + C", "B) (e^x)/x + C", "C) ln(e) + C"], correct: 0 },
+        { q: "11. ¿Qué matemático griego aproximó el valor de Pi usando polígonos?", options: ["A) Euclides", "B) Arquímedes", "C) Pitágoras"], correct: 1 },
+        { q: "12. ¿Cuál es la derivada de la función seno sin(x)?", options: ["A) -cos(x)", "B) cos(x)", "C) tan(x)"], correct: 1 },
+        { q: "13. ¿Qué representa geométricamente la constante Pi (π)?", options: ["A) Área del triángulo", "B) Relación entre circunferencia y diámetro", "C) Diagonal del cuadrado"], correct: 1 },
+        { q: "14. ¿En qué ciudad colombiana se encuentra la sede principal de la UTP?", options: ["A) Manizales", "B) Pereira", "C) Armenia"], correct: 1 },
+        { q: "15. ¿Cuál es la suma de los ángulos internos de un triángulo plano?", options: ["A) 90 grados", "B) 180 grados", "C) 360 grados"], correct: 1 },
+        { q: "16. ¿Qué método numérico evalúa f(x) en el centro de cada subintervalo?", options: ["A) Regla del Punto Medio", "B) Regla del Trapecio", "C) Extremo Izquierdo"], correct: 0 },
+        { q: "17. ¿Qué matemático escribió su famoso 'Último Teorema' en el margen de un libro?", options: ["A) Pierre de Fermat", "B) Joseph Fourier", "C) Augustin Cauchy"], correct: 0 },
+        { q: "18. ¿Cuál es la antiderivada general de f(x) = x?", options: ["A) x² + C", "B) (x²)/2 + C", "C) 2x + C"], correct: 1 },
+        { q: "19. ¿Qué filósofo y matemático francés creó el plano cartesiano?", options: ["A) René Descartes", "B) Blaise Pascal", "C) Jean d'Alembert"], correct: 0 },
+        { q: "20. ¿Qué significa que una función sea continua en un intervalo [a,b]?", options: ["A) Que es una línea recta", "B) Que no tiene saltos ni discontinuidades", "C) Que su derivada es constante"], correct: 1 },
+        { q: "21. ¿Qué método aproxima el área mediante suma de rectángulos?", options: ["A) Sumas de Riemann", "B) Regla de Simpson", "C) Derivación implícita"], correct: 0 },
+        { q: "22. ¿Cuál es la derivada de la función coseno cos(x)?", options: ["A) sin(x)", "B) -sin(x)", "C) -cos(x)"], correct: 1 },
+        { q: "23. ¿Cuál es el único número primo que es par?", options: ["A) 0", "B) 2", "C) 4"], correct: 1 },
+        { q: "24. ¿Quién fue la primera programadora de la historia?", options: ["A) Ada Lovelace", "B) Marie Curie", "C) Grace Hopper"], correct: 0 },
+        { q: "25. ¿Cómo se llama la regla para integrar productos: ∫u dv = uv - ∫v du?", options: ["A) Integración por Partes", "B) Regla de la Cadena", "C) Sustitución Trigonométrica"], correct: 0 },
+        { q: "26. ¿Qué letra griega representa comúnmente un incremento o cambio (Δ)?", options: ["A) Alfa", "B) Delta", "C) Sigma"], correct: 1 },
+        { q: "27. ¿Qué matemático británico descifró el código Enigma?", options: ["A) Alan Turing", "B) John von Neumann", "C) Stephen Hawking"], correct: 0 },
+        { q: "28. ¿Qué técnica de integración invierte la regla de la cadena?", options: ["A) Sustitución (Cambio de variable)", "B) Fracciones Parciales", "C) Integrales Impropias"], correct: 0 },
+        { q: "29. ¿Cuál es el resultado de cualquier número (distinto de 0) elevado a la 0?", options: ["A) 0", "B) 1", "C) El mismo número"], correct: 1 },
+        { q: "30. ¿Qué polígono regular tiene exactamente 8 lados?", options: ["A) Hexágono", "B) Octágono", "C) Decágono"], correct: 1 },
+        { q: "31. En un triángulo rectángulo, ¿qué establece el Teorema de Pitágoras?", options: ["A) a + b = c", "B) a² + b² = c²", "C) a · b = c²"], correct: 1 },
+        { q: "32. ¿Qué nombre recibe la gráfica de una función cuadrática f(x) = ax² + bx + c?", options: ["A) Hipérbola", "B) Parábola", "C) Elipse"], correct: 1 },
+        { q: "33. ¿Cuál es la antiderivada de cos(x)?", options: ["A) sin(x) + C", "B) -sin(x) + C", "C) tan(x) + C"], correct: 0 },
+        { q: "34. ¿Qué matemático inventó el triángulo de coeficientes binomiales?", options: ["A) Blaise Pascal", "B) Isaac Barrow", "C) Carl Jacobi"], correct: 0 },
+        { q: "35. ¿A qué valor tiende el error de las Sumas de Riemann cuando n → ∞?", options: ["A) A infinito", "B) A cero (0)", "C) A uno (1)"], correct: 1 },
+        { q: "36. ¿Qué significa la sigla UTP en nuestra institución?", options: ["A) Universidad Técnica de Pereira", "B) Universidad Tecnológica de Pereira", "C) Unión Tecnológica del Pacífico"], correct: 1 },
+        { q: "37. ¿Qué matemático demostró que no hay fórmula para ecuaciones de 5to grado?", options: ["A) Niels Henrik Abel", "B) Évariste Galois", "C) Henri Poincaré"], correct: 0 },
+        { q: "38. ¿Qué representa la derivada f'(x) geométricamente?", options: ["A) La pendiente de la recta tangente", "B) El área bajo la curva", "C) La longitud de arco"], correct: 0 },
+        { q: "39. ¿Cuál es la integral indefinida de la función constante 0?", options: ["A) 0", "B) C (Una constante)", "C) x + C"], correct: 1 },
+        { q: "40. ¿Cuál es el valor de sin(0) en radianes?", options: ["A) 0", "B) 1", "C) π"], correct: 0 },
+        { q: "41. ¿Cuál es el valor de cos(0) en radianes?", options: ["A) 0", "B) 1", "C) -1"], correct: 1 },
+        { q: "42. ¿Cuál es el valor del logaritmo natural de 1, es decir, ln(1)?", options: ["A) 0", "B) 1", "C) e"], correct: 0 },
+        { q: "43. ¿Qué matriz cuadrada tiene unos en la diagonal y ceros en el resto?", options: ["A) Matriz Nula", "B) Matriz Identidad", "C) Matriz Traspuesta"], correct: 1 },
+        { q: "44. ¿Qué científico gritó 'Eureka' al descubrir el principio de flotación?", options: ["A) Arquímedes", "B) Galeno", "C) Ptolomeo"], correct: 0 },
+        { q: "45. ¿Cuál es la regla de la potencia para ∫ x^n dx (con n ≠ -1)?", options: ["A) (x^(n+1))/(n+1) + C", "B) n · x^(n-1) + C", "C) x^n + C"], correct: 0 },
+        { q: "46. ¿Cómo se llama el cuerpo 3D generado al girar una curva sobre un eje?", options: ["A) Sólido de Revolución", "B) Poliedro Regular", "C) Vector Esférico"], correct: 0 },
+        { q: "47. ¿Qué método tiene mayor precisión de orden cuadrático entre Trapecio y Simpson?", options: ["A) Regla del Trapecio", "B) Regla de Simpson", "C) Ambos son iguales"], correct: 1 },
+        { q: "48. ¿Qué número complejo se define como i = √(-1)?", options: ["A) Unidad Imaginaria", "B) Constante de Euler", "C) Razón Áurea"], correct: 0 },
+        { q: "49. ¿Cuál es la suma de los primeros 100 enteros positivos (1+2+...+100)?", options: ["A) 5000", "B) 5050", "C) 10000"], correct: 1 },
+        { q: "50. En la saga Dragon Ball, ¿quién fue el primer guerrero en llegar a SSJ3?", options: ["A) Vegeta", "B) Goku", "C) Gohan"], correct: 1 }
+    ];
+
+    // Mazo de preguntas barajado aleatoriamente
+    let shuffledQuestions = [];
+    let currentTriviaIndex = 0;
+
+    function getNextQuestion() {
+        if (shuffledQuestions.length === 0 || currentTriviaIndex >= shuffledQuestions.length) {
+            shuffledQuestions = [...triviaQuestions].sort(() => Math.random() - 0.5);
+            currentTriviaIndex = 0;
+        }
+        const q = shuffledQuestions[currentTriviaIndex];
+        currentTriviaIndex++;
+        return q;
+    }
+
+    // Salto Inmediato
+    function triggerJump() {
+        if (isGameOver) {
+            restartGame();
+        } else if (!isJumping && !isPaused) {
+            dino.velocityY = dino.jumpPower;
+            isJumping = true;
+        }
+    }
+
+    // Controles Teclado (Saltar / Agacharse / Caída Rápida)
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+            e.preventDefault();
+            triggerJump();
+        } else if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            isCrouching = true;
+            if (isJumping) {
+                dino.velocityY += 2.5; // Caída rápida en el aire
+            }
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowDown') {
+            isCrouching = false;
+        }
+    });
+
+    canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        triggerJump();
+    });
+
+    function spawnObstacle() {
+        const isFlyer = Math.random() > 0.60 && score > 120;
+        if (isFlyer) {
+            obstacles.push({
+                x: canvas.width,
+                y: 155,
+                width: 38,
+                height: 25,
+                type: 'pterodactyl'
+            });
+        } else {
+            const h = 32 + Math.random() * 14;
+            obstacles.push({
+                x: canvas.width,
+                y: 240 - h,
+                width: 22 + Math.random() * 10,
+                height: h,
+                type: 'rock'
+            });
+        }
+    }
+
+    function update() {
+        if (isPaused || isGameOver) return;
+
+        const now = Date.now();
+        const timeSinceLastTrivia = now - lastTriviaTime;
+        const timeUntilNextTrivia = triviaIntervalMs - timeSinceLastTrivia;
+
+        // CÁMARA LENTA: 2 segundos ANTES de la pregunta O 2 segundos DESPUÉS de responderla
+        if (timeUntilNextTrivia <= 2000 || now < slowMoEndTime) {
+            isSlowMo = true;
+        } else {
+            isSlowMo = false;
+        }
+
+        // Aplicar velocidad según estado
+        const currentSpeed = isSlowMo ? baseGameSpeed * 0.35 : baseGameSpeed;
+        const currentGravity = isSlowMo ? gravity * 0.35 : gravity;
+
+        frameCount++;
+        score++;
+        bgScroll += currentSpeed * 0.4;
+
+        document.getElementById('scoreText').innerText = String(score).padStart(5, '0');
+
+        // Incremento progresivo de velocidad base
+        if (frameCount % 300 === 0 && baseGameSpeed < 9.5) {
+            baseGameSpeed += 0.25;
+        }
+
+        // Agacharse
+        if (isCrouching && !isJumping) {
+            dino.height = 25;
+            dino.y = 215;
+        } else if (!isJumping) {
+            dino.height = 45;
+            dino.y = dino.groundY;
+        }
+
+        // Física de Salto
+        dino.velocityY += currentGravity;
+        dino.y += dino.velocityY * (isSlowMo ? 0.6 : 1.0);
+        if (dino.y >= dino.groundY) {
+            dino.y = dino.groundY;
+            dino.velocityY = 0;
+            isJumping = false;
+        }
+
+        // Animación de piernas
+        if (frameCount % 6 === 0) {
+            dino.animFrame = (dino.animFrame + 1) % 2;
+        }
+
+        // Crear Obstáculos
+        if (frameCount % Math.max(50, Math.floor(105 - currentSpeed * 4)) === 0) {
+            spawnObstacle();
+        }
+
+        // Mover Obstáculos y Colisión
+        for (let i = 0; i < obstacles.length; i++) {
+            let obs = obstacles[i];
+            obs.x -= currentSpeed;
+
+            const padding = 5;
+            if (
+                dino.x + padding < obs.x + obs.width &&
+                dino.x + dino.width - padding > obs.x &&
+                dino.y + padding < obs.y + obs.height &&
+                dino.y + dino.height - padding > obs.y
+            ) {
+                endGame();
+            }
+        }
+
+        // Limpiar fuera de pantalla
+        obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
+
+        // DISPARAR TRIVIA AL CUMPLIR 10 SEGUNDOS
+        if (timeUntilNextTrivia <= 0) {
+            triggerTrivia();
+        }
+    }
+
+    function drawPixelArtBG() {
+        // Cielo degradado prehistórico
+        let grad = ctx.createLinearGradient(0, 0, 0, 240);
+        grad.addColorStop(0, '#2b0938');
+        grad.addColorStop(0.5, '#6b114d');
+        grad.addColorStop(1, '#d94b2b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, 240);
+
+        // Sol Prehistórico
+        ctx.fillStyle = '#ffcc00';
+        ctx.beginPath();
+        ctx.arc(680, 80, 45, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Volcanes
+        ctx.fillStyle = '#3b0a24';
+        ctx.beginPath();
+        ctx.moveTo(80 - (bgScroll * 0.2) % 300, 240);
+        ctx.lineTo(160 - (bgScroll * 0.2) % 300, 110);
+        ctx.lineTo(240 - (bgScroll * 0.2) % 300, 240);
+        ctx.fill();
+
+        ctx.fillStyle = '#ff3300';
+        ctx.fillRect(155 - (bgScroll * 0.2) % 300, 110, 10, 15);
+
+        ctx.fillStyle = '#2b071a';
+        ctx.beginPath();
+        ctx.moveTo(400 - (bgScroll * 0.2) % 500, 240);
+        ctx.lineTo(520 - (bgScroll * 0.2) % 500, 90);
+        ctx.lineTo(640 - (bgScroll * 0.2) % 500, 240);
+        ctx.fill();
+
+        // Suelo de Jungla
+        ctx.fillStyle = '#1c3b1e';
+        ctx.fillRect(0, 240, canvas.width, 40);
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillRect(0, 238, canvas.width, 3);
+
+        ctx.fillStyle = '#2d5e30';
+        for (let x = 0; x < canvas.width; x += 40) {
+            let shift = (x - bgScroll) % canvas.width;
+            if (shift < 0) shift += canvas.width;
+            ctx.fillRect(shift, 246, 12, 6);
+        }
+
+        // Cartel de CÁMARA LENTA cuando se activa
+        if (isSlowMo && !isPaused && !isGameOver) {
+            ctx.fillStyle = '#00e5ff';
+            ctx.font = '16px "Press Start 2P", monospace';
+            ctx.fillText('⏳ CÁMARA LENTA', 280, 50);
+        }
+    }
+
+    function drawDino() {
+        if (isCrouching && !isJumping) {
+            ctx.fillStyle = '#00ff66';
+            ctx.fillRect(dino.x + 12, dino.y, 28, 14);
+            ctx.fillRect(dino.x, dino.y + 6, 32, 12);
+            
+            ctx.fillStyle = '#ff6600';
+            ctx.fillRect(dino.x + 2, dino.y - 2, 6, 6);
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(dino.x + 32, dino.y + 2, 4, 4);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(dino.x + 30, dino.y + 10, 6, 3);
+            
+            ctx.fillStyle = '#00b347';
+            if (dino.animFrame === 0) {
+                ctx.fillRect(dino.x + 6, dino.y + 18, 8, 7);
+                ctx.fillRect(dino.x + 20, dino.y + 18, 8, 4);
+            } else {
+                ctx.fillRect(dino.x + 6, dino.y + 18, 8, 4);
+                ctx.fillRect(dino.x + 20, dino.y + 18, 8, 7);
+            }
+        } else {
+            ctx.fillStyle = '#00ff66';
+            ctx.fillRect(dino.x + 8, dino.y, 24, 20);
+            ctx.fillRect(dino.x + 4, dino.y + 16, 28, 18);
+            
+            ctx.fillStyle = '#ff6600';
+            ctx.fillRect(dino.x + 2, dino.y - 4, 8, 8);
+            ctx.fillRect(dino.x + 12, dino.y - 6, 8, 8);
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(dino.x + 24, dino.y + 4, 5, 5);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(dino.x + 22, dino.y + 14, 8, 4);
+
+            ctx.fillStyle = '#00cc52';
+            ctx.fillRect(dino.x + 28, dino.y + 22, 8, 4);
+
+            ctx.fillStyle = '#00b347';
+            if (isJumping) {
+                ctx.fillRect(dino.x + 6, dino.y + 34, 8, 6);
+                ctx.fillRect(dino.x + 20, dino.y + 34, 8, 6);
+            } else if (dino.animFrame === 0) {
+                ctx.fillRect(dino.x + 6, dino.y + 34, 8, 11);
+                ctx.fillRect(dino.x + 20, dino.y + 34, 8, 5);
+            } else {
+                ctx.fillRect(dino.x + 6, dino.y + 34, 8, 5);
+                ctx.fillRect(dino.x + 20, dino.y + 34, 8, 11);
+            }
+        }
+    }
+
+    function drawObstacles() {
+        for (let obs of obstacles) {
+            if (obs.type === 'rock') {
+                ctx.fillStyle = '#ff2200';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                ctx.fillStyle = '#ff8800';
+                ctx.fillRect(obs.x + 4, obs.y + 4, obs.width - 8, obs.height - 8);
+            } else if (obs.type === 'pterodactyl') {
+                ctx.fillStyle = '#dd00ff';
+                ctx.fillRect(obs.x, obs.y + 6, obs.width, 10);
+                ctx.fillRect(obs.x + 8, obs.y, 14, 20);
+                ctx.fillStyle = '#ffea00';
+                ctx.fillRect(obs.x + 28, obs.y + 8, 10, 4);
+            }
+        }
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPixelArtBG();
+        drawDino();
+        drawObstacles();
+    }
+
+    function gameLoop() {
+        update();
+        render();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function triggerTrivia() {
+        isPaused = true;
+        const qData = getNextQuestion();
+        
+        document.getElementById('qText').innerText = qData.q;
+        const optionsDiv = document.getElementById('optionsContainer');
+        optionsDiv.innerHTML = '';
+
+        qData.options.forEach((optText, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = optText;
+            btn.onclick = () => {
+                if (idx === qData.correct) {
+                    score += 50;
+                    obstacles = []; // Limpia obstáculos en pantalla si acierta
+                }
+                document.getElementById('triviaModal').style.display = 'none';
+                isPaused = false;
+                lastTriviaTime = Date.now();
+                slowMoEndTime = Date.now() + 2000; // Activa 2 segundos adicionales de cámara lenta
+            };
+            optionsDiv.appendChild(btn);
+        });
+
+        document.getElementById('triviaModal').style.display = 'flex';
+    }
+
+    function endGame() {
+        isGameOver = true;
+        if (score > highScore) {
+            highScore = score;
+            document.getElementById('highScoreText').innerText = String(highScore).padStart(5, '0');
+        }
+        document.getElementById('gameOverModal').style.display = 'flex';
+    }
+
+    function restartGame() {
+        score = 0;
+        baseGameSpeed = 4.2;
+        dino.y = dino.groundY;
+        dino.velocityY = 0;
+        isCrouching = false;
+        obstacles = [];
+        frameCount = 0;
+        isGameOver = false;
+        isPaused = false;
+        lastTriviaTime = Date.now();
+        slowMoEndTime = 0;
+        document.getElementById('gameOverModal').style.display = 'none';
+        document.getElementById('triviaModal').style.display = 'none';
+    }
+
+    // Iniciar juego
+    requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

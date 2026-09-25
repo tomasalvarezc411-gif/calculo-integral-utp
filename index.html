@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo Integral UTP 2026-II | DBZ Arcade Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; image-rendering: pixelated; }
+        body {
+            background: #0b0914;
+            background-image: radial-gradient(#1e293b 15%, transparent 16%), radial-gradient(#151022 15%, transparent 16%);
+            background-size: 32px 32px; background-position: 0 0, 16px 16px;
+            color: #ffffff; font-family: 'VT323', monospace; font-size: 22px;
+            margin: 0; padding: 20px; overflow-x: hidden;
+        }
+        .sky-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 200px;
+            pointer-events: none; z-index: 0; overflow: hidden;
+            background: linear-gradient(180deg, #131b2e 0%, transparent 100%);
+        }
+        .pixel-cloud {
+            position: absolute; background: #2a3c53;
+            box-shadow: 8px 0 #2a3c53, -8px 0 #2a3c53, 0 -8px #2a3c53, 0 8px #2a3c53, 16px 0 #3a5270, -16px 0 #3a5270;
+            width: 80px; height: 24px; opacity: 0.5; animation: moveCloud 30s linear infinite;
+        }
+        @keyframes moveCloud { from { transform: translateX(-150px); } to { transform: translateX(100vw); } }
+        
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        
+        .hero-banner {
+            text-align: center; background: #181124; border: 4px solid #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #8b5a2b, 8px 8px 0px 0px #000000;
+            padding: 30px 20px; margin-bottom: 35px; position: relative;
+        }
+        .hero-banner h1 {
+            font-family: 'Press Start 2P', monospace; font-size: 22px; color: #ffaa00;
+            text-shadow: 4px 4px #000000, 0 0 15px rgba(255,170,0,0.5); margin: 0 0 15px 0; line-height: 1.4;
+        }
+        .hero-banner p { color: #55ffff; font-size: 24px; margin: 0 0 15px 0; }
+        .utp-badge {
+            display: inline-block; font-family: 'Press Start 2P', monospace; font-size: 10px;
+            background: #ff0055; color: #fff; padding: 6px 12px; border: 2px solid #fff;
+            box-shadow: 3px 3px 0 #000; margin-top: 5px;
+        }
+        
+        .progress-card {
+            background: #111a24; border: 3px solid #3a5270; padding: 15px 20px;
+            margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-title { font-family: 'Press Start 2P', monospace; font-size: 11px; color: #ffaa00; }
+        .progress-bar-outer { width: 100%; max-width: 400px; height: 18px; background: #000; border: 2px solid #55ffff; }
+        .progress-bar-inner { width: 50%; height: 100%; background: linear-gradient(90deg, #00e5ff, #55ff55); }
+
+        .phase-header {
+            font-family: 'Press Start 2P', monospace; font-size: 14px; color: #55ffff;
+            background: #16101f; border-left: 6px solid #55ffff; padding: 12px 18px; margin: 30px 0 20px 0;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; }
+        
+        .module-card {
+            background: #16121e; border: 4px solid #443366;
+            box-shadow: inset -4px -4px 0px 0px #110d18, 6px 6px 0px 0px #000000;
+            padding: 20px; position: relative; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .module-card:hover { transform: translateY(-5px); border-color: #ffaa00; }
+        
+        .module-card.extra-card {
+            background: #221309; border-color: #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #120903, 6px 6px 0px 0px #000000, 0 0 15px rgba(255,170,0,0.3);
+        }
+        .module-card.extra-card:hover { border-color: #00e5ff; box-shadow: inset -4px -4px 0px 0px #120903, 6px 6px 0px 0px #000000, 0 0 25px rgba(0,229,255,0.5); }
+
+        .module-card.locked { opacity: 0.6; filter: grayscale(0.8); border-color: #333; }
+        .module-card.locked:hover { transform: none; border-color: #333; }
+
+        .card-number { font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00; margin-bottom: 8px; }
+        .card-title { font-family: 'Press Start 2P', monospace; font-size: 13px; color: #ffffff; margin: 0 0 10px 0; line-height: 1.3; }
+        .card-desc { color: #aaa; font-size: 20px; margin-bottom: 15px; flex-grow: 1; }
+        .card-fighters { font-size: 18px; color: #ffff55; background: #0d0912; border: 1px dashed #555; padding: 6px 10px; margin-bottom: 15px; }
+
+        .btn-play {
+            font-family: 'Press Start 2P', monospace; font-size: 11px; color: #ffffff; background-color: #00aa00;
+            text-decoration: none; padding: 12px; text-align: center; border: 3px solid #55ff55;
+            box-shadow: inset -3px -3px 0px 0px #005500, 3px 3px 0px 0px #000000; cursor: pointer; display: block;
+        }
+        .btn-play:active { transform: translate(2px, 2px); box-shadow: none; }
+        .btn-extra {
+            background-color: #ff9900; border-color: #ffea00; color: #000000;
+            box-shadow: inset -3px -3px 0px 0px #995500, 3px 3px 0px 0px #000000;
+        }
+
+        .btn-locked {
+            font-family: 'Press Start 2P', monospace; font-size: 10px; color: #888; background-color: #222;
+            padding: 12px; text-align: center; border: 2px solid #444; cursor: not-allowed; display: block;
+        }
+
+        .footer-banner {
+            margin-top: 50px; padding: 25px; background: #120e17; border-top: 4px dashed #ffaa00;
+            text-align: center; color: #888; font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="sky-bg">
+    <div class="pixel-cloud" style="top: 20px; animation-delay: 0s;"></div>
+    <div class="pixel-cloud" style="top: 70px; animation-delay: -10s;"></div>
+</div>
+
+<div class="container">
+    <header class="hero-banner">
+        <h1>CÁLCULO INTEGRAL & DESARROLLO DE SOFTWARE</h1>
+        <p>PLATAFORMA WEB INTERACTIVA Y GAMIFICADA — ESTILO DRAGON BALL Z</p>
+        <span class="utp-badge">UNIVERSIDAD TECNOLÓGICA DE PEREIRA | UTP 2026-II</span>
+    </header>
+
+    <div class="progress-card">
+        <div>
+            <div class="progress-title">ESTADO DE LA PLATAFORMA: FASE 1 COMPLETADA + MINIJUEGO EXTRA</div>
+            <div style="font-size: 18px; color: #aaa; margin-top: 4px;">Taller de 70 Ejercicios + Métodos Numéricos + Dino Runner Quiz</div>
+        </div>
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner"></div>
+        </div>
+    </div>
+
+    <!-- FASE 1 & RECURSOS ACTIVOS -->
+    <div class="phase-header">⚡ FASE 1: EVALUACIÓN PARCIAL I (MÓDULOS ACTIVOS + JUEGO EXTRA)</div>
+    <div class="modules-grid">
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 01</div>
+                <h3 class="card-title">Sumas de Riemann</h3>
+                <div class="card-desc">Aproximación por rectángulos izquierdos (Ln), derechos (Rn) y punto medio (Mn).</div>
+                <div class="card-fighters">🐉 Jefes: Senosama, Sheng Long, Wiz</div>
+            </div>
+            <a href="modules/module-01-riemann.html" class="btn-play">▶ JUGAR MÓDULO 1</a>
+        </div>
+
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 02</div>
+                <h3 class="card-title">Regla del Trapecio</h3>
+                <div class="card-desc">Integración numérica mediante trapecios lineales y estimación de error teórico.</div>
+                <div class="card-fighters">🐉 Jefes: Cell, Freezer, Majin Buu</div>
+            </div>
+            <a href="modules/module-02-trapecio.html" class="btn-play">▶ JUGAR MÓDULO 2</a>
+        </div>
+
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 03</div>
+                <h3 class="card-title">Regla del Punto Medio</h3>
+                <div class="card-desc">Aproximación por rectángulos centrados y compensación de error de curvatura.</div>
+                <div class="card-fighters">🐉 Jefes: Goku SSJ3, Vegeta God, Gohan Beast</div>
+            </div>
+            <a href="modules/module-03-punto-medio.html" class="btn-play">▶ JUGAR MÓDULO 3</a>
+        </div>
+
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 04</div>
+                <h3 class="card-title">Regla de Simpson (1/3)</h3>
+                <div class="card-desc">Aproximación parabólica de segundo orden con subintervalos pares.</div>
+                <div class="card-fighters">🐉 Jefes: Bardock, Broly SSJ, Janemba</div>
+            </div>
+            <a href="modules/module-04-simpson.html" class="btn-play">▶ JUGAR MÓDULO 4</a>
+        </div>
+
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 05</div>
+                <h3 class="card-title">Integral Definida & Área</h3>
+                <div class="card-desc">Cálculo exacto por Teorema Fundamental y área entre curvas f(x) y g(x).</div>
+                <div class="card-fighters">🐉 Jefes: Trunks SSJ, Maestro Roshi, Piccolo</div>
+            </div>
+            <a href="modules/module-05-area.html" class="btn-play">▶ JUGAR MÓDULO 5</a>
+        </div>
+
+        <div class="module-card">
+            <div>
+                <div class="card-number">MÓDULO 06</div>
+                <h3 class="card-title">Volumen de Sólidos 3D</h3>
+                <div class="card-desc">Método de Discos y Arandelas con visualización de superficies en revolución 3D.</div>
+                <div class="card-fighters">🐉 Jefes: Goku UI, Vegeta Ultra Ego, Jiren</div>
+            </div>
+            <a href="modules/module-06-volumen.html" class="btn-play">▶ JUGAR MÓDULO 6</a>
+        </div>
+
+        <!-- MÓDULO EXTRA: DINO RUNNER QUIZ -->
+        <div class="module-card extra-card">
+            <div>
+                <div class="card-number" style="color: #00e5ff;">RECURSO EXTRA GAMIFICADO</div>
+                <h3 class="card-title" style="color: #ffaa00;">🦖 Dino Prehistoric Runner</h3>
+                <div class="card-desc">Runner retro prehistórico con trivias aleatorias cada 10s y cámara lenta.</div>
+                <div class="card-fighters" style="color: #00e5ff; border-color: #00e5ff;">🎮 Pon a prueba tu conocimiento</div>
+            </div>
+            <a href="modules/module-extra-dino.html" class="btn-play btn-extra">▶ JUGAR DINO EXTRA</a>
+        </div>
+    </div>
+
+    <!-- FASE 2 -->
+    <div class="phase-header" style="color: #ffaa00; border-left-color: #ffaa00;">🔒 FASE 2: TÉCNICAS DE INTEGRACIÓN (PRÓXIMAMENTE)</div>
+    <div class="modules-grid">
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 07</div><h3 class="card-title">Integración por Sustitución</h3><div class="card-desc">Cambio de variable u = g(x) y potencias de funciones.</div></div>
+            <span class="btn-locked">🔒 FASE 2</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 08</div><h3 class="card-title">Integrales Exponenciales</h3><div class="card-desc">Integración de e^u y a^u en aplicaciones físicas.</div></div>
+            <span class="btn-locked">🔒 FASE 2</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 09</div><h3 class="card-title">Integrales Logarítmicas</h3><div class="card-desc">Formas integrales que conducen a ln|u|.</div></div>
+            <span class="btn-locked">🔒 FASE 2</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 10</div><h3 class="card-title">Integrales Trigonométricas</h3><div class="card-desc">Identidades y potencias de sen(x), cos(x), tan(x) y sec(x).</div></div>
+            <span class="btn-locked">🔒 FASE 2</span>
+        </div>
+    </div>
+
+    <!-- FASE 3 -->
+    <div class="phase-header" style="color: #ff0055; border-left-color: #ff0055;">🔒 FASE 3: MÉTODOS AVANZADOS (PRÓXIMAMENTE)</div>
+    <div class="modules-grid">
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 11</div><h3 class="card-title">Sustitución Trigonométrica</h3><div class="card-desc">Triángulos de referencia y sustituciones de radicales.</div></div>
+            <span class="btn-locked">🔒 FASE 3</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 12</div><h3 class="card-title">Integración por Partes</h3><div class="card-desc">Fórmula ∫u dv = uv - ∫v du y regla LIATE.</div></div>
+            <span class="btn-locked">🔒 FASE 3</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 13</div><h3 class="card-title">Fracciones Parciales</h3><div class="card-desc">Descomposición de funciones racionales algebraicas.</div></div>
+            <span class="btn-locked">🔒 FASE 3</span>
+        </div>
+        <div class="module-card locked">
+            <div><div class="card-number">MÓDULO 14</div><h3 class="card-title">Integrales Impropias</h3><div class="card-desc">Límites infinitos y discontinuidades no acotadas.</div></div>
+            <span class="btn-locked">🔒 FASE 3</span>
+        </div>
+    </div>
+
+    <footer class="footer-banner">
+        <p>UNIVERSIDAD TECNOLÓGICA DE PEREIRA — LICENCIATURA EN TECNOLOGÍA / DESARROLLO DE SOFTWARE (2026-II)</p>
+        <p style="font-size: 16px; color: #55ffff;">Evaluación Parcial I | CB215 Matemáticas II - Grupo 403</p>
+    </footer>
+</div>
+</body>
+</html>

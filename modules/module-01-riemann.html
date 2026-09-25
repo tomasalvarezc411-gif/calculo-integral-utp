@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 1: Sumas de Riemann | DBZ Deities Edition</title>
+
+    <!-- Fuentes Retro de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js CDN para gráficos interactivos -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <style>
+        /* =========================================================
+           ESTILOS GENERALES RETRO 8-BIT / MINECRAFT
+           ========================================================= */
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background: #0f0d11;
+            background-image: 
+                radial-gradient(#1a2636 15%, transparent 16%),
+                radial-gradient(#16121e 15%, transparent 16%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Nubes Animadas de Fondo */
+        .sky-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, #101c2e 0%, transparent 100%);
+        }
+
+        .pixel-cloud {
+            position: absolute;
+            background: #2a3c53;
+            box-shadow: 
+                8px 0 #2a3c53, -8px 0 #2a3c53, 
+                0 -8px #2a3c53, 0 8px #2a3c53,
+                16px 0 #3a5270, -16px 0 #3a5270;
+            width: 80px;
+            height: 24px;
+            opacity: 0.6;
+            animation: moveCloud 25s linear infinite;
+        }
+
+        @keyframes moveCloud {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(100vw); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Encabezado y Botón Retro */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px dashed #55ffff;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #ffffff;
+            background-color: #388700;
+            text-decoration: none;
+            padding: 12px 18px;
+            display: inline-block;
+            border: 4px solid #55aa55;
+            box-shadow: inset -4px -4px 0px 0px #1e4a00, 4px 4px 0px 0px #000000;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-pixel:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset -2px -2px 0px 0px #1e4a00, 2px 2px 0px 0px #000000;
+        }
+
+        .title-block {
+            text-align: center;
+            background: #1d150c;
+            border: 4px solid #8b5a2b;
+            box-shadow: inset -4px -4px 0px 0px #0d0905, 6px 6px 0px 0px #000000;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .title-block h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #ffaa00;
+            text-shadow: 3px 3px #000000;
+            margin: 0 0 10px 0;
+        }
+
+        /* Tarjetas con Borde de Piedra / Píxel */
+        .pixel-card {
+            background: #181419;
+            border: 4px solid #555555;
+            box-shadow: inset -4px -4px 0px 0px #222222, 6px 6px 0px 0px #000000;
+            padding: 22px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .pixel-card h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #55ffff;
+            text-shadow: 2px 2px #000;
+            margin-top: 0;
+            border-bottom: 4px solid #333;
+            padding-bottom: 12px;
+        }
+
+        /* Personaje Guía */
+        .character-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #111a24;
+            border: 3px solid #3a5270;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pixel-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffaa00;
+            box-shadow: 
+                -12px -8px 0 #000, 12px -8px 0 #000,
+                -12px -8px 0 #fff, 12px -8px 0 #fff,
+                0 12px 0 #8b0000, -8px 12px 0 #8b0000, 8px 12px 0 #8b0000;
+            position: relative;
+            animation: bouncePixel 1.5s infinite alternate ease-in-out;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        @keyframes bouncePixel {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            background: #222b35;
+            border: 3px solid #ffffff;
+            padding: 10px 15px;
+            color: #ffff55;
+            position: relative;
+            font-size: 20px;
+        }
+
+        /* Controles e Inputs Retro */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: #0b090c;
+            border: 3px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #ffaa00;
+            margin-bottom: 8px;
+        }
+
+        .control-group input, .control-group select {
+            width: 100%;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            background: #1d150c;
+            color: #55ffff;
+            border: 3px solid #8b5a2b;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .control-group input[type=range] {
+            accent-color: #ffaa00;
+            cursor: pointer;
+        }
+
+        .stats-banner {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #0d1217;
+            border: 3px solid #2e435e;
+            padding: 12px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            color: #55ff55;
+            font-weight: bold;
+        }
+
+        .stat-value.error {
+            color: #ff5555;
+        }
+
+        .quest-box {
+            background: #1c180a;
+            border: 4px solid #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #8b5a2b, 4px 4px 0px 0px #000;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .quest-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #ffaa00;
+            margin-top: 0;
+        }
+
+        .hint-box {
+            background: rgba(85, 255, 255, 0.08);
+            border-left: 4px solid #55ffff;
+            padding: 12px 18px;
+            margin-top: 10px;
+            font-size: 22px;
+            color: #55ffff;
+            line-height: 1.5;
+        }
+
+        .formula-display {
+            background: #0d0b0e;
+            border: 2px dashed #ffaa00;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 24px;
+            color: #ffaa00;
+        }
+
+        /* =========================================================
+           SISTEMA DE BATALLA DBZ (SENOSAMA, SHENG LONG, WIZ)
+           ========================================================= */
+        .dbz-arena {
+            background: linear-gradient(180deg, #021226 0%, #08294d 60%, #1b022b 100%);
+            border: 4px solid #00e5ff;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 20px #000;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arena-title {
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #00e5ff;
+            text-shadow: 2px 2px #ff00ab;
+            margin-bottom: 20px;
+        }
+
+        .hp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            width: 140px;
+        }
+
+        .hp-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .hp-bar-outer {
+            width: 100%;
+            height: 14px;
+            background: #330000;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 5px #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hp-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #aaff00);
+            transition: width 0.5s ease-in-out, background 0.3s;
+        }
+
+        .hp-bar-fill.warning {
+            background: linear-gradient(90deg, #ffaa00, #ffff00);
+        }
+
+        .hp-bar-fill.danger {
+            background: linear-gradient(90deg, #ff0000, #ff5500);
+        }
+
+        .fighters-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 270px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .fighter-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s, filter 0.5s;
+        }
+
+        .fighter-card.hit-effect {
+            animation: hitShake 0.4s ease-in-out;
+            filter: brightness(2) drop-shadow(0 0 15px #ff0000) !important;
+        }
+
+        @keyframes hitShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, -5px) rotate(-5deg); }
+            40% { transform: translate(10px, 5px) rotate(5deg); }
+            60% { transform: translate(-8px, 2px) rotate(-3deg); }
+            80% { transform: translate(5px, -2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .fighter-card.defeated {
+            transform: translateY(40px) rotate(90deg) scale(0.8);
+            filter: grayscale(1) opacity(0.3) !important;
+        }
+
+        .ko-badge {
+            position: absolute;
+            top: 40%;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            color: #ff0000;
+            text-shadow: 3px 3px #000, 0 0 10px #ffff00;
+            display: none;
+            z-index: 10;
+        }
+
+        .fighter-card.defeated .ko-badge {
+            display: block;
+            animation: koBounce 0.5s bounce ease-in-out;
+        }
+
+        /* PIXEL ART ANIMATIONS */
+        .zeno-svg {
+            filter: drop-shadow(0 0 12px #e040fb);
+            animation: floatFighter 1.7s infinite alternate ease-in-out;
+        }
+        .shenlong-svg {
+            filter: drop-shadow(0 0 18px #00ff66) drop-shadow(0 0 8px #ff0000);
+            animation: floatFighter 2.2s infinite alternate ease-in-out;
+        }
+        .whis-svg {
+            filter: drop-shadow(0 0 14px #00b0ff);
+            animation: floatFighter 1.9s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatFighter {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-8px); }
+        }
+
+        .floor-grid {
+            height: 16px;
+            background: repeating-linear-gradient(90deg, #0091ea, #0091ea 16px, #006064 16px, #006064 32px);
+            border-top: 4px solid #00e5ff;
+            margin-top: 10px;
+        }
+
+        /* CUESTIONARIO INTERACTIVO DE BATALLA */
+        .quiz-container {
+            background: #0d0912;
+            border: 3px solid #00e5ff;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .quiz-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #55ffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .question-card {
+            background: #16101f;
+            border: 2px solid #332244;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #ffff55;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            background: #251a33;
+            color: #ffffff;
+            border: 2px solid #553377;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #3c2954;
+            border-color: #ffaa00;
+        }
+
+        .option-btn.correct {
+            background: #1e5223 !important;
+            border-color: #55ff55 !important;
+            color: #55ff55 !important;
+        }
+
+        .option-btn.incorrect {
+            background: #521e1e !important;
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+        }
+
+        /* PANTALLA DE VICTORIA FINAL */
+        .victory-screen {
+            display: none;
+            background: rgba(0, 229, 255, 0.15);
+            border: 4px solid #55ff55;
+            box-shadow: 0 0 30px #55ff55;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            animation: victoryGlow 1s infinite alternate;
+        }
+
+        @keyframes victoryGlow {
+            from { box-shadow: 0 0 15px #55ff55; }
+            to { box-shadow: 0 0 40px #ffff00; }
+        }
+
+        .victory-screen h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #55ff55;
+            text-shadow: 3px 3px #000;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nubes Animadas de Fondo -->
+<div class="sky-bg">
+    <div class="pixel-cloud" style="top: 20px; animation-delay: 0s;"></div>
+    <div class="pixel-cloud" style="top: 70px; animation-delay: -10s;"></div>
+    <div class="pixel-cloud" style="top: 40px; animation-delay: -18s;"></div>
+</div>
+
+<div class="container">
+    <!-- Navegación -->
+    <div class="header-nav">
+        <a href="../index.html" class="btn-pixel">◄ VOLVER AL MENU</a>
+        <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00;">UTP | CB215 NIVEL 1</span>
+    </div>
+
+    <!-- Título Principal -->
+    <div class="title-block">
+        <h1>MÓDULO 1: SUMAS DE RIEMANN</h1>
+        <p style="color: #aaa; margin: 5px 0 0 0;">Aproximación Numérica del Área por Rectángulos estilo Pixel Art</p>
+    </div>
+
+    <!-- Sección 1: Lore / Teoría -->
+    <section class="pixel-card">
+        <h2>1. MISIÓN TEÓRICA</h2>
+        <p>
+            Las <strong>Sumas de Riemann</strong> dividen la región bajo una curva f(x) en el intervalo [a, b] en n subintervalos de ancho Δx = (b - a) / n. El área aproximada equivale a la suma de las áreas de los rectángulos:
+        </p>
+        <div class="formula-display">
+            Sₙ = ∑ᵢ₌₁ⁿ f(xᵢ*) · Δx,  donde Δx = (b - a) / n
+        </div>
+        <p><strong>Puntos de Evaluación Comunes:</strong></p>
+        <div class="formula-display">
+            Izquierda (Lₙ): xᵢ* = a + (i - 1)Δx  |  Derecha (Rₙ): xᵢ* = a + iΔx  |  Punto Medio (Mₙ): xᵢ* = a + (i - 0.5)Δx
+        </div>
+    </section>
+
+    <!-- Sección 2: Laboratorio Interactivo -->
+    <section class="pixel-card">
+        <h2>2. LABORATORIO INTERACTIVO</h2>
+
+        <div class="character-box">
+            <div class="pixel-avatar"></div>
+            <div class="speech-bubble">
+                "¡Bienvenido Guerrero Saiyajin! Ajusta n y el tipo de rectángulo (Izquierda, Derecha, Punto Medio) para observar cómo las Sumas de Riemann convergen al área exacta. ¡Luego enfrenta a Senosama, Sheng Long y Wiz!"
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label for="functionSelect">FUNCIÓN F(X):</label>
+                <select id="functionSelect" onchange="updatePlot()">
+                    <option value="x^2">f(x) = x²</option>
+                    <option value="x^3">f(x) = x³</option>
+                    <option value="1/x">f(x) = 1/x</option>
+                    <option value="exp(x)">f(x) = e^x</option>
+                    <option value="sin(x)">f(x) = sin(x)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="typeSelect">TIPO DE SUMA:</label>
+                <select id="typeSelect" onchange="updatePlot()">
+                    <option value="left">Extremo Izquierdo (Ln)</option>
+                    <option value="right">Extremo Derecho (Rn)</option>
+                    <option value="mid">Punto Medio (Mn)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="aInput">LÍMITE A:</label>
+                <input type="number" id="aInput" value="0" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="bInput">LÍMITE B:</label>
+                <input type="number" id="bInput" value="2" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="nSlider">SUBINTERVALOS (N = <span id="nVal">4</span>):</label>
+                <input type="range" id="nSlider" min="1" max="50" value="4" oninput="document.getElementById('nVal').innerText = this.value; updatePlot()">
+            </div>
+        </div>
+
+        <div id="plotlyChart" style="width:100%; height:450px; border: 3px solid #333;"></div>
+
+        <div class="stats-banner">
+            <div class="stat-box">
+                <div class="stat-label">VALOR EXACTO (INTEGRAL)</div>
+                <div class="stat-value" id="exactValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">APROXIMACIÓN (Sn)</div>
+                <div class="stat-value" id="riemannValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ERROR ABSOLUTO</div>
+                <div class="stat-value error" id="errorValue">0.0000</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 3: Aplicación / Misión Secundaria -->
+    <section class="pixel-card">
+        <div class="quest-box">
+            <h3 class="quest-title">⚔️ MISIÓN SECUNDARIA: RENDERIZADO DIGITAL Y RASTREO DE PÍXELES</h3>
+            <p style="margin-bottom: 0;">
+                En gráficos por computadora y motores 2D, las Sumas de Riemann son la base para el cálculo de volumen de buffers, acumulación de luz por muestra (Raymarching) y rasterización discreta de polígonos.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección 4: EJERCICIOS CON SINTAXIS NATURAL Y LIMPIA -->
+    <section class="pixel-card">
+        <h2>3. EJERCICIOS</h2>
+        
+        <!-- Ejercicio 1 -->
+        <h3 style="color: #ffaa00;">1. Aproxime el área bajo f(x) = x² en usando R₄ (suma por la derecha con n = 4).</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Calcula el ancho Δx = (2 - 0) / 4 = 0.5. Como usas extremos derechos, las xᵢ de evaluación son x₁ = 0.5, x₂ = 1.0, x₃ = 1.5, x₄ = 2.0. Evalúa f(x) = x² en cada valor y suma: R₄ = 0.5 · (0.25 + 1.00 + 2.25 + 4.00) = 0.5 · 7.5 = 3.7500.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 2 -->
+        <h3 style="color: #ffaa00;">2. Aproxime el área bajo f(x) = x² en usando L₄ (suma por la izquierda con n = 4).</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con Δx = 0.5, las xᵢ por la izquierda son x₀ = 0.0, x₁ = 0.5, x₂ = 1.0, x₃ = 1.5. Evalúa f(x) = x²: L₄ = 0.5 · (0.00 + 0.25 + 1.00 + 2.25) = 0.5 · 3.5 = 1.7500.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 3 -->
+        <h3 style="color: #ffaa00;">3. Calcule R₅ para f(x) = 1 / x en el intervalo.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Determina Δx = (3 - 1) / 5 = 0.4. Los puntos por la derecha son 1.4, 1.8, 2.2, 2.6, 3.0. Evalúa f(x) = 1 / x en estos 5 puntos y multiplica la suma por 0.4.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 4 -->
+        <h3 style="color: #ffaa00;">4. Aproxime ∫₀¹ eˣ dx usando R₆.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> El paso es Δx = 1 / 6 ≈ 0.1667. Los puntos de evaluación por la derecha son 1/6, 2/6, 3/6, 4/6, 5/6, 6/6. Evalúa eˣ en cada punto y multiplica por Δx.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 5 -->
+        <h3 style="color: #ffaa00;">5. Calcule L₄ para f(x) = sin(x) en [0, π].</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con a = 0, b = π y n = 4, el incremento es Δx = π / 4. Los puntos por la izquierda son 0, π/4, π/2, 3π/4. Evalúa sin(x) en cada ángulo y multiplica por π/4.
+        </div>
+    </section>
+
+    <!-- =========================================================
+         ARENA DE BOSSES DBZ (SENOSAMA, SHENG LONG, WIZ)
+         ========================================================= -->
+    <div class="dbz-arena">
+        <div class="arena-title">⚡ DESAFÍO CÓSMICO: DESAFÍA A SENOSAMA, SHENG LONG Y WIZ ⚡</div>
+        
+        <div class="fighters-container">
+            <!-- SENOSAMA (ZENO SAMA) HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-zeno">
+                <div class="hp-container">
+                    <span class="hp-label">SENOSAMA</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-zeno"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="zeno-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="12,115 2,60 15,20 47,0 78,20 92,60 82,115" fill="rgba(224,64,251,0.25)"/>
+                    <!-- Cabeza con forma de huevo tricolor de Senosama -->
+                    <ellipse cx="47" cy="30" rx="22" ry="24" fill="#00e5ff" stroke="#000" stroke-width="2"/>
+                    <path d="M25,30 Q35,8 47,8 Q59,8 69,30 Z" fill="#aa00ff"/>
+                    <rect x="25" y="28" width="8" height="12" fill="#ff4081"/>
+                    <rect x="61" y="28" width="8" height="12" fill="#ff4081"/>
+                    <!-- Ojitos grandes de gato de Zeno -->
+                    <circle cx="38" cy="32" r="5" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+                    <circle cx="56" cy="32" r="5" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+                    <circle cx="38" cy="32" r="2" fill="#000000"/>
+                    <circle cx="56" cy="32" r="2" fill="#000000"/>
+                    <path d="M42,42 Q47,46 52,42" fill="none" stroke="#000000" stroke-width="2"/>
+                    <!-- Traje imperial tricolor magenta y negro con símbolo '王' -->
+                    <path d="M15,54 L80,54 L85,110 L9,110 Z" fill="#d500f9" stroke="#4a148c" stroke-width="2"/>
+                    <path d="M30,54 L65,54 L60,110 L35,110 Z" fill="#111111"/>
+                    <circle cx="47" cy="80" r="10" fill="#ffd700" stroke="#000" stroke-width="1.5"/>
+                    <text x="47" y="85" font-family="'VT323', monospace" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">王</text>
+                    <!-- Pies amarillos pequeños -->
+                    <rect x="25" y="108" width="16" height="12" rx="4" fill="#ffd700"/>
+                    <rect x="54" y="108" width="16" height="12" rx="4" fill="#ffd700"/>
+                </svg>
+            </div>
+
+            <!-- SHENG LONG (SHENLONG INTENSO Y DRAGÓN) HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-shenlong">
+                <div class="hp-container">
+                    <span class="hp-label">SHENG LONG</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-shenlong"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="shenlong-svg" width="120" height="150" viewBox="0 0 120 150">
+                    <!-- Aura mística de fondo -->
+                    <polygon points="15,140 2,70 20,15 60,0 100,15 118,70 105,140" fill="rgba(0,230,118,0.2)"/>
+                    
+                    <!-- CUERPO SERPENTINO COIL (S-CURVA DEL DRAGÓN) -->
+                    <!-- Sombra posterior del cuerpo -->
+                    <path d="M 20,135 Q 5,100 25,75 Q 45,50 20,35 Q 50,15 80,30 Q 110,50 85,85 Q 60,115 80,135" 
+                          fill="none" stroke="#0a3a14" stroke-width="22" stroke-linecap="round"/>
+                    
+                    <!-- Cuerpo principal verde oscuro -->
+                    <path d="M 20,135 Q 5,100 25,75 Q 45,50 20,35 Q 50,15 80,30 Q 110,50 85,85 Q 60,115 80,135" 
+                          fill="none" stroke="#1b5e20" stroke-width="18" stroke-linecap="round"/>
+                    
+                    <!-- Escamas dorsales (Espinas verdes en la espalda) -->
+                    <path d="M 12,125 L 5,115 L 18,105 L 10,95 L 22,85 L 18,75 L 28,65 L 20,55 L 30,45" 
+                          fill="none" stroke="#66bb6a" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M 85,35 L 98,42 L 88,52 L 100,62 L 88,72 L 96,82 L 82,92" 
+                          fill="none" stroke="#66bb6a" stroke-width="4" stroke-linecap="round"/>
+
+                    <!-- Escamas ventrales (Vientre amarillo/crema segmentado) -->
+                    <path d="M 20,135 Q 5,100 25,75 Q 45,50 20,35 Q 50,15 80,30 Q 110,50 85,85 Q 60,115 80,135" 
+                          fill="none" stroke="#d4e157" stroke-width="7" stroke-dasharray="4,5" stroke-linecap="round"/>
+
+                    <!-- GARRAS Y PATAS DE DRAGÓN IMPONENTES -->
+                    <!-- Garra Izquierda -->
+                    <path d="M 25,75 L 10,80 M 25,75 L 12,88 M 25,75 L 18,92" stroke="#43a047" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="10" cy="80" r="2" fill="#ffffff"/>
+                    <circle cx="12" cy="88" r="2" fill="#ffffff"/>
+                    <circle cx="18" cy="92" r="2" fill="#ffffff"/>
+
+                    <!-- Garra Derecha (Amenazante al frente) -->
+                    <path d="M 75,70 L 92,65 M 75,70 L 95,75 M 75,70 L 90,85" stroke="#43a047" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="92" cy="65" r="2.5" fill="#ffffff"/>
+                    <circle cx="95" cy="75" r="2.5" fill="#ffffff"/>
+                    <circle cx="90" cy="85" r="2.5" fill="#ffffff"/>
+
+                    <!-- CABEZA INTIMIDANTE DE SHENG LONG -->
+                    <!-- Cuernos de Ciervo / Cervid Antlers Dorados/Marrón -->
+                    <path d="M 45,22 L 32,5 L 22,12 M 32,5 L 38,-2 M 32,5 L 20,0" fill="none" stroke="#8d6e63" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M 75,22 L 88,5 L 98,12 M 88,5 L 82,-2 M 88,5 L 100,0" fill="none" stroke="#8d6e63" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- Estructura de la Cabeza -->
+                    <path d="M 35,22 L 85,22 L 95,40 L 80,58 L 40,58 L 25,40 Z" fill="#2e7d32" stroke="#00c853" stroke-width="2.5"/>
+                    
+                    <!-- Hocico alargado y mandíbula de dragón -->
+                    <path d="M 30,35 L 90,35 L 98,48 L 88,54 L 32,54 L 22,48 Z" fill="#1b5e20" stroke="#0a3a14" stroke-width="2"/>
+                    
+                    <!-- Boca abierta en rugido / fauces -->
+                    <path d="M 35,46 L 85,46 L 80,55 L 40,55 Z" fill="#b71c1c"/>
+                    
+                    <!-- Dientes y Colmillos filosos -->
+                    <polygon points="38,46 42,50 44,46" fill="#ffffff"/>
+                    <polygon points="48,46 52,52 56,46" fill="#ffffff"/>
+                    <polygon points="64,46 68,52 72,46" fill="#ffffff"/>
+                    <polygon points="76,46 80,50 82,46" fill="#ffffff"/>
+                    <polygon points="42,55 45,51 48,55" fill="#ffffff"/>
+                    <polygon points="72,55 75,51 78,55" fill="#ffffff"/>
+
+                    <!-- OJOS ROJOS BRILLANTES CON PUPILA INTIMIDANTE -->
+                    <polygon points="38,28 54,32 50,24 36,24" fill="#d50000" stroke="#000" stroke-width="1.5"/>
+                    <polygon points="82,28 66,32 70,24 84,24" fill="#d50000" stroke="#000" stroke-width="1.5"/>
+                    <!-- Pupila slit / fulgor -->
+                    <line x1="45" y1="25" x2="45" y2="31" stroke="#ffeb3b" stroke-width="2"/>
+                    <line x1="75" y1="25" x2="75" y2="31" stroke="#ffeb3b" stroke-width="2"/>
+
+                    <!-- MENTÓN Y BARBA DE DRAGÓN -->
+                    <path d="M 45,58 L 60,72 L 75,58" fill="#2e7d32" stroke="#00c853" stroke-width="1.5"/>
+
+                    <!-- BIGOTES LARGOS Y SINUOSOS (WHISKERS) -->
+                    <path d="M 32,44 C 10,40 -10,65 5,85" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M 88,44 C 110,40 130,65 115,85" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- ESFERAS DEL DRAGÓN GLOWING ALREDEDOR -->
+                    <!-- Esfera 1 -->
+                    <circle cx="15" cy="110" r="5" fill="#ff9100" stroke="#ffd700" stroke-width="1"/>
+                    <circle cx="15" cy="110" r="1.5" fill="#d50000"/>
+                    <!-- Esfera 2 -->
+                    <circle cx="105" cy="110" r="5" fill="#ff9100" stroke="#ffd700" stroke-width="1"/>
+                    <circle cx="105" cy="110" r="1.5" fill="#d50000"/>
+                    <!-- Esfera 3 -->
+                    <circle cx="60" cy="140" r="6" fill="#ffaa00" stroke="#ffd700" stroke-width="1.5"/>
+                    <circle cx="58" cy="139" r="1" fill="#d50000"/>
+                    <circle cx="62" cy="139" r="1" fill="#d50000"/>
+                    <circle cx="60" cy="142" r="1" fill="#d50000"/>
+                    <!-- Esfera 4 -->
+                    <circle cx="35" cy="130" r="5" fill="#ff9100" stroke="#ffd700" stroke-width="1"/>
+                    <circle cx="35" cy="130" r="1.5" fill="#d50000"/>
+                    <!-- Esfera 5 -->
+                    <circle cx="85" cy="130" r="5" fill="#ff9100" stroke="#ffd700" stroke-width="1"/>
+                    <circle cx="85" cy="130" r="1.5" fill="#d50000"/>
+                </svg>
+            </div>
+
+            <!-- WIZ (WHIS) HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-whis">
+                <div class="hp-container">
+                    <span class="hp-label">WIZ</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-whis"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="whis-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <!-- Halo de Ángel flotante azul celeste -->
+                    <ellipse cx="47" cy="22" rx="28" ry="8" fill="none" stroke="#80d8ff" stroke-width="4"/>
+                    <!-- Pelo blanco hacia arriba en copete -->
+                    <path d="M32,32 Q47,5 62,32 Z" fill="#ffffff" stroke="#ccc" stroke-width="1.5"/>
+                    <!-- Cara azul celeste pálido -->
+                    <polygon points="26,32 68,32 62,60 47,66 32,60" fill="#b3e5fc"/>
+                    <!-- Ojos violetas -->
+                    <polygon points="30,40 40,42 38,37" fill="#7b1fa2"/>
+                    <polygon points="64,40 54,42 56,37" fill="#7b1fa2"/>
+                    <!-- Túnica Burdeos / Marrón con Hombreras Negras y Cetro -->
+                    <path d="M12,60 L82,60 L88,110 L6,110 Z" fill="#880e4f" stroke="#4a148c" stroke-width="2"/>
+                    <path d="M30,60 L64,60 L58,110 L36,110 Z" fill="#111111"/>
+                    <path d="M25,60 Q47,75 69,60" fill="none" stroke="#ffab00" stroke-width="4"/>
+                    <!-- Cetro de Ángel en la mano -->
+                    <line x1="82" y1="40" x2="88" y2="115" stroke="#ffd700" stroke-width="3"/>
+                    <circle cx="82" cy="40" r="6" fill="#00e5ff" stroke="#ffd700" stroke-width="1.5"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="floor-grid"></div>
+
+        <!-- CUESTIONARIO DE ATAQUE -->
+        <div class="quiz-container">
+            <div class="quiz-title">⚔️ RESPONDE CORRECTAMENTE PARA ATACAR A SENOSAMA, SHENG LONG Y WIZ:</div>
+
+            <div class="question-card" id="q1-box">
+                <div class="question-text">1. Para el Ejercicio 1 (f(x) = x² en con R₄), ¿cuál es el valor de la Suma de Riemann por la derecha?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(1, true, this)">A) R₄ = 3.7500</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">B) R₄ = 2.6667</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">C) R₄ = 1.7500</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q2-box">
+                <div class="question-text">2. En el Ejercicio 2 (f(x) = x² en con L₄), ¿cuál es el resultado de la suma por la izquierda?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">A) L₄ = 2.0000</button>
+                    <button class="option-btn" onclick="checkAnswer(2, true, this)">B) L₄ = 1.7500</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">C) L₄ = 3.7500</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q3-box">
+                <div class="question-text">3. Si aumentamos el número de subintervalos n hacia el infinito (n → ∞), ¿a qué valor convergen Lₙ y Rₙ en f(x) = x² en?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">A) Área = 3.0000</button>
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">B) Área = 2.5000</button>
+                    <button class="option-btn" onclick="checkAnswer(3, true, this)">C) Área Exacta = 8/3 ≈ 2.6667</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA FINAL -->
+        <div class="victory-screen" id="victory-banner">
+            <h2>🏆 ¡DEMOSTRACIÓN DIVINA COMPLETADA! 🏆</h2>
+            <p style="font-size: 24px; color: #ffff55; margin: 0;">
+                Has impresionado a Senosama, Sheng Long y Wiz resolviendo todos los problemas del Módulo 1. ¡Has alcanzado la maestría suprema en las Sumas de Riemann!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript de Gráficos y Combate -->
+<script>
+    function getFunction(type, x) {
+        switch(type) {
+            case 'x^2': return Math.pow(x, 2);
+            case 'x^3': return Math.pow(x, 3);
+            case '1/x': return 1 / x;
+            case 'exp(x)': return Math.exp(x);
+            case 'sin(x)': return Math.sin(x);
+            default: return Math.pow(x, 2);
+        }
+    }
+
+    function getExactIntegral(type, a, b) {
+        switch(type) {
+            case 'x^2': return (Math.pow(b, 3) - Math.pow(a, 3)) / 3;
+            case 'x^3': return (Math.pow(b, 4) - Math.pow(a, 4)) / 4;
+            case '1/x': return Math.log(b) - Math.log(a);
+            case 'exp(x)': return Math.exp(b) - Math.exp(a);
+            case 'sin(x)': return -Math.cos(b) - (-Math.cos(a));
+            default: return 0;
+        }
+    }
+
+    function updatePlot() {
+        const funcType = document.getElementById('functionSelect').value;
+        const sumType = document.getElementById('typeSelect').value;
+        const a = parseFloat(document.getElementById('aInput').value);
+        const b = parseFloat(document.getElementById('bInput').value);
+        const n = parseInt(document.getElementById('nSlider').value);
+
+        if (a >= b || (funcType === '1/x' && a <= 0)) return;
+
+        const dx = (b - a) / n;
+        const xCurve = [], yCurve = [];
+        const steps = 250;
+        for (let i = 0; i <= steps; i++) {
+            const x = a + (b - a) * (i / steps);
+            xCurve.push(x);
+            yCurve.push(getFunction(funcType, x));
+        }
+
+        const shapes = [];
+        let riemannSum = 0;
+
+        for (let i = 0; i < n; i++) {
+            const x0 = a + i * dx;
+            const x1 = a + (i + 1) * dx;
+            let xEval = x0;
+
+            if (sumType === 'right') xEval = x1;
+            else if (sumType === 'mid') xEval = (x0 + x1) / 2;
+            else xEval = x0;
+
+            const yEval = getFunction(funcType, xEval);
+            riemannSum += yEval * dx;
+
+            shapes.push({
+                type: 'rect',
+                x0: x0, x1: x1,
+                y0: 0, y1: yEval,
+                fillcolor: 'rgba(0, 229, 255, 0.35)',
+                line: { color: '#00e5ff', width: 2 }
+            });
+        }
+
+        const exactVal = getExactIntegral(funcType, a, b);
+        const absError = Math.abs(exactVal - riemannSum);
+
+        document.getElementById('exactValue').innerText = exactVal.toFixed(4);
+        document.getElementById('riemannValue').innerText = riemannSum.toFixed(4);
+        document.getElementById('errorValue').innerText = absError.toFixed(4);
+
+        const data = [{
+            x: xCurve, y: yCurve, mode: 'lines', name: 'f(x)',
+            line: { color: '#ffaa00', width: 4 }
+        }];
+
+        const layout = {
+            paper_bgcolor: '#0d0b0e', plot_bgcolor: '#161218',
+            font: { family: 'VT323, monospace', size: 18, color: '#ffffff' },
+            xaxis: { title: 'X', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            yaxis: { title: 'Y', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            margin: { t: 20, r: 20, l: 50, b: 50 },
+            shapes: shapes, showlegend: false
+        };
+
+        Plotly.newPlot('plotlyChart', data, layout, {responsive: true});
+    }
+
+    let currentHP = 100;
+    let correctAnswersCount = 0;
+    const answeredQuestions = { 1: false, 2: false, 3: false };
+
+    function checkAnswer(questionNum, isCorrect, btnElement) {
+        if (answeredQuestions[questionNum]) return;
+
+        const parentGrid = btnElement.parentElement;
+        const buttons = parentGrid.querySelectorAll('.option-btn');
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            answeredQuestions[questionNum] = true;
+            correctAnswersCount++;
+
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            dealDamage(33.34);
+        } else {
+            btnElement.classList.add('incorrect');
+        }
+    }
+
+    function dealDamage(amount) {
+        currentHP = Math.max(0, currentHP - amount);
+
+        const hpZeno = document.getElementById('hp-zeno');
+        const hpShenlong = document.getElementById('hp-shenlong');
+        const hpWhis = document.getElementById('hp-whis');
+
+        [hpZeno, hpShenlong, hpWhis].forEach(bar => {
+            if (bar) {
+                bar.style.width = currentHP + '%';
+                if (currentHP < 60 && currentHP > 25) {
+                    bar.className = 'hp-bar-fill warning';
+                } else if (currentHP <= 25) {
+                    bar.className = 'hp-bar-fill danger';
+                }
+            }
+        });
+
+        const fighters = [
+            document.getElementById('fighter-zeno'),
+            document.getElementById('fighter-shenlong'),
+            document.getElementById('fighter-whis')
+        ];
+
+        fighters.forEach(f => {
+            if (f) {
+                f.classList.add('hit-effect');
+                setTimeout(() => f.classList.remove('hit-effect'), 400);
+            }
+        });
+
+        if (correctAnswersCount === 3 || currentHP <= 0) {
+            setTimeout(() => {
+                fighters.forEach(f => { if (f) f.classList.add('defeated'); });
+                document.getElementById('victory-banner').style.display = 'block';
+            }, 500);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePlot();
+    });
+</script>
+</body>
+</html>

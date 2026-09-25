@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 4: Regla de Simpson | DBZ Legendary Bosses Edition</title>
+
+    <!-- Fuentes Retro de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js CDN para gráficos interactivos -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <style>
+        /* =========================================================
+           ESTILOS GENERALES RETRO 8-BIT / MINECRAFT
+           ========================================================= */
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background: #0f0d11;
+            background-image: 
+                radial-gradient(#1a2636 15%, transparent 16%),
+                radial-gradient(#16121e 15%, transparent 16%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Nubes Animadas de Fondo */
+        .sky-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, #101c2e 0%, transparent 100%);
+        }
+
+        .pixel-cloud {
+            position: absolute;
+            background: #2a3c53;
+            box-shadow: 
+                8px 0 #2a3c53, -8px 0 #2a3c53, 
+                0 -8px #2a3c53, 0 8px #2a3c53,
+                16px 0 #3a5270, -16px 0 #3a5270;
+            width: 80px;
+            height: 24px;
+            opacity: 0.6;
+            animation: moveCloud 25s linear infinite;
+        }
+
+        @keyframes moveCloud {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(100vw); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Encabezado y Botón Retro */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px dashed #55ffff;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #ffffff;
+            background-color: #388700;
+            text-decoration: none;
+            padding: 12px 18px;
+            display: inline-block;
+            border: 4px solid #55aa55;
+            box-shadow: inset -4px -4px 0px 0px #1e4a00, 4px 4px 0px 0px #000000;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-pixel:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset -2px -2px 0px 0px #1e4a00, 2px 2px 0px 0px #000000;
+        }
+
+        .title-block {
+            text-align: center;
+            background: #1d150c;
+            border: 4px solid #8b5a2b;
+            box-shadow: inset -4px -4px 0px 0px #0d0905, 6px 6px 0px 0px #000000;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .title-block h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #ffaa00;
+            text-shadow: 3px 3px #000000;
+            margin: 0 0 10px 0;
+        }
+
+        /* Tarjetas con Borde de Piedra / Píxel */
+        .pixel-card {
+            background: #181419;
+            border: 4px solid #555555;
+            box-shadow: inset -4px -4px 0px 0px #222222, 6px 6px 0px 0px #000000;
+            padding: 22px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .pixel-card h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #55ffff;
+            text-shadow: 2px 2px #000;
+            margin-top: 0;
+            border-bottom: 4px solid #333;
+            padding-bottom: 12px;
+        }
+
+        /* Personaje Guía */
+        .character-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #111a24;
+            border: 3px solid #3a5270;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pixel-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffaa00;
+            box-shadow: 
+                -12px -8px 0 #000, 12px -8px 0 #000,
+                -12px -8px 0 #fff, 12px -8px 0 #fff,
+                0 12px 0 #8b0000, -8px 12px 0 #8b0000, 8px 12px 0 #8b0000;
+            position: relative;
+            animation: bouncePixel 1.5s infinite alternate ease-in-out;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        @keyframes bouncePixel {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            background: #222b35;
+            border: 3px solid #ffffff;
+            padding: 10px 15px;
+            color: #ffff55;
+            position: relative;
+            font-size: 20px;
+        }
+
+        /* Controles e Inputs Retro */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: #0b090c;
+            border: 3px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #ffaa00;
+            margin-bottom: 8px;
+        }
+
+        .control-group input, .control-group select {
+            width: 100%;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            background: #1d150c;
+            color: #55ffff;
+            border: 3px solid #8b5a2b;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .control-group input[type=range] {
+            accent-color: #ffaa00;
+            cursor: pointer;
+        }
+
+        .stats-banner {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #0d1217;
+            border: 3px solid #2e435e;
+            padding: 12px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            color: #55ff55;
+            font-weight: bold;
+        }
+
+        .stat-value.error {
+            color: #ff5555;
+        }
+
+        .quest-box {
+            background: #1c180a;
+            border: 4px solid #ffaa00;
+            box-shadow: inset -4px -4px 0px 0px #8b5a2b, 4px 4px 0px 0px #000;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .quest-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #ffaa00;
+            margin-top: 0;
+        }
+
+        .hint-box {
+            background: rgba(85, 255, 255, 0.08);
+            border-left: 4px solid #55ffff;
+            padding: 12px 18px;
+            margin-top: 10px;
+            font-size: 22px;
+            color: #55ffff;
+            line-height: 1.5;
+        }
+
+        .formula-display {
+            background: #0d0b0e;
+            border: 2px dashed #ffaa00;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 24px;
+            color: #ffaa00;
+        }
+
+        /* =========================================================
+           SISTEMA DE BATALLA DBZ (BARDOCK, BROLY, JANEMBA)
+           ========================================================= */
+        .dbz-arena {
+            background: linear-gradient(180deg, #0d031b 0%, #200433 60%, #42021c 100%);
+            border: 4px solid #76ff03;
+            box-shadow: 0 0 25px rgba(118, 255, 3, 0.4), inset 0 0 20px #000;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arena-title {
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #76ff03;
+            text-shadow: 2px 2px #ff0055;
+            margin-bottom: 20px;
+        }
+
+        .hp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            width: 140px;
+        }
+
+        .hp-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .hp-bar-outer {
+            width: 100%;
+            height: 14px;
+            background: #330000;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 5px #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hp-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #aaff00);
+            transition: width 0.5s ease-in-out, background 0.3s;
+        }
+
+        .hp-bar-fill.warning {
+            background: linear-gradient(90deg, #ffaa00, #ffff00);
+        }
+
+        .hp-bar-fill.danger {
+            background: linear-gradient(90deg, #ff0000, #ff5500);
+        }
+
+        .fighters-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 260px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .fighter-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s, filter 0.5s;
+        }
+
+        .fighter-card.hit-effect {
+            animation: hitShake 0.4s ease-in-out;
+            filter: brightness(2) drop-shadow(0 0 15px #ff0000) !important;
+        }
+
+        @keyframes hitShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, -5px) rotate(-5deg); }
+            40% { transform: translate(10px, 5px) rotate(5deg); }
+            60% { transform: translate(-8px, 2px) rotate(-3deg); }
+            80% { transform: translate(5px, -2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .fighter-card.defeated {
+            transform: translateY(40px) rotate(90deg) scale(0.8);
+            filter: grayscale(1) opacity(0.3) !important;
+        }
+
+        .ko-badge {
+            position: absolute;
+            top: 40%;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            color: #ff0000;
+            text-shadow: 3px 3px #000, 0 0 10px #ffff00;
+            display: none;
+            z-index: 10;
+        }
+
+        .fighter-card.defeated .ko-badge {
+            display: block;
+            animation: koBounce 0.5s bounce ease-in-out;
+        }
+
+        /* PIXEL ART ANIMATIONS */
+        .bardock-svg {
+            filter: drop-shadow(0 0 12px #ff1744);
+            animation: floatFighter 1.8s infinite alternate ease-in-out;
+        }
+        .broly-svg {
+            filter: drop-shadow(0 0 14px #76ff03);
+            animation: floatFighter 2.2s infinite alternate ease-in-out;
+        }
+        .janemba-svg {
+            filter: drop-shadow(0 0 12px #d500f9);
+            animation: floatFighter 1.7s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatFighter {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-8px); }
+        }
+
+        .floor-grid {
+            height: 16px;
+            background: repeating-linear-gradient(90deg, #33691e, #33691e 16px, #1b5e20 16px, #1b5e20 32px);
+            border-top: 4px solid #76ff03;
+            margin-top: 10px;
+        }
+
+        /* CUESTIONARIO INTERACTIVO DE BATALLA */
+        .quiz-container {
+            background: #0d0912;
+            border: 3px solid #76ff03;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .quiz-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #55ffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .question-card {
+            background: #16101f;
+            border: 2px solid #332244;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #ffff55;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            background: #251a33;
+            color: #ffffff;
+            border: 2px solid #553377;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #3c2954;
+            border-color: #ffaa00;
+        }
+
+        .option-btn.correct {
+            background: #1e5223 !important;
+            border-color: #55ff55 !important;
+            color: #55ff55 !important;
+        }
+
+        .option-btn.incorrect {
+            background: #521e1e !important;
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+        }
+
+        /* PANTALLA DE VICTORIA FINAL */
+        .victory-screen {
+            display: none;
+            background: rgba(118, 255, 3, 0.15);
+            border: 4px solid #55ff55;
+            box-shadow: 0 0 30px #55ff55;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            animation: victoryGlow 1s infinite alternate;
+        }
+
+        @keyframes victoryGlow {
+            from { box-shadow: 0 0 15px #55ff55; }
+            to { box-shadow: 0 0 40px #ffff00; }
+        }
+
+        .victory-screen h2 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #55ff55;
+            text-shadow: 3px 3px #000;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nubes Animadas de Fondo -->
+<div class="sky-bg">
+    <div class="pixel-cloud" style="top: 20px; animation-delay: 0s;"></div>
+    <div class="pixel-cloud" style="top: 70px; animation-delay: -10s;"></div>
+    <div class="pixel-cloud" style="top: 40px; animation-delay: -18s;"></div>
+</div>
+
+<div class="container">
+    <!-- Navegación -->
+    <div class="header-nav">
+        <a href="../index.html" class="btn-pixel">◄ VOLVER AL MENU</a>
+        <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00;">UTP | CB215 NIVEL 4</span>
+    </div>
+
+    <!-- Título Principal -->
+    <div class="title-block">
+        <h1>MÓDULO 4: REGLA DE SIMPSON</h1>
+        <p style="color: #aaa; margin: 5px 0 0 0;">Aproximación por Parábolas de Segundo Grado estilo Pixel Art</p>
+    </div>
+
+    <!-- Sección 1: Lore / Teoría -->
+    <section class="pixel-card">
+        <h2>1. MISIÓN TEÓRICA</h2>
+        <p>
+            La <strong>Regla de Simpson (1/3)</strong> aproxima la curva mediante arcos de parábola que conectan tríos de puntos consecutivos. Requiere obligatoriamente que el número de subintervalos <strong>n sea par</strong>:
+        </p>
+        <div class="formula-display">
+            Sₙ = (Δx / 3) · [ f(x₀) + 4 f(x₁) + 2 f(x₂) + 4 f(x₃) + ... + 4 f(xₙ₋₁) + f(xₙ) ], donde Δx = (b - a) / n
+        </div>
+        <p><strong>Cota del Error Teórico:</strong></p>
+        <div class="formula-display">
+            |Eₛ| ≤ K · (b - a)⁵ / (180 n⁴), donde K = máx |f⁴⁾(x)| en [a, b]
+        </div>
+    </section>
+
+    <!-- Sección 2: Laboratorio Interactivo -->
+    <section class="pixel-card">
+        <h2>2. LABORATORIO INTERACTIVO</h2>
+
+        <div class="character-box">
+            <div class="pixel-avatar"></div>
+            <div class="speech-bubble">
+                "¡Bienvenido Guerrero Saiyajin! La Regla de Simpson usa arcos parabólicos para lograr una precisión superior. Ajusta n (siempre par) y luego supera la prueba de batalla contra Bardock, Broly y Janemba."
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label for="functionSelect">FUNCIÓN F(X):</label>
+                <select id="functionSelect" onchange="updatePlot()">
+                    <option value="x^2">f(x) = x²</option>
+                    <option value="1/x">f(x) = 1/x</option>
+                    <option value="exp(x)">f(x) = e^x</option>
+                    <option value="sin(x)">f(x) = sin(x)</option>
+                    <option value="sqrt(1+x^3)">f(x) = √(1 + x³)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="aInput">LÍMITE A:</label>
+                <input type="number" id="aInput" value="0" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="bInput">LÍMITE B:</label>
+                <input type="number" id="bInput" value="2" step="0.5" onchange="updatePlot()">
+            </div>
+            <div class="control-group">
+                <label for="nSlider">SUBINTERVALOS PAR (N = <span id="nVal">4</span>):</label>
+                <input type="range" id="nSlider" min="2" max="40" step="2" value="4" oninput="document.getElementById('nVal').innerText = this.value; updatePlot()">
+            </div>
+        </div>
+
+        <div id="plotlyChart" style="width:100%; height:450px; border: 3px solid #333;"></div>
+
+        <div class="stats-banner">
+            <div class="stat-box">
+                <div class="stat-label">VALOR EXACTO</div>
+                <div class="stat-value" id="exactValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">APROXIMACIÓN (Sn)</div>
+                <div class="stat-value" id="simpsonValue">0.0000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ERROR ABSOLUTO</div>
+                <div class="stat-value error" id="errorValue">0.0000</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 3: Aplicación / Misión Secundaria -->
+    <section class="pixel-card">
+        <div class="quest-box">
+            <h3 class="quest-title">⚔️ MISIÓN SECUNDARIA: MODELADO DE TRAYECTORIAS Y MOTOR GRÁFICO 3D</h3>
+            <p style="margin-bottom: 0;">
+                En el desarrollo de motores gráficos 3D y simulación de aerodinámica, las curvas suaves de tipo Bézier y Splines se integran con la <strong>Regla de Simpson</strong> para calcular el área proyectada, resistencia al viento o longitud de arco de forma ultra precisa.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección 4: EJERCICIOS CON SINTAXIS NATURAL Y LIMPIA -->
+    <section class="pixel-card">
+        <h2>3. EJERCICIOS</h2>
+        
+        <!-- Ejercicio 1 -->
+        <h3 style="color: #ffaa00;">1. Aproxime ∫₀² x² dx usando la regla de Simpson con n = 4.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Identifica a = 0, b = 2 y n = 4 (n es par). Calcula Δx = (2 - 0) / 4 = 0.5. Evalúa f(x) = x² en x₀ = 0.0, x₁ = 0.5, x₂ = 1.0, x₃ = 1.5 y x₄ = 2.0, aplicando los patrones de coeficientes 1, 4, 2, 4, 1 divididos entre 3.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 2 -->
+        <h3 style="color: #ffaa00;">2. Use S₄ para aproximar ∫₁³ (1 / x) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con a = 1, b = 3 y n = 4, se tiene Δx = (3 - 1) / 4 = 0.5. Los puntos son xᵢ ∈ {1.0, 1.5, 2.0, 2.5, 3.0}. Evalúa f(x) = 1 / x y multiplica por el vector de pesos (1, 4, 2, 4, 1) · (Δx / 3).
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 3 -->
+        <h3 style="color: #ffaa00;">3. Calcule S₆ para ∫₀¹ eˣ dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Divida el intervalo en n = 6 subintervalos (Δx = 1 / 6 ≈ 0.1667). Evalúa f(x) = eˣ en xᵢ = i / 6 para i = 0, 1, 2, 3, 4, 5, 6 con la ponderación 1, 4, 2, 4, 2, 4, 1.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 4 -->
+        <h3 style="color: #ffaa00;">4. Aproxime ∫₀^π sin(x) dx usando S₄.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Para [0, π] con n = 4, el paso es Δx = π / 4. Los puntos a evaluar en f(x) = sin(x) son 0, π/4, π/2, 3π/4 y π.
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #555; margin: 20px 0;">
+
+        <!-- Ejercicio 5 -->
+        <h3 style="color: #ffaa00;">5. Use S₄ para aproximar ∫₀¹ √(1 + x³) dx.</h3>
+        <div class="hint-box">
+            💡 <strong>Pista para iniciar:</strong> Con a = 0, b = 1 y n = 4, la distancia es Δx = 0.25. Evalúa f(x) = √(1 + x³) en 0.00, 0.25, 0.50, 0.75 y 1.00.
+        </div>
+    </section>
+
+    <!-- =========================================================
+         ARENA DE BOSSES DBZ HIGH-RES (BARDOCK, BROLY, JANEMBA)
+         ========================================================= -->
+    <div class="dbz-arena">
+        <div class="arena-title">⚡ TORNEO LEGENDARIO: DERROTA A BARDOCK, BROLY Y JANEMBA ⚡</div>
+        
+        <div class="fighters-container">
+            <!-- BARDOCK HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-bardock">
+                <div class="hp-container">
+                    <span class="hp-label">BARDOCK</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-bardock"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="bardock-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="10,115 0,60 15,20 47,0 80,20 95,60 85,115" fill="rgba(255,23,68,0.25)"/>
+                    <!-- Pelo negro saiyajin de Bardock -->
+                    <path d="M22,35 L12,12 L30,22 L35,2 L50,15 L62,0 L68,22 L85,12 L72,38 L88,42 L68,52 Z" fill="#111111" stroke="#000" stroke-width="2"/>
+                    <!-- Cinta roja en la frente -->
+                    <rect x="25" y="32" width="45" height="7" fill="#d50000" stroke="#880000" stroke-width="1"/>
+                    <!-- Cara y Cicatriz -->
+                    <polygon points="26,38 68,38 62,65 47,73 32,65" fill="#ffcc99"/>
+                    <!-- Cicatriz en la mejilla izquierda -->
+                    <path d="M30,52 L40,58 M32,58 L38,52" stroke="#b71c1c" stroke-width="2"/>
+                    <!-- Ojos y Cejas -->
+                    <polygon points="28,43 42,46 40,40 28,40" fill="#000000"/>
+                    <polygon points="48,46 62,43 62,40 50,40" fill="#000000"/>
+                    <rect x="34" y="44" width="4" height="4" fill="#ffffff"/>
+                    <rect x="52" y="44" width="4" height="4" fill="#ffffff"/>
+                    <!-- Armadura Saiyajin Verde y Negra -->
+                    <path d="M15,68 L30,62 L47,72 L64,62 L79,68 L85,105 L9,105 Z" fill="#1b5e20" stroke="#000" stroke-width="2"/>
+                    <polygon points="32,62 62,62 56,85 38,85" fill="#212121"/>
+                    <rect x="25" y="86" width="44" height="8" fill="#ffd600"/>
+                    <rect x="5" y="68" width="12" height="25" fill="#ffcc99"/>
+                    <rect x="77" y="68" width="12" height="25" fill="#ffcc99"/>
+                    <!-- Muñequera azul -->
+                    <rect x="5" y="85" width="12" height="10" fill="#0277bd"/>
+                    <rect x="77" y="85" width="12" height="10" fill="#0277bd"/>
+                </svg>
+            </div>
+
+            <!-- BROLY LEGENDARY SUPER SAIYAJIN HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-broly">
+                <div class="hp-container">
+                    <span class="hp-label">BROLY SSJ</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-broly"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="broly-svg" width="105" height="130" viewBox="0 0 105 130">
+                    <polygon points="10,120 0,60 15,15 52,0 88,15 105,60 95,120" fill="rgba(118,255,3,0.3)"/>
+                    <!-- Pelo enorme SSJ Legendario verde lima -->
+                    <path d="M18,35 L5,10 L28,18 L32,0 L52,12 L72,0 L78,18 L100,10 L85,38 L102,45 L80,58 Z" fill="#aeea00" stroke="#64dd17" stroke-width="2.5"/>
+                    <path d="M25,25 L38,10 L52,20 L68,8 L78,25" fill="#ccff90" opacity="0.6"/>
+                    <!-- Cara musculosa y joya de la frente -->
+                    <polygon points="28,40 76,40 70,68 52,78 34,68" fill="#ffcc99"/>
+                    <circle cx="52" cy="38" r="5" fill="#ffd700" stroke="#000" stroke-width="1"/>
+                    <circle cx="52" cy="38" r="2.5" fill="#00e5ff"/>
+                    <!-- Ojos blancos sin pupila (Furia SSJ) -->
+                    <polygon points="32,47 46,50 44,43 32,43" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+                    <polygon points="58,50 72,47 72,43 60,43" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+                    <!-- Pecho híper musculoso desnudo con collar de oro -->
+                    <path d="M12,70 Q52,85 92,70 L98,110 L6,110 Z" fill="#ffcc99" stroke="#d4a000" stroke-width="2"/>
+                    <path d="M28,70 Q52,80 76,70" fill="none" stroke="#ffd700" stroke-width="6"/>
+                    <circle cx="52" cy="76" r="6" fill="#00e5ff" stroke="#ffd700" stroke-width="2"/>
+                    <!-- Manta/Faja roja en la cintura -->
+                    <path d="M15,100 L89,100 L95,125 L9,125 Z" fill="#d50000" stroke="#880000" stroke-width="2"/>
+                    <rect x="25" y="98" width="54" height="8" fill="#ffd700"/>
+                </svg>
+            </div>
+
+            <!-- SUPER JANEMBA HIGH RES PIXEL ART -->
+            <div class="fighter-card" id="fighter-janemba">
+                <div class="hp-container">
+                    <span class="hp-label">JANEMBA</span>
+                    <div class="hp-bar-outer"><div class="hp-bar-fill" id="hp-janemba"></div></div>
+                </div>
+                <div class="ko-badge">K.O.</div>
+                <svg class="janemba-svg" width="95" height="125" viewBox="0 0 95 125">
+                    <polygon points="12,115 2,60 15,15 47,0 80,15 93,60 82,115" fill="rgba(213,0,249,0.3)"/>
+                    <!-- Cuernos demoníacos morados largos -->
+                    <path d="M18,5 L32,38 L12,35 Z" fill="#4a148c" stroke="#aa00ff" stroke-width="2"/>
+                    <path d="M76,5 L62,38 L82,35 Z" fill="#4a148c" stroke="#aa00ff" stroke-width="2"/>
+                    <!-- Cabeza y armadura violeta -->
+                    <polygon points="25,32 70,32 62,62 47,68 32,62" fill="#aa00ff" stroke="#4a148c" stroke-width="2"/>
+                    <!-- Cara roja inferior -->
+                    <polygon points="30,48 65,48 58,68 47,72 36,68" fill="#d50000"/>
+                    <!-- Ojos amarillos rasgados -->
+                    <polygon points="32,42 42,45 40,39" fill="#ffea00"/>
+                    <polygon points="63,42 53,45 55,39" fill="#ffea00"/>
+                    <!-- Cuerpo rojo demonio con armadura de pecho violeta -->
+                    <path d="M15,65 L80,65 L86,105 L9,105 Z" fill="#d50000" stroke="#880000" stroke-width="2"/>
+                    <path d="M25,65 L70,65 L65,92 L30,92 Z" fill="#4a148c" stroke="#aa00ff" stroke-width="2"/>
+                    <ellipse cx="47" cy="78" rx="8" ry="8" fill="#ffea00"/>
+                    <!-- Brazos rojos con coderas moradas -->
+                    <rect x="5" y="65" width="12" height="30" fill="#d50000"/>
+                    <rect x="78" y="65" width="12" height="30" fill="#d50000"/>
+                    <rect x="3" y="78" width="14" height="10" fill="#4a148c"/>
+                    <rect x="78" y="78" width="14" height="10" fill="#4a148c"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="floor-grid"></div>
+
+        <!-- CUESTIONARIO DE ATAQUE -->
+        <div class="quiz-container">
+            <div class="quiz-title">⚔️ RESPONDE CORRECTAMENTE PARA ATACAR Y QUITAR HP A BARDOCK, BROLY Y JANEMBA:</div>
+
+            <div class="question-card" id="q1-box">
+                <div class="question-text">1. Para el Ejercicio 1 (∫₀² x² dx con n = 4), ¿cuál es el valor exacto dado por la regla de Simpson (S₄)?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(1, true, this)">A) S₄ = 2.6667</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">B) S₄ = 2.7500</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">C) S₄ = 2.6250</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q2-box">
+                <div class="question-text">2. En el Ejercicio 2 (∫₁³ (1 / x) dx con n = 4), ¿cuál es la secuencia de coeficientes de ponderación de Simpson?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">A) Coeficientes: 1, 2, 2, 2, 1</button>
+                    <button class="option-btn" onclick="checkAnswer(2, true, this)">B) Coeficientes: 1, 4, 2, 4, 1</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">C) Coeficientes: 1, 3, 3, 3, 1</button>
+                </div>
+            </div>
+
+            <div class="question-card" id="q3-box">
+                <div class="question-text">3. En el Ejercicio 4 (∫₀^π sin(x) dx con n = 4), ¿cuál es el resultado aproximado de S₄?</div>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">A) S₄ = 1.9871</button>
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">B) S₄ = 2.0521</button>
+                    <button class="option-btn" onclick="checkAnswer(3, true, this)">C) S₄ = 2.0045</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA FINAL -->
+        <div class="victory-screen" id="victory-banner">
+            <h2>🏆 ¡VICTORIA TOTAL! HAS DERROTADO A BARDOCK, BROLY Y JANEMBA 🏆</h2>
+            <p style="font-size: 24px; color: #ffff55; margin: 0;">
+                Has superado el poder de Bardock, Broly SSJ y Janemba resolviendo todos los ejercicios del Módulo 4. ¡Has dominado la Regla de Simpson!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript de Gráficos y Combate -->
+<script>
+    function getFunction(type, x) {
+        switch(type) {
+            case 'x^2': return Math.pow(x, 2);
+            case '1/x': return 1 / x;
+            case 'exp(x)': return Math.exp(x);
+            case 'sin(x)': return Math.sin(x);
+            case 'sqrt(1+x^3)': return Math.sqrt(1 + Math.pow(x, 3));
+            default: return Math.pow(x, 2);
+        }
+    }
+
+    function getExactIntegral(type, a, b) {
+        switch(type) {
+            case 'x^2': return (Math.pow(b, 3) - Math.pow(a, 3)) / 3;
+            case '1/x': return Math.log(b) - Math.log(a);
+            case 'exp(x)': return Math.exp(b) - Math.exp(a);
+            case 'sin(x)': return -Math.cos(b) - (-Math.cos(a));
+            case 'sqrt(1+x^3)': return 1.1114;
+            default: return 0;
+        }
+    }
+
+    function updatePlot() {
+        const funcType = document.getElementById('functionSelect').value;
+        const a = parseFloat(document.getElementById('aInput').value);
+        const b = parseFloat(document.getElementById('bInput').value);
+        let n = parseInt(document.getElementById('nSlider').value);
+
+        if (n % 2 !== 0) n += 1;
+
+        if (a >= b || (funcType === '1/x' && a <= 0)) return;
+
+        const dx = (b - a) / n;
+        const xCurve = [], yCurve = [];
+        const steps = 200;
+        for (let i = 0; i <= steps; i++) {
+            const x = a + (b - a) * (i / steps);
+            xCurve.push(x);
+            yCurve.push(getFunction(funcType, x));
+        }
+
+        let simpsonSum = getFunction(funcType, a) + getFunction(funcType, b);
+
+        for (let i = 1; i < n; i++) {
+            const xi = a + i * dx;
+            const coeff = (i % 2 === 1) ? 4 : 2;
+            simpsonSum += coeff * getFunction(funcType, xi);
+        }
+
+        simpsonSum = (simpsonSum * dx) / 3;
+
+        const exactVal = getExactIntegral(funcType, a, b);
+        const absError = Math.abs(exactVal - simpsonSum);
+
+        document.getElementById('exactValue').innerText = exactVal.toFixed(4);
+        document.getElementById('simpsonValue').innerText = simpsonSum.toFixed(4);
+        document.getElementById('errorValue').innerText = absError.toFixed(4);
+
+        const data = [{
+            x: xCurve, y: yCurve, mode: 'lines', name: 'f(x)',
+            line: { color: '#ffaa00', width: 4 }
+        }];
+
+        const layout = {
+            paper_bgcolor: '#0d0b0e', plot_bgcolor: '#161218',
+            font: { family: 'VT323, monospace', size: 18, color: '#ffffff' },
+            xaxis: { title: 'X', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            yaxis: { title: 'Y', gridcolor: '#2a222e', zerolinecolor: '#ffaa00' },
+            margin: { t: 20, r: 20, l: 50, b: 50 },
+            showlegend: false
+        };
+
+        Plotly.newPlot('plotlyChart', data, layout, {responsive: true});
+    }
+
+    let currentHP = 100;
+    let correctAnswersCount = 0;
+    const answeredQuestions = { 1: false, 2: false, 3: false };
+
+    function checkAnswer(questionNum, isCorrect, btnElement) {
+        if (answeredQuestions[questionNum]) return;
+
+        const parentGrid = btnElement.parentElement;
+        const buttons = parentGrid.querySelectorAll('.option-btn');
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            answeredQuestions[questionNum] = true;
+            correctAnswersCount++;
+
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            dealDamage(33.34);
+        } else {
+            btnElement.classList.add('incorrect');
+        }
+    }
+
+    function dealDamage(amount) {
+        currentHP = Math.max(0, currentHP - amount);
+
+        const hpBardock = document.getElementById('hp-bardock');
+        const hpBroly = document.getElementById('hp-broly');
+        const hpJanemba = document.getElementById('hp-janemba');
+
+        [hpBardock, hpBroly, hpJanemba].forEach(bar => {
+            if (bar) {
+                bar.style.width = currentHP + '%';
+                if (currentHP < 60 && currentHP > 25) {
+                    bar.className = 'hp-bar-fill warning';
+                } else if (currentHP <= 25) {
+                    bar.className = 'hp-bar-fill danger';
+                }
+            }
+        });
+
+        const fighters = [
+            document.getElementById('fighter-bardock'),
+            document.getElementById('fighter-broly'),
+            document.getElementById('fighter-janemba')
+        ];
+
+        fighters.forEach(f => {
+            if (f) {
+                f.classList.add('hit-effect');
+                setTimeout(() => f.classList.remove('hit-effect'), 400);
+            }
+        });
+
+        if (correctAnswersCount === 3 || currentHP <= 0) {
+            setTimeout(() => {
+                fighters.forEach(f => { if (f) f.classList.add('defeated'); });
+                document.getElementById('victory-banner').style.display = 'block';
+            }, 500);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePlot();
+    });
+</script>
+</body>
+</html>
