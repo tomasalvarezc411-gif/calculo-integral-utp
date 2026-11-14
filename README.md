@@ -1,93 +1,21 @@
-# Plataforma Web Colaborativa de Cálculo Integral
-## Evaluación Parcial I - UTP 2026-II (CB215 Grupo 403)
-
-![UTP Logo Badge](https://img.shields.io/badge/UTP-2026--II-orange?style=for-the-badge&logo=dragon)
-![License](https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Estado-Fase_1_Completada-brightgreen?style=for-the-badge)
-![GitHub Pages](https://img.shields.io/badge/Despliegue-GitHub_Pages-blue?style=for-the-badge)
-
----
-
-## 📌 Descripción del Proyecto
-
-Este repositorio contiene la **Plataforma Web Colaborativa e Interactiva de Cálculo Integral**, desarrollada para la primera evaluación parcial de la asignatura **Matemáticas II (CB215 - Grupo 403)** del programa de Desarrollo de Software de la **Universidad Tecnológica de Pereira (UTP)** en modalidad 100% virtual (2026-II).
-
-La plataforma combina el rigor matemático con una interfaz inspirada en el universo de **Dragon Ball Z y Arcade Retro (Pixel Art 8-Bit)**, permitiendo a los estudiantes visualizar, simular y ejercitar métodos numéricos e integrales definidas de manera gamificada.
-
----
-
-## 🐉 Módulos Desarrollados (Fase 1 - Entregable 1)
-
-| # | Módulo | Método / Tema | Personajes / Tema | Estado |
-|---|---|---|---|---|
-| **01** | `module-01-riemann.html` | Sumas de Riemann (Ln, Rn, Mn) | Senosama, Sheng Long, Wiz | ✅ Completado |
-| **02** | `module-02-trapecio.html` | Regla del Trapecio | Cell, Freezer, Majin Buu | ✅ Completado |
-| **03** | `module-03-punto-medio.html` | Regla del Punto Medio | Goku SSJ3, Vegeta God, Gohan Beast | ✅ Completado |
-| **04** | `module-04-simpson.html` | Regla de Simpson (1/3) | Bardock, Broly SSJ, Janemba | ✅ Completado |
-| **05** | `module-05-area.html` | Integral Definida y Área bajo la Curva | Trunks SSJ, Maestro Roshi, Piccolo | ✅ Completado |
-| **06** | `module-06-volumen.html` | Volumen de Sólidos de Revolución (Discos/Arandelas) | Goku Ultra Instinct, Vegeta Ultra Ego, Jiren | ✅ Completado |
-| **EXTRA** | `module-extra-dino.html` | Dino Prehistoric Runner Quiz (Trivias + Cámara Lenta) | Prehistoria Pixel Art / Cultura Matemática | ✅ Completado |
-
-*Módulos 07 a 14 estructurados para las Fases 2 y 3 (Parciales II y III).*
-
----
-
-## 🛠️ Tecnologías Utilizadas
-
-- **HTML5 Semantic**: Estructura modular e interactiva.
-- **CSS3 Custom (Pixel Art 8-Bit)**: Diseñado sin librerías pesadas, utilizando sombras `box-shadow` cuadradas, fuentes tipográficas retro y paletas de colores estilo arcade.
-- **JavaScript ES6+**: Algoritmos matemáticos numéricos para calcular sumatorio de Riemann, regla del trapecio, fórmula de Simpson 1/3, e integración definida exacta, además del motor gráfico 2D del minijuego.
-- **Plotly.js (v2.24.1)**: Motor de renderizado vectorial de curvas f(x), rectángulos, trapecios y superficies 3D de sólidos de revolución.
-- **Google Fonts**: Tipografías `'Press Start 2P'` y `'VT323'`.
-
----
-
-## 📁 Estructura del Repositorio
-
-```text
-├── index.html                  # Página principal (Lobby DBZ 14 Módulos + Extra)
-├── README.md                   # Documentación técnica y guía del proyecto
-├── modules/
-│   ├── module-01-riemann.html   # Módulo 1: Sumas de Riemann
-│   ├── module-02-trapecio.html  # Módulo 2: Regla del Trapecio
-│   ├── module-03-punto-medio.html # Módulo 3: Regla del Punto Medio
-│   ├── module-04-simpson.html   # Módulo 4: Regla de Simpson
-│   ├── module-05-area.html      # Módulo 5: Integral Definida y Área
-│   ├── module-06-volumen.html   # Módulo 6: Volumen de Sólidos
-│   └── module-extra-dino.html  # Módulo Extra: Dino Prehistoric Runner Quiz
-```
-
----
-
-## 🚀 Guía de Despliegue en GitHub Pages
-
-1. **Clonar o subir el repositorio a GitHub**:
-   ```bash
-   git clone https://github.com/TU_USUARIO/calculo-integral-utp-2026.git
-   cd calculo-integral-utp-2026
-   ```
-
-2. **Subir cambios a GitHub**:
-   ```bash
-   git add .
-   git commit -m "Feat: Finalización de Fase 1 con index.html, README y 7 módulos"
-   git push origin main
-   ```
-
-3. **Activar GitHub Pages**:
-   - Ingresa al repositorio en GitHub.
-   - Ve a **Settings** > **Pages**.
-   - En **Source**, selecciona la rama `main` y la carpeta `/ (root)`.
-   - Haz clic en **Save**.
-   - Tu sitio estará disponible públicamente en: `https://TU_USUARIO.github.io/calculo-integral-utp-2026/`
-
----
-
-## 📝 Componentes de Evaluación Parcial I (UTP)
-
-1. **Plataforma Web Colaborativa (40%)**: Código fuente desplegado con simuladores interactivos, gráficos dinámicos y cuestionarios gamificados.
-2. **Taller Manuscrito de 70 Ejercicios (50%)**: Taller resuelto a mano paso a paso con sustento matemático teórico y numérico.
-3. **Sustentación en Video (10%)**: Explicación en video (5-10 minutos) demostrando el funcionamiento de la plataforma y la resolución de ejercicios clave.
+Plataforma Web Colaborativa e Interactiva de Cálculo Integral📌 Descripción del ProyectoEste repositorio contiene la Plataforma Web Colaborativa e Interactiva de Cálculo Integral, desarrollada para la asignatura Matemáticas II (CB215 - Grupo 403) del programa de Tecnología en Desarrollo de Software de la Universidad Tecnológica de Pereira (UTP) en modalidad virtual (2026-II).La plataforma combina el rigor analítico del cálculo con una interfaz gráfica inspirada en el universo de Dragon Ball Z y la estética Arcade Retro (Pixel Art 8-Bit). Su objetivo es brindar a los estudiantes herramientas visuales interactivas en tiempo real para simular métodos numéricos, integrales definidas, técnicas de integración del segundo parcial, áreas entre curvas, volúmenes y sólidos de revolución en 3D.🐉 Módulos Desarrollados (Fase 1 y Módulo 07 - Parciales I y II)MóduloArchivoMétodo / TemaPersonajes / TemáticaEstado01modules/module-01-riemann.htmlSumas de Riemann (Ln, Rn, Mn)Senosama, Sheng Long, Wiz✅ Completado02modules/module-02-trapecio.htmlRegla del TrapecioCell, Freezer, Majin Buu✅ Completado03modules/module-03-punto-medio.htmlRegla del Punto MedioGoku SSJ3, Vegeta God, Gohan Beast✅ Completado04modules/module-04-simpson.htmlRegla de Simpson (1/3)Bardock, Broly SSJ, Janemba✅ Completado05modules/module-05-area.htmlIntegral Definida y Área bajo la CurvaTrunks SSJ, Maestro Roshi, Piccolo✅ Completado06modules/module-06-volumen.htmlVolumen de Sólidos de Revolución (Discos/Arandelas)Goku Ultra Instinct, Vegeta Ultra Ego, Jiren✅ CompletadoEXTRAmodules/module-extra-dino.htmlDino Prehistoric Runner Quiz (Trivias + Cámara Lenta)Prehistoria Pixel Art / Cultura Matemática✅ Completado07modules/module-07-parcial2-solidos.htmlBanco Completo Parcial 2 (62 Ejercicios) + Sólidos 3D + Pac-Math DBZ ArcadeVegito Blue, Gogeta SSJ4, Shenron 3D, Pac-Goku SSJ✅ Completado🛠️ Tecnologías UtilizadasHTML5 Semantic: Estructuración limpia e independiente para el lobby y cada módulo interactivo.CSS3 Custom (Pixel Art 8-Bit): Estilizado retro sin librerías externas pesadas, basado en sombras box-shadow cuadradas, bordes rectos y paletas de colores de alto contraste en modo oscuro.JavaScript ES6+: Algoritmos numéricos para sumatorias, métodos de aproximación, fórmulas de integración analítica y motores lógicos para los minijuegos arcades.Plotly.js (v2.24.1): Motor de gráficos vectoriales interactivos para trazar funciones 2D, regiones de áreas y superficies 3D (surface) de sólidos en revolución.KaTeX: Renderizado limpio de fórmulas matemáticas y desarrollo paso a paso.Google Fonts: Tipografías retro 'Press Start 2P' y 'VT323'.📁 Estructura del Repositoriocalculo-integral-utp/
+├── index.html                   # Página principal (Lobby DBZ con 7 Módulos + Extra Arcade)
+├── README.md                    # Documentación técnica y guía del proyecto
+└── modules/
+    ├── module-01-riemann.html   # Sumas de Riemann (Ln, Rn, Mn)
+    ├── module-02-trapecio.html  # Regla del Trapecio
+    ├── module-03-punto-medio.html # Regla del Punto Medio
+    ├── module-04-simpson.html   # Regla de Simpson (1/3)
+    ├── module-05-area.html      # Integral Definida y Área bajo la Curva
+    ├── module-06-volumen.html   # Sólidos de Revolución (Discos y Arandelas)
+    ├── module-extra-dino.html   # Minijuego Dino Prehistoric Runner Quiz
+    └── module-07-parcial2-solidos.html # Banco Parcial 2 (62 Ejercicios) + Sólidos 3D + Pac-Math DBZ
+🚀 Guía de Despliegue en GitHub PagesClonar o subir el repositorio a GitHub:git clone https://github.com/tomasalvarezc411-gif/calculo-integral-utp.git
+cd calculo-integral-utp
+Subir los cambios al repositorio:git add .
+git commit -m "feat: integración completa del Módulo 07 (Parcial 2 + Sólidos 3D + Pac-Math DBZ)"
+git push origin main
+Activar GitHub Pages:Ingresa al repositorio en GitHub.Ve a Settings > Pages.En Source, selecciona la rama main y la carpeta / (root).Haz clic en Save.Tu sitio web estará disponible públicamente en:https://tomasalvarezc411-gif.github.io/calculo-integral-utp/📝 Componentes de Evaluación (UTP)Plataforma Web Colaborativa (40%): Herramienta web desplegada en GitHub Pages con simuladores interactivos 2D/3D y cuestionarios gamificados.Talleres Resueltos (50%): Ejercicios teóricos resueltos paso a paso con sustento algebraico y numérico.Sustentación en Video (10%): Demostración del funcionamiento de la plataforma y explicación de ejercicios clave del curso.ución de ejercicios clave.
 
 ---
 
