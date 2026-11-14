@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,17 +48,18 @@
         }
         
         .progress-card {
-            background: #111a24; border: 3px solid #3a5270; padding: 15px 20px;
+            background: #111a24; border: 3px solid #39ff14; padding: 15px 20px;
             margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+            box-shadow: 4px 4px 0 #000;
         }
-        .progress-title { font-family: 'Press Start 2P', monospace; font-size: 11px; color: #ffaa00; }
-        .progress-bar-outer { width: 100%; max-width: 400px; height: 18px; background: #000; border: 2px solid #55ffff; }
-        .progress-bar-inner { width: 50%; height: 100%; background: linear-gradient(90deg, #00e5ff, #55ff55); }
+        .progress-title { font-family: 'Press Start 2P', monospace; font-size: 11px; color: #39ff14; line-height: 1.5; }
+        .progress-bar-outer { width: 100%; max-width: 400px; height: 20px; background: #000; border: 2px solid #55ffff; position: relative; }
+        .progress-bar-inner { width: 100%; height: 100%; background: linear-gradient(90deg, #00e5ff, #39ff14, #ffaa00); }
 
         .phase-header {
             font-family: 'Press Start 2P', monospace; font-size: 14px; color: #55ffff;
             background: #16101f; border-left: 6px solid #55ffff; padding: 12px 18px; margin: 30px 0 20px 0;
-            box-shadow: 4px 4px 0 #000;
+            box-shadow: 4px 4px 0 #000; line-height: 1.5;
         }
 
         .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; }
@@ -75,12 +77,19 @@
         }
         .module-card.extra-card:hover { border-color: #00e5ff; box-shadow: inset -4px -4px 0px 0px #120903, 6px 6px 0px 0px #000000, 0 0 25px rgba(0,229,255,0.5); }
 
-        .module-card.locked { opacity: 0.6; filter: grayscale(0.8); border-color: #333; }
-        .module-card.locked:hover { transform: none; border-color: #333; }
+        .module-card.final-boss-card {
+            background: #140d00; border: 4px solid #ff9800;
+            box-shadow: inset -4px -4px 0px 0px #2b1a00, 6px 6px 0px 0px #00e5ff, 0 0 20px rgba(255, 152, 0, 0.35);
+            grid-column: 1 / -1;
+        }
+        .module-card.final-boss-card:hover {
+            border-color: #39ff14;
+            box-shadow: inset -4px -4px 0px 0px #2b1a00, 6px 6px 0px 0px #ff9800, 0 0 28px rgba(57, 255, 20, 0.45);
+        }
 
         .card-number { font-family: 'Press Start 2P', monospace; font-size: 10px; color: #ffaa00; margin-bottom: 8px; }
-        .card-title { font-family: 'Press Start 2P', monospace; font-size: 13px; color: #ffffff; margin: 0 0 10px 0; line-height: 1.3; }
-        .card-desc { color: #aaa; font-size: 20px; margin-bottom: 15px; flex-grow: 1; }
+        .card-title { font-family: 'Press Start 2P', monospace; font-size: 13px; color: #ffffff; margin: 0 0 10px 0; line-height: 1.4; }
+        .card-desc { color: #ccc; font-size: 20px; margin-bottom: 15px; flex-grow: 1; line-height: 1.3; }
         .card-fighters { font-size: 18px; color: #ffff55; background: #0d0912; border: 1px dashed #555; padding: 6px 10px; margin-bottom: 15px; }
 
         .btn-play {
@@ -94,14 +103,9 @@
             box-shadow: inset -3px -3px 0px 0px #995500, 3px 3px 0px 0px #000000;
         }
 
-        .btn-locked {
-            font-family: 'Press Start 2P', monospace; font-size: 10px; color: #888; background-color: #222;
-            padding: 12px; text-align: center; border: 2px solid #444; cursor: not-allowed; display: block;
-        }
-
         .footer-banner {
             margin-top: 50px; padding: 25px; background: #120e17; border-top: 4px dashed #ffaa00;
-            text-align: center; color: #888; font-size: 20px;
+            text-align: center; color: #aaa; font-size: 20px;
         }
     </style>
 </head>
@@ -120,16 +124,18 @@
 
     <div class="progress-card">
         <div>
-            <div class="progress-title">ESTADO DE LA PLATAFORMA: FASE 1 COMPLETADA + MINIJUEGO EXTRA</div>
-            <div style="font-size: 18px; color: #aaa; margin-top: 4px;">Taller de 70 Ejercicios + Métodos Numéricos + Dino Runner Quiz</div>
+            <div class="progress-title">✅ ESTADO DE LA PLATAFORMA: 100% COMPLETADA (PARCIAL I + PARCIAL II + ARCADES)</div>
+            <div style="font-size: 19px; color: #ccc; margin-top: 4px;">
+                7 Módulos Interactivos 2D/3D + 62 Ejercicios del Parcial 2 + Dino Runner + Pac-Math DBZ
+            </div>
         </div>
         <div class="progress-bar-outer">
             <div class="progress-bar-inner"></div>
         </div>
     </div>
 
-    <!-- FASE 1 & RECURSOS ACTIVOS -->
-    <div class="phase-header">⚡ FASE 1: EVALUACIÓN PARCIAL I (MÓDULOS ACTIVOS + JUEGO EXTRA)</div>
+    <!-- FASE 1: PARCIAL I -->
+    <div class="phase-header">⚡ MÓDULO I: EVALUACIÓN PARCIAL I (MÉTODOS NUMÉRICOS, ÁREAS Y VOLUMEN + DINO RUNNER)</div>
     <div class="modules-grid">
         <div class="module-card">
             <div>
@@ -194,7 +200,7 @@
         <!-- MÓDULO EXTRA: DINO RUNNER QUIZ -->
         <div class="module-card extra-card">
             <div>
-                <div class="card-number" style="color: #00e5ff;">RECURSO EXTRA GAMIFICADO</div>
+                <div class="card-number" style="color: #00e5ff;">RECURSO EXTRA GAMIFICADO I</div>
                 <h3 class="card-title" style="color: #ffaa00;">🦖 Dino Prehistoric Runner</h3>
                 <div class="card-desc">Runner retro prehistórico con trivias aleatorias cada 10s y cámara lenta.</div>
                 <div class="card-fighters" style="color: #00e5ff; border-color: #00e5ff;">🎮 Pon a prueba tu conocimiento</div>
@@ -203,51 +209,43 @@
         </div>
     </div>
 
-    <!-- FASE 2 -->
-    <div class="phase-header" style="color: #ffaa00; border-left-color: #ffaa00;">🔒 FASE 2: TÉCNICAS DE INTEGRACIÓN (PRÓXIMAMENTE)</div>
-    <div class="modules-grid">
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 07</div><h3 class="card-title">Integración por Sustitución</h3><div class="card-desc">Cambio de variable u = g(x) y potencias de funciones.</div></div>
-            <span class="btn-locked">🔒 FASE 2</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 08</div><h3 class="card-title">Integrales Exponenciales</h3><div class="card-desc">Integración de e^u y a^u en aplicaciones físicas.</div></div>
-            <span class="btn-locked">🔒 FASE 2</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 09</div><h3 class="card-title">Integrales Logarítmicas</h3><div class="card-desc">Formas integrales que conducen a ln|u|.</div></div>
-            <span class="btn-locked">🔒 FASE 2</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 10</div><h3 class="card-title">Integrales Trigonométricas</h3><div class="card-desc">Identidades y potencias de sen(x), cos(x), tan(x) y sec(x).</div></div>
-            <span class="btn-locked">🔒 FASE 2</span>
-        </div>
+    <!-- FASE 2 Y CIERRE DEL CURSO: PARCIAL II COMPLETO + SÓLIDOS 3D + PAC-MATH DBZ -->
+    <div class="phase-header" style="color: #ffaa00; border-left-color: #ffaa00;">
+        🔥 MÓDULO II (CIERRE DEL PROGRAMA): EVALUACIÓN PARCIAL II COMPLETA + SÓLIDOS 3D + PAC-MATH DBZ
     </div>
-
-    <!-- FASE 3 -->
-    <div class="phase-header" style="color: #ff0055; border-left-color: #ff0055;">🔒 FASE 3: MÉTODOS AVANZADOS (PRÓXIMAMENTE)</div>
     <div class="modules-grid">
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 11</div><h3 class="card-title">Sustitución Trigonométrica</h3><div class="card-desc">Triángulos de referencia y sustituciones de radicales.</div></div>
-            <span class="btn-locked">🔒 FASE 3</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 12</div><h3 class="card-title">Integración por Partes</h3><div class="card-desc">Fórmula ∫u dv = uv - ∫v du y regla LIATE.</div></div>
-            <span class="btn-locked">🔒 FASE 3</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 13</div><h3 class="card-title">Fracciones Parciales</h3><div class="card-desc">Descomposición de funciones racionales algebraicas.</div></div>
-            <span class="btn-locked">🔒 FASE 3</span>
-        </div>
-        <div class="module-card locked">
-            <div><div class="card-number">MÓDULO 14</div><h3 class="card-title">Integrales Impropias</h3><div class="card-desc">Límites infinitos y discontinuidades no acotadas.</div></div>
-            <span class="btn-locked">🔒 FASE 3</span>
+        <div class="module-card final-boss-card">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <span class="card-number" style="color: #000; background: #ff9800; padding: 5px 10px; margin: 0;">MÓDULO 07 · PARCIAL 2 COMPLETO + ARCADE</span>
+                    <span style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #00e5ff;">62 SIMULADORES 2D/3D + PAC-MAN CULTURA GENERAL</span>
+                </div>
+                <h3 class="card-title" style="font-size: 16px; color: #ffca28; margin-top: 6px;">
+                    Segundo Parcial Completo: Técnicas de Integración, Sólidos de Revolución 3D y Pac-Math DBZ
+                </h3>
+                <div class="card-desc" style="font-size: 22px; color: #e6edf3;">
+                    • <strong>Bloque A (18 Ej.):</strong> Potencias Trigonométricas, Sustitución Trigonométrica con Triángulo Rectángulo interactivo, Sustitución Universal de Weierstrass z = tan(x/2), Áreas entre Curvas y Secciones Transversales 3D.<br>
+                    • <strong>Bloque B (12 Ej.):</strong> Taller completo de Funciones Racionales y Descomposición en Fracciones Parciales.<br>
+                    • <strong>Bloque C (11 Ej.):</strong> Taller completo de Funciones Irracionales y Radicales algebraicos.<br>
+                    • <strong>Bloque D (19 Ej. 3D):</strong> Guía completa de Sólidos de Revolución en Plotly 3D (Discos, Arandelas, Cascarones Cilíndricos, Proporción de Arquímedes 3:2:1 y Optimización de Eje).<br>
+                    • <strong>Bloque E (2 Ej.):</strong> Longitud de Arco e Integrales Impropias con límite convergente.<br>
+                    • <strong>🎮 Modo Cultura General (Pac-Math DBZ):</strong> Juego tipo Pac-Man con persecución IA (Freezer, Cell, Majin Buu y Broly) y preguntas de cultura general matemática cada 10 segundos.
+                </div>
+                <div class="card-fighters" style="color: #39ff14; border-color: #ff9800;">
+                    🐉 Guerreros Z Estelares: Vegito Blue · Gogeta SSJ4 · Shenron 3D · Whis · Pac-Goku SSJ
+                </div>
+            </div>
+            <a href="modules/module-07-parcial2-solidos.html" class="btn-play btn-extra" style="font-size: 12px; padding: 16px;">
+                ▶ ENTRAR AL MÓDULO 07 (62 EJERCICIOS + VISOR 3D + PAC-MATH DBZ)
+            </a>
         </div>
     </div>
 
     <footer class="footer-banner">
-        <p>UNIVERSIDAD TECNOLÓGICA DE PEREIRA — LICENCIATURA EN TECNOLOGÍA / DESARROLLO DE SOFTWARE (2026-II)</p>
-        <p style="font-size: 16px; color: #55ffff;">Evaluación Parcial I | CB215 Matemáticas II - Grupo 403</p>
+        <p>UNIVERSIDAD TECNOLÓGICA DE PEREIRA — TECNOLOGÍA EN DESARROLLO DE SOFTWARE (2026-II)</p>
+        <p style="font-size: 18px; color: #55ffff; margin-top: 6px;">
+            Plataforma Completa: Parcial I & Parcial II Finalizados | CB215 Matemáticas II - Grupo 403
+        </p>
     </footer>
 </div>
 </body>
