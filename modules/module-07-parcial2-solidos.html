@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 07: Parcial 2 + Sólidos 3D + Pac-Math DBZ | Cálculo Integral UTP</title>
+  <!-- Google Fonts Arcade 8-Bit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <!-- Plotly.js v2.24.1 -->
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+  <style>
+    :root {
+      --bg-outer: #08080c;
+      --bg-card: #000000;
+      --border-retro: #2a3950;
+      --amber: #ff9800;
+      --amber-light: #ffca28;
+      --cyan: #00e5ff;
+      --green: #39ff14;
+      --red: #ff1744;
+      --text: #e6edf3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-outer);
+      background-image: radial-gradient(#1c2536 1px, transparent 1px);
+      background-size: 16px 16px;
+      color: var(--text);
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .arcade-shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .pixel-box {
+      background: var(--bg-card);
+      border: 2px solid var(--border-retro);
+      box-shadow: 4px 4px 0px #04060a;
+      padding: 16px;
+    }
+    .header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-color: var(--amber);
+      box-shadow: 4px 4px 0px #663d00;
+    }
+    .title-group h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--amber-light);
+      line-height: 1.5;
+    }
+    .title-group p {
+      color: var(--cyan);
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    .btn-arcade {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      background: #111827;
+      color: var(--amber-light);
+      border: 2px solid var(--amber);
+      padding: 10px 14px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 3px 3px 0px #663d00;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-arcade:hover, .btn-arcade.active {
+      background: var(--amber);
+      color: #000;
+    }
+    .btn-cyan {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 3px 3px 0px #005b66;
+    }
+    .btn-cyan:hover, .btn-cyan.active {
+      background: var(--cyan);
+      color: #000;
+    }
+    .block-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 10px;
+    }
+    .tab-card {
+      background: #05070b;
+      border: 2px solid var(--border-retro);
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 3px 3px 0px #000;
+    }
+    .tab-card.active {
+      border-color: var(--amber);
+      background: #140d00;
+      box-shadow: 3px 3px 0px var(--amber);
+    }
+    .tab-card .tab-id {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--amber-light);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .tab-card .tab-desc {
+      font-size: 18px;
+      color: #b0c4de;
+    }
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ctrl-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--amber-light);
+      text-transform: uppercase;
+    }
+    .ctrl-select, .ctrl-input {
+      background: #06090f;
+      color: #fff;
+      border: 2px solid var(--amber);
+      padding: 9px 10px;
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      outline: none;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      background: #1a2332;
+      border: 2px solid var(--amber);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--amber);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 1024px) {
+      .workspace-grid { grid-template-columns: 1fr; }
+    }
+    .math-banner {
+      background: #060a12;
+      border: 2px solid var(--cyan);
+      padding: 14px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+    .fighter-badge {
+      display: inline-block;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      background: #1b1100;
+      color: var(--amber-light);
+      border: 1px solid var(--amber);
+      padding: 4px 8px;
+      margin-bottom: 8px;
+    }
+    .plot-container {
+      width: 100%;
+      height: 440px;
+      background: #050508;
+      border: 2px solid var(--border-retro);
+    }
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 700px) {
+      .metrics-row { grid-template-columns: 1fr; }
+    }
+    .metric-card {
+      background: #04060a;
+      border: 2px solid var(--border-retro);
+      padding: 12px;
+      text-align: center;
+    }
+    .metric-card h4 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #9fb3c8;
+      margin-bottom: 8px;
+    }
+    .metric-val-green {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--green);
+      line-height: 1.5;
+    }
+    .metric-val-red {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--red);
+      line-height: 1.5;
+    }
+    .step-item {
+      background: #070b12;
+      border-left: 4px solid var(--amber);
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+    }
+    .step-item strong {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--cyan);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .trig-svg-box {
+      background: #05080f;
+      border: 2px solid var(--amber);
+      padding: 10px;
+      margin-top: 10px;
+      text-align: center;
+    }
+    /* PAC-MATH DBZ STYLES */
+    .pac-layout {
+      display: none;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+    @media (max-width: 1024px) {
+      .pac-layout { grid-template-columns: 1fr; }
+    }
+    .canvas-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #020306;
+      border: 2px solid var(--amber);
+      padding: 12px;
+    }
+    #pacmathCanvas {
+      background: #000;
+      border: 2px solid var(--cyan);
+      max-width: 100%;
+      height: auto;
+      outline: none;
+      cursor: pointer;
+    }
+    .pac-hud {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .hud-box {
+      background: #080c14;
+      border: 1px solid var(--border-retro);
+      padding: 8px;
+      text-align: center;
+    }
+    .hud-box span {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--amber-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .hud-box strong {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: var(--green);
+    }
+    .dpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 64px);
+      grid-template-rows: repeat(2, 42px);
+      gap: 6px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+    .dpad-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      background: #0d1522;
+      color: var(--amber-light);
+      border: 2px solid var(--amber);
+      cursor: pointer;
+    }
+    .dpad-btn.pressed, .dpad-btn:active {
+      background: var(--amber);
+      color: #000;
+    }
+    .quiz-modal {
+      position: absolute;
+      inset: 14px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 3px solid var(--cyan);
+      padding: 18px;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      z-index: 20;
+    }
+    .quiz-option {
+      font-family: 'VT323', monospace;
+      font-size: 21px;
+      background: #0b1320;
+      color: #fff;
+      border: 2px solid var(--amber);
+      padding: 8px 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background: var(--amber);
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+<div class="arcade-shell">
+  <!-- HEADER -->
+  <header class="pixel-box header-bar">
+    <div class="title-group">
+      <h1>MÓDULO 07: PARCIAL 2 COMPLETO + SÓLIDOS 3D + PAC-MATH DBZ</h1>
+      <p>Cálculo Integral (CB215 - Grupo 403) · UTP 2026-II · 62 Simuladores + Arcade Cultura General</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="../index.html" class="btn-arcade">◄ VOLVER AL LOBBY</a>
+    </div>
+  </header>
+
+  <!-- BLOCK TABS -->
+  <section class="block-tabs" id="blockTabs">
+    <button class="tab-card active" data-block="A">
+      <span class="tab-id">BLOQUE A (18 EJ.)</span>
+      <span class="tab-desc">Taller Seleccionado: Trig., Weierstrass, Áreas y Secciones 3D</span>
+    </button>
+    <button class="tab-card" data-block="B">
+      <span class="tab-id">BLOQUE B (12 EJ.)</span>
+      <span class="tab-desc">Taller Completo de Funciones Racionales y Fracciones Parciales</span>
+    </button>
+    <button class="tab-card" data-block="C">
+      <span class="tab-id">BLOQUE C (11 EJ.)</span>
+      <span class="tab-desc">Taller Completo de Funciones Irracionales y Radicales</span>
+    </button>
+    <button class="tab-card" data-block="D">
+      <span class="tab-id">BLOQUE D (19 EJ. 3D)</span>
+      <span class="tab-desc">Sólidos de Revolución 3D: Discos, Arandelas y Cascarones</span>
+    </button>
+    <button class="tab-card" data-block="E">
+      <span class="tab-id">BLOQUE E (2 EJ.)</span>
+      <span class="tab-desc">Cierre Parcial 2: Longitud de Arco e Integral Impropia</span>
+    </button>
+    <button class="tab-card" data-block="PAC">
+      <span class="tab-id">🎮 CULTURA GENERAL</span>
+      <span class="tab-desc">Pac-Math DBZ Arcade: Trivia Matemática cada 10 segundos</span>
+    </button>
+  </section>
+
+  <!-- SIMULATOR VIEW (BLOCKS A - E) -->
+  <div id="simulatorSection">
+    <section class="pixel-box controls-grid" style="margin-bottom:16px;">
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="exerciseSelect">EJERCICIO DEL BLOQUE:</label>
+        <select id="exerciseSelect" class="ctrl-select"></select>
+      </div>
+      <div class="ctrl-group">
+        <label class="ctrl-label" id="param1Label">PARÁMETRO C / ÁNGULO 3D: <span id="param1Val">0</span></label>
+        <input type="range" id="param1Slider" min="-5" max="5" step="0.5" value="0" />
+      </div>
+      <div class="ctrl-group">
+        <label class="ctrl-label" id="param2Label">PARTICIONES / PARÁM. AUX: <span id="param2Val">24</span></label>
+        <input type="range" id="param2Slider" min="4" max="60" step="2" value="24" />
+      </div>
+      <div class="ctrl-group" style="flex-direction:row; gap:8px;">
+        <button class="btn-arcade" id="prevExBtn" style="flex:1; justify-content:center;">◄ ANT</button>
+        <button class="btn-arcade btn-cyan" id="nextExBtn" style="flex:1; justify-content:center;">SIG ►</button>
+      </div>
+    </section>
+
+    <div class="workspace-grid">
+      <!-- LEFT: PLOTLY + METRICS -->
+      <div class="pixel-box">
+        <span class="fighter-badge" id="fighterBadge">GUERRERO Z: VEGITO BLUE</span>
+        <div class="math-banner">
+          <div id="mathProblemRender"></div>
+        </div>
+        <div id="plotlyCanvas" class="plot-container"></div>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <h4 id="m1Title">SOLUCIÓN / VALOR EXACTO</h4>
+            <div class="metric-val-green" id="m1Value">--</div>
+          </div>
+          <div class="metric-card">
+            <h4 id="m2Title">APROXIMACIÓN NUMÉRICA</h4>
+            <div class="metric-val-green" id="m2Value">--</div>
+          </div>
+          <div class="metric-card">
+            <h4 id="m3Title">ERROR ABSOLUTO / MÉTODO</h4>
+            <div class="metric-val-red" id="m3Value">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: STEP BY STEP + AUX TRIANGLE -->
+      <div class="pixel-box">
+        <h3 style="font-family:'Press Start 2P',monospace; font-size:11px; color:var(--amber-light); margin-bottom:12px;">
+          DESARROLLO MATEMÁTICO PASO A PASO
+        </h3>
+        <div id="stepsContainer"></div>
+        <div id="trigTriangleBox" class="trig-svg-box" style="display:none;">
+          <div style="font-family:'Press Start 2P',monospace; font-size:8px; color:var(--amber-light); margin-bottom:6px;">
+            TRIÁNGULO RECTÁNGULO DE SUSTITUCIÓN
+          </div>
+          <svg width="260" height="145" viewBox="0 0 260 145">
+            <polygon points="35,120 205,120 205,25" fill="rgba(0,229,255,0.12)" stroke="#00e5ff" stroke-width="2.5"/>
+            <rect x="193" y="108" width="12" height="12" fill="none" stroke="#ff9800" stroke-width="2"/>
+            <text x="58" y="114" fill="#ffca28" font-family="Press Start 2P" font-size="9">θ</text>
+            <text x="105" y="138" fill="#39ff14" font-family="VT323" font-size="18" id="svgAdjText">Adyacente</text>
+            <text x="210" y="78" fill="#ff9800" font-family="VT323" font-size="18" id="svgOppText">Opuesto</text>
+            <text x="90" y="64" fill="#00e5ff" font-family="VT323" font-size="18" id="svgHypText">Hipotenusa</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAC-MATH DBZ CULTURA GENERAL SECTION -->
+  <div id="pacmathSection" class="pac-layout">
+    <div class="pixel-box canvas-wrap">
+      <div class="pac-hud">
+        <div class="hud-box"><span>PUNTAJE</span><strong id="pacScore">0</strong></div>
+        <div class="hud-box"><span>VIDAS Z</span><strong id="pacLives">3</strong></div>
+        <div class="hud-box"><span>TRIVIA EN</span><strong id="pacTimer" style="color:var(--cyan);">10.0s</strong></div>
+        <div class="hud-box"><span>ESTADO KI</span><strong id="pacPower" style="color:var(--amber-light);">BASE</strong></div>
+      </div>
+
+      <canvas id="pacmathCanvas" width="570" height="450" tabindex="0"></canvas>
+
+      <!-- MODAL DE PREGUNTA CADA 10 SEGUNDOS -->
+      <div class="quiz-modal" id="quizModal">
+        <div style="font-family:'Press Start 2P',monospace; font-size:10px; color:var(--amber-light);">
+          ⚡ DESAFÍO DE CULTURA GENERAL MATEMÁTICA (CADA 10S)
+        </div>
+        <div id="quizQuestionText" style="font-size:23px; color:var(--cyan); line-height:1.3;"></div>
+        <div id="quizOptionsBox" style="display:flex; flex-direction:column; gap:8px;"></div>
+        <div id="quizFeedback" style="font-family:'Press Start 2P',monospace; font-size:9px; color:var(--green);"></div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; justify-content:center;">
+        <button class="btn-arcade" id="pacStartBtn">► INICIAR / REINICIAR PARTIDA</button>
+        <button class="btn-arcade btn-cyan" id="pacForceQuizBtn">❓ LANZAR PREGUNTA AHORA</button>
+      </div>
+
+      <!-- D-PAD CONTROLES -->
+      <div class="dpad-grid">
+        <div></div>
+        <button class="dpad-btn" id="btnUp" data-dir="UP">▲</button>
+        <div></div>
+        <button class="dpad-btn" id="btnLeft" data-dir="LEFT">◄</button>
+        <button class="dpad-btn" id="btnDown" data-dir="DOWN">▼</button>
+        <button class="dpad-btn" id="btnRight" data-dir="RIGHT">►</button>
+      </div>
+      <div id="dirTelemetry" style="font-family:'Press Start 2P',monospace; font-size:8px; color:var(--cyan); margin-top:8px;">
+        DIRECCIÓN ACTIVA: ESPERANDO TECLA (FLECHAS O WASD)
+      </div>
+    </div>
+
+    <div class="pixel-box">
+      <h3 style="font-family:'Press Start 2P',monospace; font-size:11px; color:var(--amber-light); margin-bottom:10px;">
+        REGLAS DEL ARCADE PAC-MATH DBZ
+      </h3>
+      <p style="margin-bottom:10px; color:#d0d7de;">
+        • Usa las <strong>Flechas del Teclado</strong>, <strong>W-A-S-D</strong> o la cruceta inferior para mover a <strong>Pac-Goku</strong> por el laberinto.<br>
+        • Los 4 villanos (<strong>Freezer, Cell, Majin Buu y Broly</strong>) te persiguen en tiempo real calculando rutas con búsqueda en anchura (BFS).<br>
+        • <strong>Cada 10.0 segundos</strong> el combate se pausa y aparece una pregunta de <strong>Cultura General sobre las Matemáticas</strong>.<br>
+        • Si respondes bien (+250 pts), activas el <strong>Modo Super Saiyajin</strong> durante 6 segundos para derrotar fantasmas.
+      </p>
+      <div style="border-top:2px solid var(--border-retro); padding-top:10px; margin-top:10px;">
+        <div style="font-family:'Press Start 2P',monospace; font-size:9px; color:var(--cyan); margin-bottom:8px;">
+          BITÁCORA HISTÓRICA DESBLOQUEADA:
+        </div>
+        <div id="triviaLogBox" style="max-height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+          <div class="step-item"><strong>SISTEMA LISTO</strong>Inicia la partida con cualquier flecha para desbloquear datos históricos de Cálculo y Matemáticas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// BANCO COMPLETO DE 62 EJERCICIOS DEL PARCIAL 2 (BLOQUES A, B, C, D, E)
+// =====================================================================
+const EXERCISES = [
+  // ---------------- BLOQUE A (18 EJERCICIOS) ----------------
+  {
+    id: "A1", block: "A", title: "Ej. 1 — Potencias Trigonométricas: ∫ sen³(2x) cos⁴(2x) dx",
+    fighter: "VEGITO BLUE", type: "2d_indef", dom: [-1.5, 1.5],
+    latexProblem: "\int \sin^3(2x)\cos^4(2x)\,dx = -\frac{\cos^5(2x)}{10} + \frac{\cos^7(2x)}{14} + C",
+    exactLabel: "-(cos⁵(2x))/10 + (cos⁷(2x))/14 + C",
+    f: x => Math.pow(Math.sin(2*x), 3) * Math.pow(Math.cos(2*x), 4),
+    F: x => -Math.pow(Math.cos(2*x), 5)/10 + Math.pow(Math.cos(2*x), 7)/14,
+    steps: [
+      ["PASO 1: Descomposición impar del seno", "\int \sin^2(2x)\cos^4(2x)\sin(2x)\,dx = \int (1-\cos^2(2x))\cos^4(2x)\sin(2x)\,dx"],
+      ["PASO 2: Sustitución u = cos(2x)", "du = -2\sin(2x)\,dx \implies -\frac{1}{2}\int (u^4 - u^6)\,du"],
+      ["PASO 3: Antiderivada", "-\frac{\cos^5(2x)}{10} + \frac{\cos^7(2x)}{14} + C"]
+    ]
+  },
+  {
+    id: "A2", block: "A", title: "Ej. 2 — Sust. Trigonométrica: ∫ dx / (4 - x²)^(3/2)",
+    fighter: "GOGETA SSJ4", type: "2d_indef", dom: [-1.85, 1.85],
+    trig: { opp: "x", adj: "√(4 - x²)", hyp: "2" },
+    latexProblem: "\int \frac{dx}{(4-x^2)^{3/2}} = \frac{x}{4\sqrt{4-x^2}} + C",
+    exactLabel: "x / (4√(4 - x²)) + C",
+    f: x => 1 / Math.pow(4 - x*x, 1.5),
+    F: x => x / (4 * Math.sqrt(4 - x*x)),
+    steps: [
+      ["PASO 1: Sustitución x = 2 sen(θ)", "dx = 2\cos\theta\,d\theta, \quad (4-x^2)^{3/2} = 8\cos^3\theta"],
+      ["PASO 2: Simplificación trigonométrica", "\int \frac{2\cos\theta\,d\theta}{8\cos^3\theta} = \frac{1}{4}\int \sec^2\theta\,d\theta = \frac{1}{4}\tan\theta + C"],
+      ["PASO 3: Retorno a variable x", "\frac{x}{4\sqrt{4-x^2}} + C"]
+    ]
+  },
+  {
+    id: "A3", block: "A", title: "Ej. 3 — Sust. Trigonométrica: ∫ √(25 - x²) / x dx",
+    fighter: "VEGITO BLUE", type: "2d_indef", dom: [0.35, 4.85],
+    trig: { opp: "x", adj: "√(25 - x²)", hyp: "5" },
+    latexProblem: "\int \frac{\sqrt{25-x^2}}{x}\,dx = 5\ln\left|\frac{5-\sqrt{25-x^2}}{x}\right| + \sqrt{25-x^2} + C",
+    exactLabel: "5 ln|(5 - √(25-x²))/x| + √(25-x²) + C",
+    f: x => Math.sqrt(25 - x*x) / x,
+    F: x => 5 * Math.log(Math.abs((5 - Math.sqrt(25 - x*x)) / x)) + Math.sqrt(25 - x*x),
+    steps: [
+      ["PASO 1: Sustitución x = 5 sen(θ)", "dx = 5\cos\theta\,d\theta, \quad \sqrt{25-x^2} = 5\cos\theta"],
+      ["PASO 2: Integral en términos de θ", "5\int \frac{\cos^2\theta}{\sin\theta}\,d\theta = 5\int (\csc\theta - \sin\theta)\,d\theta"],
+      ["PASO 3: Retorno al triángulo", "5\ln\left|\frac{5-\sqrt{25-x^2}}{x}\right| + \sqrt{25-x^2} + C"]
+    ]
+  },
+  {
+    id: "A4", block: "A", title: "Ej. 4 — Sust. Trigonométrica: ∫ dx / (x² √(a² - x²))",
+    fighter: "TRUNKS FUTURO", type: "2d_indef", dom: [0.22, 0.92],
+    trig: { opp: "x", adj: "√(a² - x²)", hyp: "a = 1" },
+    latexProblem: "\int \frac{dx}{x^2\sqrt{a^2-x^2}} = -\frac{\sqrt{a^2-x^2}}{a^2 x} + C \quad (a=1)",
+    exactLabel: "-√(a² - x²) / (a² x) + C",
+    f: x => 1 / (x*x * Math.sqrt(1 - x*x)),
+    F: x => -Math.sqrt(1 - x*x) / x,
+    steps: [
+      ["PASO 1: Sustitución x = a sen(θ)", "dx = a\cos\theta\,d\theta, \quad \sqrt{a^2-x^2} = a\cos\theta"],
+      ["PASO 2: Reducción a cosecante cuadrada", "\frac{1}{a^2}\int \csc^2\theta\,d\theta = -\frac{1}{a^2}\cot\theta + C"],
+      ["PASO 3: Retorno con cot(θ) = √(a²-x²)/x", "-\frac{\sqrt{a^2-x^2}}{a^2 x} + C"]
+    ]
+  },
+  {
+    id: "A5", block: "A", title: "Ej. 5 — Sust. Trigonométrica: ∫ √(x² + 4) dx",
+    fighter: "GOHAN BEAST", type: "2d_indef", dom: [-3, 3],
+    trig: { opp: "x", adj: "2", hyp: "√(x² + 4)" },
+    latexProblem: "\int \sqrt{x^2+4}\,dx = \frac{x\sqrt{x^2+4}}{2} + 2\ln\left|\frac{x+\sqrt{x^2+4}}{2}\right| + C",
+    exactLabel: "(x√(x²+4))/2 + 2 ln|(x+√(x²+4))/2| + C",
+    f: x => Math.sqrt(x*x + 4),
+    F: x => (x * Math.sqrt(x*x + 4))/2 + 2 * Math.log((x + Math.sqrt(x*x + 4))/2),
+    steps: [
+      ["PASO 1: Sustitución x = 2 tan(θ)", "dx = 2\sec^2\theta\,d\theta, \quad \sqrt{x^2+4} = 2\sec\theta"],
+      ["PASO 2: Integral de secante cúbica", "4\int \sec^3\theta\,d\theta = 2(\sec\theta\tan\theta + \ln|\sec\theta+\tan\theta|) + C"],
+      ["PASO 3: Retorno a variable x", "\frac{x\sqrt{x^2+4}}{2} + 2\ln\left|\frac{x+\sqrt{x^2+4}}{2}\right| + C"]
+    ]
+  },
+  {
+    id: "A6", block: "A", title: "Ej. 6 — Sust. Trigonométrica: ∫ x² dx / (a² - x²)^(3/2)",
+    fighter: "PICCOLO ORANGE", type: "2d_indef", dom: [-0.88, 0.88],
+    trig: { opp: "x", adj: "√(a² - x²)", hyp: "a = 1" },
+    latexProblem: "\int \frac{x^2\,dx}{(a^2-x^2)^{3/2}} = \frac{x}{\sqrt{a^2-x^2}} - \arcsin\left(\frac{x}{a}\right) + C",
+    exactLabel: "x/√(a²-x²) - arcsen(x/a) + C",
+    f: x => (x*x) / Math.pow(1 - x*x, 1.5),
+    F: x => x / Math.sqrt(1 - x*x) - Math.asin(x),
+    steps: [
+      ["PASO 1: Sustitución x = a sen(θ)", "\int \frac{a^2\sin^2\theta \cdot a\cos\theta\,d\theta}{a^3\cos^3\theta} = \int \tan^2\theta\,d\theta"],
+      ["PASO 2: Identidad tan²(θ) = sec²(θ) - 1", "\int (\sec^2\theta - 1)\,d\theta = \tan\theta - \theta + C"],
+      ["PASO 3: Retorno algebraico", "\frac{x}{\sqrt{a^2-x^2}} - \arcsin\left(\frac{x}{a}\right) + C"]
+    ]
+  },
+  {
+    id: "A7", block: "A", title: "Ej. 7 — Weierstrass: ∫ dx / (1 - 2 sen x)",
+    fighter: "WHIS", type: "2d_indef", dom: [-1.2, 0.4],
+    latexProblem: "\int \frac{dx}{1-2\sin x} = \frac{\sqrt{3}}{3}\ln\left|\frac{\tan(x/2)-2-\sqrt{3}}{\tan(x/2)-2+\sqrt{3}}\right| + C",
+    exactLabel: "(√3/3) ln|(tan(x/2)-2-√3)/(tan(x/2)-2+√3)| + C",
+    f: x => 1 / (1 - 2*Math.sin(x)),
+    F: x => (Math.sqrt(3)/3) * Math.log(Math.abs((Math.tan(x/2) - 2 - Math.sqrt(3)) / (Math.tan(x/2) - 2 + Math.sqrt(3)))),
+    steps: [
+      ["PASO 1: Cambio universal z = tan(x/2)", "\sin x = \frac{2z}{1+z^2}, \quad dx = \frac{2\,dz}{1+z^2}"],
+      ["PASO 2: Integral racional en z", "\int \frac{2\,dz}{z^2 - 4z + 1} = 2\int \frac{dz}{(z-2)^2 - 3}"],
+      ["PASO 3: Solución exacta", "\frac{\sqrt{3}}{3}\ln\left|\frac{\tan(x/2)-2-\sqrt{3}}{\tan(x/2)-2+\sqrt{3}}\right| + C"]
+    ]
+  },
+  {
+    id: "A8", block: "A", title: "Ej. 8 — Weierstrass: ∫ dx / (2 - cos x)",
+    fighter: "BILLS", type: "2d_indef", dom: [-2.8, 2.8],
+    latexProblem: "\int \frac{dx}{2-\cos x} = \frac{2\sqrt{3}}{3}\arctan\left(\sqrt{3}\tan\frac{x}{2}\right) + C",
+    exactLabel: "(2√3/3) arctan(√3 tan(x/2)) + C",
+    f: x => 1 / (2 - Math.cos(x)),
+    F: x => (2*Math.sqrt(3)/3) * Math.atan(Math.sqrt(3)*Math.tan(x/2)),
+    steps: [
+      ["PASO 1: Sustitución z = tan(x/2)", "\cos x = \frac{1-z^2}{1+z^2}, \quad dx = \frac{2\,dz}{1+z^2}"],
+      ["PASO 2: Simplificación del denominador", "\int \frac{2\,dz}{2(1+z^2)-(1-z^2)} = \int \frac{2\,dz}{1+3z^2}"],
+      ["PASO 3: Arco tangente", "\frac{2\sqrt{3}}{3}\arctan\left(\sqrt{3}\tan\frac{x}{2}\right) + C"]
+    ]
+  },
+  {
+    id: "A9", block: "A", title: "Ej. 9 — Weierstrass: ∫ dx / (3 + 5 sen x)",
+    fighter: "GOKU SSJ GOD", type: "2d_indef", dom: [-0.5, 2.2],
+    latexProblem: "\int \frac{dx}{3+5\sin x} = \frac{1}{4}\ln\left|\frac{3\tan(x/2)+1}{\tan(x/2)+3}\right| + C",
+    exactLabel: "(1/4) ln|(3 tan(x/2) + 1)/(tan(x/2) + 3)| + C",
+    f: x => 1 / (3 + 5*Math.sin(x)),
+    F: x => 0.25 * Math.log(Math.abs((3*Math.tan(x/2) + 1) / (Math.tan(x/2) + 3))),
+    steps: [
+      ["PASO 1: Cambio z = tan(x/2)", "\int \frac{2\,dz}{3(1+z^2)+10z} = \int \frac{2\,dz}{3z^2+10z+3}"],
+      ["PASO 2: Factorización (3z+1)(z+3)", "\frac{1}{4}\int \left(\frac{3}{3z+1} - \frac{1}{z+3}\right)dz"],
+      ["PASO 3: Logaritmo natural", "\frac{1}{4}\ln\left|\frac{3\tan(x/2)+1}{\tan(x/2)+3}\right| + C"]
+    ]
+  },
+  {
+    id: "A10", block: "A", title: "Ej. 10 — Weierstrass: ∫ dx / (5 + 3 sen x)",
+    fighter: "VEGETA SSJ BLUE", type: "2d_indef", dom: [-2.5, 2.5],
+    latexProblem: "\int \frac{dx}{5+3\sin x} = \frac{1}{2}\arctan\left(\frac{5\tan(x/2)+3}{4}\right) + C",
+    exactLabel: "(1/2) arctan((5 tan(x/2) + 3)/4) + C",
+    f: x => 1 / (5 + 3*Math.sin(x)),
+    F: x => 0.5 * Math.atan((5*Math.tan(x/2) + 3) / 4),
+    steps: [
+      ["PASO 1: Sustitución z = tan(x/2)", "\int \frac{2\,dz}{5z^2+6z+5} = 2\int \frac{dz}{5(z+3/5)^2 + 16/5}"],
+      ["PASO 2: Completar cuadrados", "\frac{1}{2}\arctan\left(\frac{5z+3}{4}\right) + C"],
+      ["PASO 3: Retorno a x", "\frac{1}{2}\arctan\left(\frac{5\tan(x/2)+3}{4}\right) + C"]
+    ]
+  },
+  {
+    id: "A11", block: "A", title: "Ej. 11 — Weierstrass: ∫ dx / (sen x - cos x - 1)",
+    fighter: "HIT", type: "2d_indef", dom: [0.2, 1.4],
+    latexProblem: "\int \frac{dx}{\sin x - \cos x - 1} = \ln\left|\tan\frac{x}{2}-1\right| + C",
+    exactLabel: "ln|tan(x/2) - 1| + C",
+    f: x => 1 / (Math.sin(x) - Math.cos(x) - 1),
+    F: x => Math.log(Math.abs(Math.tan(x/2) - 1)),
+    steps: [
+      ["PASO 1: Cambio universal z = tan(x/2)", "\sin x - \cos x - 1 = \frac{2z - (1-z^2) - (1+z^2)}{1+z^2} = \frac{2z-2}{1+z^2}"],
+      ["PASO 2: Cancelación directa", "\int \frac{2\,dz}{2z-2} = \int \frac{dz}{z-1} = \ln|z-1| + C"],
+      ["PASO 3: Solución final", "\ln\left|\tan\frac{x}{2}-1\right| + C"]
+    ]
+  },
+  {
+    id: "A12", block: "A", title: "Ej. 12 — Trigonométrica Racional: ∫ sen x / (1 + sen²x) dx",
+    fighter: "CAULIFLA SSJ2", type: "2d_indef", dom: [-2.8, 2.8],
+    latexProblem: "\int \frac{\sin x}{1+\sin^2 x}\,dx = \frac{\sqrt{2}}{4}\ln\left|\frac{\cos x - \sqrt{2}}{\cos x + \sqrt{2}}\right| + C",
+    exactLabel: "(√2/4) ln|(cos x - √2)/(cos x + √2)| + C",
+    f: x => Math.sin(x) / (1 + Math.pow(Math.sin(x), 2)),
+    F: x => (Math.sqrt(2)/4) * Math.log(Math.abs((Math.cos(x) - Math.sqrt(2)) / (Math.cos(x) + Math.sqrt(2)))),
+    steps: [
+      ["PASO 1: Identidad sen²x = 1 - cos²x", "\int \frac{\sin x}{2 - \cos^2 x}\,dx"],
+      ["PASO 2: Sustitución u = cos x, du = -sen x dx", "\int \frac{-du}{2 - u^2} = \int \frac{du}{u^2 - 2}"],
+      ["PASO 3: Fracciones parciales", "\frac{\sqrt{2}}{4}\ln\left|\frac{\cos x - \sqrt{2}}{\cos x + \sqrt{2}}\right| + C"]
+    ]
+  },
+  {
+    id: "A13", block: "A", title: "Ej. 13 — Área entre Curvas: x = √y, x = 2 - y, eje x",
+    fighter: "TRUNKS SSJ", type: "area_dy", dom: [0, 1], exactVal: 5/6,
+    latexProblem: "A = \int_0^1 \left((2-y) - \sqrt{y}\right)dy = \frac{5}{6} \approx 0.8333\text{ u}^2",
+    exactLabel: "5/6 u² ≈ 0.8333",
+    fTop: y => 2 - y, fBot: y => Math.sqrt(y),
+    steps: [
+      ["PASO 1: Intersección en el primer cuadrante", "\sqrt{y} = 2 - y \implies y = 1"],
+      ["PASO 2: Integración horizontal respecto a y", "A = \int_0^1 (x_{\text{der}} - x_{\text{izq}})\,dy = \int_0^1 (2 - y - y^{1/2})\,dy"],
+      ["PASO 3: Evaluación exacta", "\left[2y - \frac{y^2}{2} - \frac{2}{3}y^{3/2}\right]_0^1 = 2 - \frac{1}{2} - \frac{2}{3} = \frac{5}{6}\text{ u}^2"]
+    ]
+  },
+  {
+    id: "A14", block: "A", title: "Ej. 14 — Área entre Curvas: x = y² y x = 2 - y²",
+    fighter: "MAESTRO ROSHI", type: "area_dy", dom: [-1, 1], exactVal: 8/3,
+    latexProblem: "A = \int_{-1}^1 \left((2-y^2) - y^2\right)dy = \frac{8}{3} \approx 2.6667\text{ u}^2",
+    exactLabel: "8/3 u² ≈ 2.6667",
+    fTop: y => 2 - y*y, fBot: y => y*y,
+    steps: [
+      ["PASO 1: Puntos de corte", "y^2 = 2 - y^2 \implies 2y^2 = 2 \implies y = \pm 1"],
+      ["PASO 2: Planteamiento por simetría", "A = 2\int_0^1 (2 - 2y^2)\,dy"],
+      ["PASO 3: Resultado exacto", "2\left[2y - \frac{2y^3}{3}\right]_0^1 = \frac{8}{3}\text{ u}^2"]
+    ]
+  },
+  {
+    id: "A15", block: "A", title: "Ej. 15 — Área entre Curvas: y = x² y y = 2/(x² + 1)",
+    fighter: "PICCOLO", type: "area_dx", dom: [-1, 1], exactVal: Math.PI - 2/3,
+    latexProblem: "A = \int_{-1}^1 \left(\frac{2}{x^2+1} - x^2\right)dx = \pi - \frac{2}{3} \approx 2.4749\text{ u}^2",
+    exactLabel: "π - 2/3 ≈ 2.4749 u²",
+    fTop: x => 2 / (x*x + 1), fBot: x => x*x,
+    steps: [
+      ["PASO 1: Intersección de curvas", "x^2 = \frac{2}{x^2+1} \implies x^4+x^2-2=0 \implies x = \pm 1"],
+      ["PASO 2: Integral definida en [-1, 1]", "A = \int_{-1}^1 \left(\frac{2}{x^2+1} - x^2\right)dx = \left[2\arctan(x) - \frac{x^3}{3}\right]_{-1}^1"],
+      ["PASO 3: Valor exacto", "2\left(\frac{\pi}{4} - \left(-\frac{\pi}{4}\right)\right) - \frac{2}{3} = \pi - \frac{2}{3}\text{ u}^2"]
+    ]
+  },
+  {
+    id: "A16", block: "A", title: "Ej. 16 — Área entre Parábolas: x = y² y x = 3 - 2y²",
+    fighter: "KRILIN", type: "area_dy", dom: [-1, 1], exactVal: 4,
+    latexProblem: "A = \int_{-1}^1 \left((3-2y^2) - y^2\right)dy = 4\text{ u}^2",
+    exactLabel: "4.0000 u²",
+    fTop: y => 3 - 2*y*y, fBot: y => y*y,
+    steps: [
+      ["PASO 1: Intersecciones", "y^2 = 3 - 2y^2 \implies 3y^2 = 3 \implies y = \pm 1"],
+      ["PASO 2: Integral respecto a y", "A = \int_{-1}^1 (3 - 3y^2)\,dy = \left[3y - y^3\right]_{-1}^1"],
+      ["PASO 3: Evaluación", "(3 - 1) - (-3 + 1) = 4\text{ u}^2"]
+    ]
+  },
+  {
+    id: "A17", block: "A", title: "Ej. 17 — Secciones Transversales 3D: Base x²+y² ≤ 1 (Triángulos Equiláteros)",
+    fighter: "SHENRON 3D", type: "3d_section", dom: [-1, 1], exactVal: (4*Math.sqrt(3))/3,
+    secType: "triangle",
+    latexProblem: "V = \int_{-1}^1 \sqrt{3}(1-x^2)\,dx = \frac{4\sqrt{3}}{3} \approx 2.3094\text{ u}^3",
+    exactLabel: "(4√3)/3 ≈ 2.3094 u³",
+    steps: [
+      ["PASO 1: Lado de cada triángulo equilátero", "L(x) = 2y = 2\sqrt{1-x^2}"],
+      ["PASO 2: Área de la sección transversal A(x)", "A(x) = \frac{\sqrt{3}}{4}L(x)^2 = \sqrt{3}(1-x^2)"],
+      ["PASO 3: Integración del volumen", "V = \int_{-1}^1 \sqrt{3}(1-x^2)\,dx = \frac{4\sqrt{3}}{3}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "A18", block: "A", title: "Ej. 18 — Secciones Transversales 3D: Base y = 1 - x²/4 (Cuadrados)",
+    fighter: "PORUNGA 3D", type: "3d_section", dom: [0, 2], exactVal: 16/15,
+    secType: "square",
+    latexProblem: "V = \int_0^2 \left(1 - \frac{x^2}{4}\right)^2 dx = \frac{16}{15} \approx 1.0667\text{ u}^3",
+    exactLabel: "16/15 ≈ 1.0667 u³",
+    steps: [
+      ["PASO 1: Lado del cuadrado en el primer cuadrante", "L(x) = y = 1 - \frac{x^2}{4}, \quad x \in [0, 2]"],
+      ["PASO 2: Área de cada lámina cuadrada", "A(x) = \left(1 - \frac{x^2}{4}\right)^2 = 1 - \frac{x^2}{2} + \frac{x^4}{16}"],
+      ["PASO 3: Volumen exacto", "V = \left[x - \frac{x^3}{6} + \frac{x^5}{80}\right]_0^2 = \frac{16}{15}\text{ u}^3"]
+    ]
+  },
+
+  // ---------------- BLOQUE B (12 EJERCICIOS RACIONALES) ----------------
+  {
+    id: "B1", block: "B", title: "Sec. I Ej. 1 — Fracciones Parciales: ∫ (x + 1)/(x³ + x² - 6x) dx",
+    fighter: "GOHAN SSJ2", type: "2d_indef", dom: [0.3, 1.7],
+    latexProblem: "\int \frac{x+1}{x^3+x^2-6x}\,dx = -\frac{1}{6}\ln|x| - \frac{2}{15}\ln|x+3| + \frac{3}{10}\ln|x-2| + C",
+    exactLabel: "-(1/6)ln|x| - (2/15)ln|x+3| + (3/10)ln|x-2| + C",
+    f: x => (x + 1) / (x*x*x + x*x - 6*x),
+    F: x => -(1/6)*Math.log(Math.abs(x)) - (2/15)*Math.log(Math.abs(x+3)) + (3/10)*Math.log(Math.abs(x-2)),
+    steps: [
+      ["PASO 1: Factorización del denominador", "x^3+x^2-6x = x(x+3)(x-2)"],
+      ["PASO 2: Coeficientes de fracciones parciales", "A = -\frac{1}{6}, \quad B = -\frac{2}{15}, \quad D = \frac{3}{10}"],
+      ["PASO 3: Integración logarítmica", "-\frac{1}{6}\ln|x| - \frac{2}{15}\ln|x+3| + \frac{3}{10}\ln|x-2| + C"]
+    ]
+  },
+  {
+    id: "B2", block: "B", title: "Sec. I Ej. 2 — Fracciones Parciales: ∫ (3x + 5)/(x³ - x² - x + 1) dx",
+    fighter: "GOTENKS SSJ3", type: "2d_indef", dom: [-0.7, 0.7],
+    latexProblem: "\int \frac{3x+5}{x^3-x^2-x+1}\,dx = \frac{1}{2}\ln\left|\frac{x+1}{x-1}\right| - \frac{4}{x-1} + C",
+    exactLabel: "(1/2)ln|(x+1)/(x-1)| - 4/(x-1) + C",
+    f: x => (3*x + 5) / (x*x*x - x*x - x + 1),
+    F: x => 0.5*Math.log(Math.abs((x+1)/(x-1))) - 4/(x-1),
+    steps: [
+      ["PASO 1: Factorización por agrupación", "x^3-x^2-x+1 = (x+1)(x-1)^2"],
+      ["PASO 2: Descomposición con factor repetido", "\frac{1/2}{x+1} - \frac{1/2}{x-1} + \frac{4}{(x-1)^2}"],
+      ["PASO 3: Antiderivada", "\frac{1}{2}\ln\left|\frac{x+1}{x-1}\right| - \frac{4}{x-1} + C"]
+    ]
+  },
+  {
+    id: "B3", block: "B", title: "Sec. I Ej. 3 — División + Parciales: ∫ (x⁴ - x³ - x - 1)/(x³ - x²) dx",
+    fighter: "VEGETA GOD", type: "2d_indef", dom: [1.25, 3.2],
+    latexProblem: "\int \frac{x^4-x^3-x-1}{x^3-x^2}\,dx = \frac{x^2}{2} - \frac{1}{x} + 2\ln\left|\frac{x}{x-1}\right| + C",
+    exactLabel: "x²/2 - 1/x + 2 ln|x/(x-1)| + C",
+    f: x => (Math.pow(x,4) - Math.pow(x,3) - x - 1) / (Math.pow(x,3) - x*x),
+    F: x => (x*x)/2 - 1/x + 2*Math.log(Math.abs(x/(x-1))),
+    steps: [
+      ["PASO 1: División polinómica previa", "x - \frac{x+1}{x^2(x-1)}"],
+      ["PASO 2: Fracciones parciales", "x - \left(-\frac{2}{x} - \frac{1}{x^2} + \frac{2}{x-1}\right)"],
+      ["PASO 3: Integración término a término", "\frac{x^2}{2} - \frac{1}{x} + 2\ln\left|\frac{x}{x-1}\right| + C"]
+    ]
+  },
+  {
+    id: "B4", block: "B", title: "Sec. I Ej. 4 — Cuadráticos Irreducibles: ∫ (x³+x²+x+2)/(x⁴+3x²+2) dx",
+    fighter: "GOKU UI", type: "2d_indef", dom: [-2.5, 2.5],
+    latexProblem: "\int \frac{x^3+x^2+x+2}{x^4+3x^2+2}\,dx = \arctan(x) + \frac{1}{2}\ln(x^2+2) + C",
+    exactLabel: "arctan(x) + (1/2) ln(x² + 2) + C",
+    f: x => (x*x*x + x*x + x + 2) / (Math.pow(x,4) + 3*x*x + 2),
+    F: x => Math.atan(x) + 0.5*Math.log(x*x + 2),
+    steps: [
+      ["PASO 1: Factorización del denominador", "x^4+3x^2+2 = (x^2+1)(x^2+2)"],
+      ["PASO 2: Separación en factores cuadráticos", "\frac{1}{x^2+1} + \frac{x}{x^2+2}"],
+      ["PASO 3: Integración directa", "\arctan(x) + \frac{1}{2}\ln(x^2+2) + C"]
+    ]
+  },
+  {
+    id: "B5", block: "B", title: "Sec. II Ej. 1 — Racionales: ∫ x / (x² - 3x - 4) dx",
+    fighter: "BARDOCK", type: "2d_indef", dom: [-0.7, 3.6],
+    latexProblem: "\int \frac{x}{x^2-3x-4}\,dx = \frac{4}{5}\ln|x-4| + \frac{1}{5}\ln|x+1| + C",
+    exactLabel: "(4/5)ln|x-4| + (1/5)ln|x+1| + C",
+    f: x => x / (x*x - 3*x - 4),
+    F: x => (4/5)*Math.log(Math.abs(x-4)) + (1/5)*Math.log(Math.abs(x+1)),
+    steps: [
+      ["PASO 1: Factorización", "x^2-3x-4 = (x-4)(x+1)"],
+      ["PASO 2: Fracciones parciales", "\frac{4/5}{x-4} + \frac{1/5}{x+1}"],
+      ["PASO 3: Solución", "\frac{4}{5}\ln|x-4| + \frac{1}{5}\ln|x+1| + C"]
+    ]
+  },
+  {
+    id: "B6", block: "B", title: "Sec. II Ej. 2 — Racionales: ∫ x⁴ / (1 - x)³ dx",
+    fighter: "BROLY SSJ", type: "2d_indef", dom: [-2.0, 0.7],
+    latexProblem: "\int \frac{x^4}{(1-x)^3}\,dx = \frac{1}{2(1-x)^2} - \frac{4}{1-x} - 6\ln|1-x| + 4(1-x) - \frac{(1-x)^2}{2} + C",
+    exactLabel: "1/(2(1-x)²) - 4/(1-x) - 6ln|1-x| + 4(1-x) - (1-x)²/2 + C",
+    f: x => Math.pow(x,4) / Math.pow(1 - x, 3),
+    F: x => 1/(2*Math.pow(1-x,2)) - 4/(1-x) - 6*Math.log(Math.abs(1-x)) + 4*(1-x) - 0.5*Math.pow(1-x,2),
+    steps: [
+      ["PASO 1: Cambio u = 1 - x (x = 1 - u)", "-\int \frac{(1-4u+6u^2-4u^3+u^4)}{u^3}\,du"],
+      ["PASO 2: Expansión de potencias de u", "-\int (u^{-3} - 4u^{-2} + 6u^{-1} - 4 + u)\,du"],
+      ["PASO 3: Retorno a u = 1 - x", "\frac{1}{2(1-x)^2} - \frac{4}{1-x} - 6\ln|1-x| + 4(1-x) - \frac{(1-x)^2}{2} + C"]
+    ]
+  },
+  {
+    id: "B7", block: "B", title: "Sec. II Ej. 3 — Racionales: ∫ 2x³ / (x² + 1)² dx",
+    fighter: "CELL PERFECTO", type: "2d_indef", dom: [-3, 3],
+    latexProblem: "\int \frac{2x^3}{(x^2+1)^2}\,dx = \ln(x^2+1) + \frac{1}{x^2+1} + C",
+    exactLabel: "ln(x² + 1) + 1/(x² + 1) + C",
+    f: x => (2*x*x*x) / Math.pow(x*x + 1, 2),
+    F: x => Math.log(x*x + 1) + 1/(x*x + 1),
+    steps: [
+      ["PASO 1: Sustitución u = x² + 1, du = 2x dx", "\int \frac{u-1}{u^2}\,du = \int \left(\frac{1}{u} - \frac{1}{u^2}\right)du"],
+      ["PASO 2: Integración directa", "\ln|u| + \frac{1}{u} + C"],
+      ["PASO 3: Retorno a x", "\ln(x^2+1) + \frac{1}{x^2+1} + C"]
+    ]
+  },
+  {
+    id: "B8", block: "B", title: "Sec. II Ej. 4 — Racionales: ∫ (6x² - 2x - 1)/(4x³ - x) dx",
+    fighter: "FREEZER GOLDEN", type: "2d_indef", dom: [0.6, 2.5],
+    latexProblem: "\int \frac{6x^2-2x-1}{4x^3-x}\,dx = \ln|x| - \frac{1}{4}\ln|2x-1| + \frac{3}{4}\ln|2x+1| + C",
+    exactLabel: "ln|x| - (1/4)ln|2x-1| + (3/4)ln|2x+1| + C",
+    f: x => (6*x*x - 2*x - 1) / (4*x*x*x - x),
+    F: x => Math.log(Math.abs(x)) - 0.25*Math.log(Math.abs(2*x-1)) + 0.75*Math.log(Math.abs(2*x+1)),
+    steps: [
+      ["PASO 1: Factorización 4x³ - x = x(2x - 1)(2x + 1)", "\frac{1}{x} - \frac{1/2}{2x-1} + \frac{3/2}{2x+1}"],
+      ["PASO 2: Integración logarítmica", "\ln|x| - \frac{1}{4}\ln|2x-1| + \frac{3}{4}\ln|2x+1| + C"]
+    ]
+  },
+  {
+    id: "B9", block: "B", title: "Sec. II Ej. 5 — Racionales: ∫ (5x - 2)/(x² - 4) dx",
+    fighter: "MAJIN BUU", type: "2d_indef", dom: [-1.7, 1.7],
+    latexProblem: "\int \frac{5x-2}{x^2-4}\,dx = 2\ln|x-2| + 3\ln|x+2| + C",
+    exactLabel: "2 ln|x - 2| + 3 ln|x + 2| + C",
+    f: x => (5*x - 2) / (x*x - 4),
+    F: x => 2*Math.log(Math.abs(x-2)) + 3*Math.log(Math.abs(x+2)),
+    steps: [
+      ["PASO 1: Diferencia de cuadrados", "x^2-4 = (x-2)(x+2)"],
+      ["PASO 2: Fracciones parciales", "\frac{2}{x-2} + \frac{3}{x+2}"],
+      ["PASO 3: Solución", "2\ln|x-2| + 3\ln|x+2| + C"]
+    ]
+  },
+  {
+    id: "B10", block: "B", title: "Sec. II Ej. 6 — Racionales: ∫ (x⁴-2x³+3x²-x+3)/(x³-2x²+3x) dx",
+    fighter: "JANEMBA", type: "2d_indef", dom: [0.3, 2.8],
+    latexProblem: "\int \frac{x^4-2x^3+3x^2-x+3}{x^3-2x^2+3x}\,dx = \frac{x^2}{2} + \ln|x| - \frac{1}{2}\ln(x^2-2x+3) + C",
+    exactLabel: "x²/2 + ln|x| - (1/2)ln(x²-2x+3) + C",
+    f: x => (Math.pow(x,4)-2*Math.pow(x,3)+3*x*x-x+3)/(Math.pow(x,3)-2*x*x+3*x),
+    F: x => 0.5*x*x + Math.log(Math.abs(x)) - 0.5*Math.log(x*x - 2*x + 3),
+    steps: [
+      ["PASO 1: División larga", "x + \frac{-x+3}{x(x^2-2x+3)}"],
+      ["PASO 2: Fracciones parciales", "x + \frac{1}{x} - \frac{x-1}{x^2-2x+3}"],
+      ["PASO 3: Integración", "\frac{x^2}{2} + \ln|x| - \frac{1}{2}\ln(x^2-2x+3) + C"]
+    ]
+  },
+  {
+    id: "B11", block: "B", title: "Sec. II Ej. 7 — Racional Exponencial: ∫ dx / (e^(2x) - 3e^x)",
+    fighter: "JIREN", type: "2d_indef", dom: [-1.5, 0.9],
+    latexProblem: "\int \frac{dx}{e^{2x}-3e^x} = -\frac{1}{9}x + \frac{1}{3}e^{-x} + \frac{1}{9}\ln|e^x-3| + C",
+    exactLabel: "-(1/9)x + (1/3)e^(-x) + (1/9)ln|e^x - 3| + C",
+    f: x => 1 / (Math.exp(2*x) - 3*Math.exp(x)),
+    F: x => -(1/9)*x + (1/3)*Math.exp(-x) + (1/9)*Math.log(Math.abs(Math.exp(x) - 3)),
+    steps: [
+      ["PASO 1: Sustitución u = e^x, dx = du/u", "\int \frac{du}{u^2(u-3)}"],
+      ["PASO 2: Descomposición racional", "-\frac{1/9}{u} - \frac{1/3}{u^2} + \frac{1/9}{u-3}"],
+      ["PASO 3: Retorno a u = e^x", "-\frac{1}{9}x + \frac{1}{3}e^{-x} + \frac{1}{9}\ln|e^x-3| + C"]
+    ]
+  },
+  {
+    id: "B12", block: "B", title: "Sec. II Ej. 8 — Racional Trig.: ∫ sen x / (cos x (1 + cos²x)) dx",
+    fighter: "TOPPO HAKAI", type: "2d_indef", dom: [-1.2, 1.2],
+    latexProblem: "\int \frac{\sin x}{\cos x(1+\cos^2 x)}\,dx = \frac{1}{2}\ln(1+\cos^2 x) - \ln|\cos x| + C",
+    exactLabel: "(1/2)ln(1 + cos²x) - ln|cos x| + C",
+    f: x => Math.sin(x) / (Math.cos(x) * (1 + Math.pow(Math.cos(x), 2))),
+    F: x => 0.5*Math.log(1 + Math.pow(Math.cos(x), 2)) - Math.log(Math.abs(Math.cos(x))),
+    steps: [
+      ["PASO 1: Sustitución u = cos x, du = -sen x dx", "-\int \frac{du}{u(1+u^2)} = \int \left(\frac{u}{1+u^2} - \frac{1}{u}\right)du"],
+      ["PASO 2: Integración logarítmica", "\frac{1}{2}\ln(1+\cos^2 x) - \ln|\cos x| + C"]
+    ]
+  },
+
+  // ---------------- BLOQUE C (11 EJERCICIOS IRRACIONALES) ----------------
+  {
+    id: "C1", block: "C", title: "Prelim. I — Irracional: ∫ √(x + 4) / x dx",
+    fighter: "GOKU SSJ3", type: "2d_indef", dom: [0.3, 4.0],
+    latexProblem: "\int \frac{\sqrt{x+4}}{x}\,dx = 2\sqrt{x+4} + 2\ln\left|\frac{\sqrt{x+4}-2}{\sqrt{x+4}+2}\right| + C",
+    exactLabel: "2√(x+4) + 2 ln|(√(x+4)-2)/(√(x+4)+2)| + C",
+    f: x => Math.sqrt(x + 4) / x,
+    F: x => 2*Math.sqrt(x+4) + 2*Math.log(Math.abs((Math.sqrt(x+4)-2)/(Math.sqrt(x+4)+2))),
+    steps: [
+      ["PASO 1: Sustitución u² = x + 4 (2u du = dx)", "\int \frac{2u^2}{u^2-4}\,du = 2\int \left(1 + \frac{4}{u^2-4}\right)du"],
+      ["PASO 2: Resultado exacto", "2\sqrt{x+4} + 2\ln\left|\frac{\sqrt{x+4}-2}{\sqrt{x+4}+2}\right| + C"]
+    ]
+  },
+  {
+    id: "C2", block: "C", title: "Prelim. II — Irracional (mcm=6): ∫ dx / (2 ∛x + √x)",
+    fighter: "GOTENKS", type: "2d_indef", dom: [0.1, 4.0],
+    latexProblem: "\int \frac{dx}{2\sqrt[3]{x}+\sqrt{x}} = 2\sqrt{x} - 6\sqrt[3]{x} + 24\sqrt[6]{x} - 48\ln|\sqrt[6]{x}+2| + C",
+    exactLabel: "2√x - 6∛x + 24(⁶√x) - 48 ln|⁶√x + 2| + C",
+    f: x => 1 / (2*Math.cbrt(x) + Math.sqrt(x)),
+    F: x => 2*Math.sqrt(x) - 6*Math.cbrt(x) + 24*Math.pow(x, 1/6) - 48*Math.log(Math.pow(x, 1/6) + 2),
+    steps: [
+      ["PASO 1: Sustitución x = u⁶, dx = 6u⁵ du", "6\int \frac{u^3}{u+2}\,du = 6\int \left(u^2 - 2u + 4 - \frac{8}{u+2}\right)du"],
+      ["PASO 2: Retorno con u = x^(1/6)", "2\sqrt{x} - 6\sqrt[3]{x} + 24\sqrt[6]{x} - 48\ln|\sqrt[6]{x}+2| + C"]
+    ]
+  },
+  {
+    id: "C3", block: "C", title: "Prelim. III — Irracional: ∫ √((1 - x)/(1 + x)) · (dx / x²)",
+    fighter: "VEGETA ULTRA EGO", type: "2d_indef", dom: [0.2, 0.9],
+    latexProblem: "\int \sqrt{\frac{1-x}{1+x}}\frac{dx}{x^2} = \ln\left|\frac{1+\sqrt{1-x^2}}{x}\right| - \frac{\sqrt{1-x^2}}{x(1+x)} + C",
+    exactLabel: "-2√((1-x)/(1+x)) + 2ln|(1+√(1-x²))/x| - √(1-x²)/x + C",
+    f: x => Math.sqrt((1-x)/(1+x)) / (x*x),
+    F: x => Math.log((1 + Math.sqrt(1-x*x))/x) - Math.sqrt(1-x*x)/(x*(1+x)),
+    steps: [
+      ["PASO 1: Racionalización del numerador", "\int \frac{1-x}{x^2\sqrt{1-x^2}}\,dx = \int \frac{dx}{x^2\sqrt{1-x^2}} - \int \frac{dx}{x\sqrt{1-x^2}}"],
+      ["PASO 2: Integración por partes trigonométricas", "\ln\left|\frac{1+\sqrt{1-x^2}}{x}\right| - \frac{\sqrt{1-x^2}}{x} - \sqrt{\frac{1-x}{1+x}} + C"]
+    ]
+  },
+  {
+    id: "C4", block: "C", title: "Taller Ej. 1 — Irracional: ∫ √x / (⁴√(x³) + 1) dx",
+    fighter: "GOKU BLACK", type: "2d_indef", dom: [0.1, 4.0],
+    latexProblem: "\int \frac{\sqrt{x}}{\sqrt[4]{x^3}+1}\,dx = \frac{4}{3}\sqrt[4]{x^3} - \frac{4}{3}\ln|\sqrt[4]{x^3}+1| + C",
+    exactLabel: "(4/3) ⁴√(x³) - (4/3) ln|⁴√(x³) + 1| + C",
+    f: x => Math.sqrt(x) / (Math.pow(x, 0.75) + 1),
+    F: x => (4/3)*Math.pow(x, 0.75) - (4/3)*Math.log(Math.pow(x, 0.75) + 1),
+    steps: [
+      ["PASO 1: Sustitución x = u⁴, dx = 4u³ du", "4\int \frac{u^5}{u^3+1}\,du = \frac{4}{3}\int \left(1 - \frac{1}{u^3+1}\right)3u^2\,du"],
+      ["PASO 2: Antiderivada", "\frac{4}{3}\sqrt[4]{x^3} - \frac{4}{3}\ln|\sqrt[4]{x^3}+1| + C"]
+    ]
+  },
+  {
+    id: "C5", block: "C", title: "Taller Ej. 2 — Irracional: ∫ x³ / √(1 - 2x²) dx",
+    fighter: "ZAMASU", type: "2d_indef", dom: [-0.65, 0.65],
+    latexProblem: "\int \frac{x^3}{\sqrt{1-2x^2}}\,dx = -\frac{(x^2+1)\sqrt{1-2x^2}}{6} + C",
+    exactLabel: "-((x² + 1)√(1 - 2x²)) / 6 + C",
+    f: x => (x*x*x) / Math.sqrt(1 - 2*x*x),
+    F: x => -((x*x + 1)*Math.sqrt(1 - 2*x*x)) / 6,
+    steps: [
+      ["PASO 1: Sustitución u² = 1 - 2x²", "x^2 = \frac{1-u^2}{2}, \quad x\,dx = -\frac{u}{2}\,du"],
+      ["PASO 2: Simplificación", "-\frac{1}{4}\int (1-u^2)\,du = -\frac{(x^2+1)\sqrt{1-2x^2}}{6} + C"]
+    ]
+  },
+  {
+    id: "C6", block: "C", title: "Taller Ej. 3 — Irracional: ∫ x⁵ √(1 - x³) dx",
+    fighter: "RADITZ", type: "2d_indef", dom: [-1.2, 0.95],
+    latexProblem: "\int x^5\sqrt{1-x^3}\,dx = -\frac{2}{45}(3x^3+2)(1-x^3)^{3/2} + C",
+    exactLabel: "-(2/45)(3x³ + 2)(1 - x³)^(3/2) + C",
+    f: x => Math.pow(x,5) * Math.sqrt(1 - x*x*x),
+    F: x => -(2/45)*(3*x*x*x + 2)*Math.pow(1 - x*x*x, 1.5),
+    steps: [
+      ["PASO 1: Sustitución u = 1 - x³, du = -3x² dx", "-\frac{1}{3}\int (1-u)\sqrt{u}\,du"],
+      ["PASO 2: Integración de potencias", "-\frac{2}{45}(3x^3+2)(1-x^3)^{3/2} + C"]
+    ]
+  },
+  {
+    id: "C7", block: "C", title: "Taller Ej. 4 — Irracional: ∫ dx / ((x - 2)√(x + 2))",
+    fighter: "NAPPA", type: "2d_indef", dom: [-1.8, 1.7],
+    latexProblem: "\int \frac{dx}{(x-2)\sqrt{x+2}} = \frac{1}{2}\ln\left|\frac{\sqrt{x+2}-2}{\sqrt{x+2}+2}\right| + C",
+    exactLabel: "(1/2) ln|(√(x+2) - 2)/(√(x+2) + 2)| + C",
+    f: x => 1 / ((x - 2)*Math.sqrt(x + 2)),
+    F: x => 0.5*Math.log(Math.abs((Math.sqrt(x+2)-2)/(Math.sqrt(x+2)+2))),
+    steps: [
+      ["PASO 1: Sustitución u² = x + 2", "\int \frac{2u\,du}{(u^2-4)u} = \int \frac{2\,du}{u^2-4}"],
+      ["PASO 2: Solución", "\frac{1}{2}\ln\left|\frac{\sqrt{x+2}-2}{\sqrt{x+2}+2}\right| + C"]
+    ]
+  },
+  {
+    id: "C8", block: "C", title: "Taller Ej. 5 — Irracional: ∫ x √(x + 1) dx",
+    fighter: "TEN SHIN HAN", type: "2d_indef", dom: [-0.95, 3.0],
+    latexProblem: "\int x\sqrt{x+1}\,dx = \frac{2}{15}(x+1)^{3/2}(3x-2) + C",
+    exactLabel: "(2/15)(x + 1)^(3/2)(3x - 2) + C",
+    f: x => x * Math.sqrt(x + 1),
+    F: x => (2/15)*Math.pow(x+1, 1.5)*(3*x - 2),
+    steps: [
+      ["PASO 1: Sustitución u = x + 1", "\int (u-1)u^{1/2}\,du = \frac{2}{5}u^{5/2} - \frac{2}{3}u^{3/2} + C"],
+      ["PASO 2: Factorización", "\frac{2}{15}(x+1)^{3/2}(3x-2) + C"]
+    ]
+  },
+  {
+    id: "C9", block: "C", title: "Taller Ej. 6 — Irracional: ∫ √((1 - x)/(1 + x)) · (dx / x)",
+    fighter: "YAMCHA", type: "2d_indef", dom: [0.15, 0.92],
+    latexProblem: "\int \sqrt{\frac{1-x}{1+x}}\frac{dx}{x} = \ln\left|\frac{\sqrt{1-x}+1}{\sqrt{1-x}-1}\right| + \sqrt{2}\ln\left|\frac{\sqrt{1-x}-\sqrt{2}}{\sqrt{1-x}+\sqrt{2}}\right| + C",
+    exactLabel: "ln|(√(1-x)+1)/(√(1-x)-1)| + √2 ln|(√(1-x)-√2)/(√(1-x)+√2)| + C",
+    f: x => Math.sqrt((1-x)/(1+x)) / x,
+    F: x => 2*Math.atanh(Math.sqrt((1-x)/(1+x))) - 2*Math.atan(Math.sqrt((1-x)/(1+x))),
+    steps: [
+      ["PASO 1: Sustitución u² = (1 - x)/(1 + x)", "x = \frac{1-u^2}{1+u^2}, \quad dx = \frac{-4u\,du}{(1+u^2)^2}"],
+      ["PASO 2: Fracciones parciales en u", "\ln\left|\frac{\sqrt{1-x}+1}{\sqrt{1-x}-1}\right| + \sqrt{2}\ln\left|\frac{\sqrt{1-x}-\sqrt{2}}{\sqrt{1-x}+\sqrt{2}}\right| + C"]
+    ]
+  },
+  {
+    id: "C10", block: "C", title: "Taller Ej. 7 — Irracional: ∫ √(1 - 4y) dy",
+    fighter: "CHAOS", type: "2d_indef", dom: [-2.0, 0.22],
+    latexProblem: "\int \sqrt{1-4y}\,dy = -\frac{1}{6}(1-4y)^{3/2} + C",
+    exactLabel: "-(1/6)(1 - 4y)^(3/2) + C",
+    f: x => Math.sqrt(1 - 4*x),
+    F: x => -(1/6)*Math.pow(1 - 4*x, 1.5),
+    steps: [
+      ["PASO 1: Sustitución lineal u = 1 - 4y", "du = -4\,dy \implies -\frac{1}{4}\int u^{1/2}\,du"],
+      ["PASO 2: Resultado", "-\frac{1}{6}(1-4y)^{3/2} + C"]
+    ]
+  },
+  {
+    id: "C11", block: "C", title: "Taller Ej. 8 — Irracional: ∫ dx / (√(x+1) + ⁴√(x+1))",
+    fighter: "ANDROIDE 17", type: "2d_indef", dom: [-0.8, 4.0],
+    latexProblem: "\int \frac{dx}{\sqrt{x+1}+\sqrt[4]{x+1}} = 2\sqrt{x+1} - 4\sqrt[4]{x+1} + 4\ln(\sqrt[4]{x+1}+1) + C",
+    exactLabel: "2√(x+1) - 4 ⁴√(x+1) + 4 ln(⁴√(x+1) + 1) + C",
+    f: x => 1 / (Math.sqrt(x+1) + Math.pow(x+1, 0.25)),
+    F: x => 2*Math.sqrt(x+1) - 4*Math.pow(x+1, 0.25) + 4*Math.log(Math.pow(x+1, 0.25) + 1),
+    steps: [
+      ["PASO 1: Sustitución x + 1 = u⁴ (dx = 4u³ du)", "4\int \frac{u^2}{u+1}\,du = 4\int \left(u - 1 + \frac{1}{u+1}\right)du"],
+      ["PASO 2: Solución exacta", "2\sqrt{x+1} - 4\sqrt[4]{x+1} + 4\ln(\sqrt[4]{x+1}+1) + C"]
+    ]
+  },
+
+  // ---------------- BLOQUE D (19 EJERCICIOS SÓLIDOS DE REVOLUCIÓN 3D) ----------------
+  {
+    id: "D1", block: "D", title: "Taller A — Sólido 3D (Discos): y = 1 + x/3 alrededor del eje X",
+    fighter: "GOKU ULTRA INSTINCT", type: "3d_rev", axis: "y=0", axisVal: 0, dom: [0, 12],
+    exactVal: 124 * Math.PI, exactLabel: "124π ≈ 389.5575 u³",
+    rOuter: x => 1 + x/3, rInner: x => 0,
+    latexProblem: "V = \pi \int_0^{12} \left(1 + \frac{x}{3}\right)^2 dx = 124\pi \approx 389.5575\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio del tronco de cono", "R(x) = 1 + \frac{x}{3}"],
+      ["PASO 2: Integral por el método de discos", "V = \pi \int_0^{12} \left(1 + \frac{2x}{3} + \frac{x^2}{9}\right)dx = 124\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D2", block: "D", title: "Taller B (Base 1) — Sólido 3D (Discos): y = 2 - x², y = 1 giro en y = 1",
+    fighter: "GOKU ULTRA INSTINCT", type: "3d_rev", axis: "y=c", axisVal: 1, dom: [-1, 1],
+    exactVal: (16 * Math.PI)/15, exactLabel: "16π/15 ≈ 3.3510 u³",
+    rOuter: x => 2 - x*x, rInner: x => 1,
+    latexProblem: "V = \pi \int_{-1}^1 (1 - x^2)^2\,dx = \frac{16\pi}{15} \approx 3.3510\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio respecto al eje desplazado y = 1", "R(x) = (2-x^2) - 1 = 1 - x^2"],
+      ["PASO 2: Evaluación de la integral", "V = \pi \int_{-1}^1 (1 - 2x^2 + x^4)\,dx = \frac{16\pi}{15}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D3", block: "D", title: "Tarea 1 — Sólido 3D: y = 2 - x²/4 (Q1) alrededor del eje Y",
+    fighter: "VEGETA ULTRA EGO", type: "3d_rev", axis: "x=c", axisVal: 0, dom: [0, Math.sqrt(8)],
+    exactVal: 8 * Math.PI, exactLabel: "8π ≈ 25.1327 u³",
+    rOuter: x => 2 - (x*x)/4, rInner: x => 0,
+    latexProblem: "V = 2\pi \int_0^{\sqrt{8}} x\left(2 - \frac{x^2}{4}\right)dx = 8\pi \approx 25.1327\text{ u}^3",
+    steps: [
+      ["PASO 1: Método de cascarones alrededor del eje Y", "r = x, \quad h = 2 - \frac{x^2}{4}"],
+      ["PASO 2: Cálculo del volumen", "V = 2\pi \left[x^2 - \frac{x^4}{16}\right]_0^{\sqrt{8}} = 8\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D4", block: "D", title: "Tarea 2 — Sólido 3D: y = √(4 - x²) en [-1, 2] alrededor del eje X",
+    fighter: "JIREN", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [-1, 2],
+    exactVal: 9 * Math.PI, exactLabel: "9π ≈ 28.2743 u³",
+    rOuter: x => Math.sqrt(Math.max(0, 4 - x*x)), rInner: x => 0,
+    latexProblem: "V = \pi \int_{-1}^2 (4 - x^2)\,dx = 9\pi \approx 28.2743\text{ u}^3",
+    steps: [
+      ["PASO 1: Casquete esférico por discos", "R(x)^2 = 4 - x^2"],
+      ["PASO 2: Evaluación en [-1, 2]", "V = \pi\left[4x - \frac{x^3}{3}\right]_{-1}^2 = 9\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D5", block: "D", title: "Tarea 3 — Sólido 3D: y = √(4x + 1) en [0, 2] alrededor del eje X",
+    fighter: "BROLY FULL POWER", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [0, 2],
+    exactVal: 10 * Math.PI, exactLabel: "10π ≈ 31.4159 u³",
+    rOuter: x => Math.sqrt(4*x + 1), rInner: x => 0,
+    latexProblem: "V = \pi \int_0^2 (4x + 1)\,dx = 10\pi \approx 31.4159\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio al cuadrado", "R(x)^2 = 4x + 1"],
+      ["PASO 2: Integración directa", "V = \pi\left[2x^2 + x\right]_0^2 = 10\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D6", block: "D", title: "Tarea 4 — Sólido 3D Paramétrico: y = ax², y = h alrededor del eje Y",
+    fighter: "WHIS", type: "3d_rev", axis: "x=c", axisVal: 0, dom: [0, 2],
+    exactVal: 2 * Math.PI, exactLabel: "πh²/(2a) (con a=1, h=2 → 2π)",
+    rOuter: x => 2, rInner: x => (x*x)/2,
+    latexProblem: "V = \pi \int_0^h \frac{y}{a}\,dy = \frac{\pi h^2}{2a}",
+    steps: [
+      ["PASO 1: Despeje x² = y/a para discos en el eje Y", "A(y) = \pi x^2 = \frac{\pi y}{a}"],
+      ["PASO 2: Integración de 0 a h", "V = \frac{\pi h^2}{2a}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D7", block: "D", title: "Tarea 5 — Sólido 3D Trigonométrico: y = √(sen x) en [0, π] giro en X",
+    fighter: "GOGETA BLUE", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [0, Math.PI],
+    exactVal: 2 * Math.PI, exactLabel: "2π ≈ 6.2832 u³",
+    rOuter: x => Math.sqrt(Math.max(0, Math.sin(x))), rInner: x => 0,
+    latexProblem: "V = \pi \int_0^\pi \sin x\,dx = 2\pi \approx 6.2832\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio R(x) = √(sen x)", "A(x) = \pi \sin x"],
+      ["PASO 2: Evaluación en [0, π]", "V = \pi[-\cos x]_0^\pi = 2\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D8", block: "D", title: "Tarea 6 — Proporción de Arquímedes 3 : 2 : 1 (Cilindro, Elipsoide, Cono)",
+    fighter: "KAIOSHIN", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [-1, 1],
+    exactVal: (4 * Math.PI)/3, exactLabel: "Relación 3 : 2 : 1 verificada",
+    rOuter: x => Math.sqrt(Math.max(0, 1 - x*x)), rInner: x => 0,
+    latexProblem: "V_{\text{cil}} : V_{\text{elip}} : V_{\text{cono}} = 2\pi a^2 b : \frac{4}{3}\pi a^2 b : \frac{2}{3}\pi a^2 b = 3 : 2 : 1",
+    steps: [
+      ["PASO 1: Volumen del cilindro y elipsoide", "V_{\text{cil}} = 2\pi a^2 b, \quad V_{\text{elip}} = \frac{4}{3}\pi a^2 b"],
+      ["PASO 2: Volumen del cono doble y proporción", "V_{\text{cono}} = \frac{2}{3}\pi a^2 b \implies 3 : 2 : 1"]
+    ]
+  },
+  {
+    id: "D9", block: "D", title: "Tarea 7 — Deducción de Volúmenes Clásicos (Cilindro, Esfera, Elipsoide)",
+    fighter: "SHENRON", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [-2, 2],
+    exactVal: (16 * Math.PI)/3, exactLabel: "4πab²/3 (con a=2, b=1 → 8π/3)",
+    rOuter: x => Math.sqrt(Math.max(0, 1 - (x*x)/4)), rInner: x => 0,
+    latexProblem: "V_{\text{elipsoide}} = \pi \int_{-a}^a b^2\left(1 - \frac{x^2}{a^2}\right)dx = \frac{4}{3}\pi a b^2",
+    steps: [
+      ["PASO 1: Ecuación de la elipse b²x² + a²y² = a²b²", "y^2 = b^2\left(1 - \frac{x^2}{a^2}\right)"],
+      ["PASO 2: Integración en [-a, a]", "V = \frac{4}{3}\pi a b^2 \quad (\text{para } a=b=r \implies \frac{4}{3}\pi r^3)"]
+    ]
+  },
+  {
+    id: "D10", block: "D", title: "Tarea 8 — Optimización de Eje y = b: y = 4 - x²/4 (Mínimo en b = 8/3)",
+    fighter: "WHIS ULTRA", type: "3d_rev", axis: "y=c", axisVal: 8/3, dom: [-2, 2],
+    exactVal: Math.PI * (4*Math.pow(8/3,2) - (64/3)*(8/3) + 512/15),
+    exactLabel: "Mínimo en b = 8/3 → V = 256π/45 ≈ 17.8722 u³",
+    rOuter: x => 4 - (x*x)/4, rInner: x => 8/3,
+    latexProblem: "V(b) = \pi\left(4b^2 - \frac{64}{3}b + \frac{512}{15}\right) \implies V'(b)=0 \iff b = \frac{8}{3}",
+    steps: [
+      ["PASO 1: Polinomio de volumen en función de b", "V(b) = \pi\left(4b^2 - \frac{64}{3}b + \frac{512}{15}\right)"],
+      ["PASO 2: Derivada respecto a b", "V'(b) = \pi\left(8b - \frac{64}{3}\right) = 0 \implies b = \frac{8}{3}"]
+    ]
+  },
+  {
+    id: "D11", block: "D", title: "Arandelas 1 — Sólido 3D: y = x² y y² = 8x alrededor del eje X",
+    fighter: "VEGITO SSJ", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [0, 2],
+    exactVal: (48 * Math.PI)/5, exactLabel: "48π/5 ≈ 30.1593 u³",
+    rOuter: x => Math.sqrt(8*x), rInner: x => x*x,
+    latexProblem: "V = \pi \int_0^2 \left((\sqrt{8x})^2 - (x^2)^2\right)dx = \frac{48\pi}{5} \approx 30.1593\text{ u}^3",
+    steps: [
+      ["PASO 1: Intersección en x = 0 y x = 2", "R(x) = \sqrt{8x}, \quad r(x) = x^2"],
+      ["PASO 2: Integral de arandelas", "V = \pi \int_0^2 (8x - x^4)\,dx = \frac{48\pi}{5}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D12", block: "D", title: "Arandelas 2 — Sólido 3D: 2y - x = 2, y = x² + 2 en [0, 1] giro en X",
+    fighter: "GOTENKS SSJ", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [0, 1],
+    exactVal: (79 * Math.PI)/20, exactLabel: "79π/20 ≈ 12.4093 u³",
+    rOuter: x => x*x + 2, rInner: x => 1 + x/2,
+    latexProblem: "V = \pi \int_0^1 \left((x^2+2)^2 - \left(1+\frac{x}{2}\right)^2\right)dx = \frac{79\pi}{20} \approx 12.4093\text{ u}^3",
+    steps: [
+      ["PASO 1: Radios exterior e interior", "R(x) = x^2+2, \quad r(x) = 1 + \frac{x}{2}"],
+      ["PASO 2: Evaluación en [0, 1]", "V = \frac{79\pi}{20}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D13", block: "D", title: "Cascarones 2 — Sólido 3D: y = x(x - 1)², y = 0 alrededor del eje Y",
+    fighter: "TRUNKS SSJ2", type: "3d_rev", axis: "x=c", axisVal: 0, dom: [0, 1],
+    exactVal: Math.PI / 15, exactLabel: "π/15 ≈ 0.2094 u³",
+    rOuter: x => x * Math.pow(x - 1, 2), rInner: x => 0,
+    latexProblem: "V = 2\pi \int_0^1 x \cdot x(x-1)^2\,dx = \frac{\pi}{15} \approx 0.2094\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio r = x y altura h = x(x - 1)²", "V = 2\pi \int_0^1 (x^4 - 2x^3 + x^2)\,dx"],
+      ["PASO 2: Resultado exacto", "2\pi\left(\frac{1}{5} - \frac{1}{2} + \frac{1}{3}\right) = \frac{\pi}{15}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D14", block: "D", title: "Cascarones 3 — Sólido 3D: y = x - x², y = 0 alrededor de x = 2",
+    fighter: "PICCOLO", type: "3d_rev", axis: "x=c", axisVal: 2, dom: [0, 1],
+    exactVal: Math.PI / 2, exactLabel: "π/2 ≈ 1.5708 u³",
+    rOuter: x => x - x*x, rInner: x => 0,
+    latexProblem: "V = 2\pi \int_0^1 (2-x)(x-x^2)\,dx = \frac{\pi}{2} \approx 1.5708\text{ u}^3",
+    steps: [
+      ["PASO 1: Radio al eje desplazado x = 2", "r(x) = 2 - x, \quad h(x) = x - x^2"],
+      ["PASO 2: Integración", "V = 2\pi \int_0^1 (2x - 3x^2 + x^3)\,dx = \frac{\pi}{2}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D15", block: "D", title: "Cascarones 4 — Sólido 3D: y = sen x, y = cos x en [0, π/4] giro en X",
+    fighter: "ROSHI MAX POWER", type: "3d_rev", axis: "y=c", axisVal: 0, dom: [0, Math.PI/4],
+    exactVal: Math.PI / 2, exactLabel: "π/2 ≈ 1.5708 u³",
+    rOuter: x => Math.cos(x), rInner: x => Math.sin(x),
+    latexProblem: "V = \pi \int_0^{\pi/4} (\cos^2 x - \sin^2 x)\,dx = \pi \int_0^{\pi/4} \cos(2x)\,dx = \frac{\pi}{2}",
+    steps: [
+      ["PASO 1: Identidad del coseno del ángulo doble", "\cos^2 x - \sin^2 x = \cos(2x)"],
+      ["PASO 2: Evaluación exacta", "\pi\left[\frac{\sin(2x)}{2}\right]_0^{\pi/4} = \frac{\pi}{2}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D16", block: "D", title: "Miscelánea A — Sólido 3D: y = 4 - x², y = 0 alrededor del eje Y",
+    fighter: "GOKU SSJ4", type: "3d_rev", axis: "x=c", axisVal: 0, dom: [0, 2],
+    exactVal: 8 * Math.PI, exactLabel: "8π ≈ 25.1327 u³",
+    rOuter: x => 4 - x*x, rInner: x => 0,
+    latexProblem: "V = 2\pi \int_0^2 x(4-x^2)\,dx = 8\pi \approx 25.1327\text{ u}^3",
+    steps: [
+      ["PASO 1: Método de cascarones cilíndricos", "V = 2\pi \int_0^2 (4x - x^3)\,dx"],
+      ["PASO 2: Evaluación", "2\pi[2x^2 - x^4/4]_0^2 = 8\pi\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D17", block: "D", title: "Miscelánea B — Sólido 3D: y = 4 - x², y = 0 alrededor de y = -3",
+    fighter: "VEGETA SSJ4", type: "3d_rev", axis: "y=c", axisVal: -3, dom: [-2, 2],
+    exactVal: (1472 * Math.PI)/15, exactLabel: "1472π/15 ≈ 308.2950 u³",
+    rOuter: x => 4 - x*x, rInner: x => 0,
+    latexProblem: "V = \pi \int_{-2}^2 \left((7-x^2)^2 - 3^2\right)dx = \frac{1472\pi}{15} \approx 308.2950\text{ u}^3",
+    steps: [
+      ["PASO 1: Radios desde y = -3", "R(x) = (4-x^2) - (-3) = 7 - x^2, \quad r(x) = 0 - (-3) = 3"],
+      ["PASO 2: Integración de arandelas", "V = \pi \int_{-2}^2 (40 - 14x^2 + x^4)\,dx = \frac{1472\pi}{15}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D18", block: "D", title: "Miscelánea C (Base 2) — Sólido 3D: y = 4 - x², y = 0 giro en y = 7",
+    fighter: "VEGETA ULTRA EGO", type: "3d_rev", axis: "y=c", axisVal: 7, dom: [-2, 2],
+    exactVal: (576 * Math.PI)/5, exactLabel: "576π/5 ≈ 361.9115 u³",
+    rOuter: x => 0, rInner: x => 4 - x*x,
+    latexProblem: "V = \pi \int_{-2}^2 \left[7^2 - (3+x^2)^2\right]dx = \frac{576\pi}{5} \approx 361.9115\text{ u}^3",
+    steps: [
+      ["PASO 1: Radios respecto a la recta y = 7", "R = 7 - 0 = 7, \quad r = 7 - (4-x^2) = 3 + x^2"],
+      ["PASO 2: Evaluación exacta", "V = \pi \int_{-2}^2 (40 - 6x^2 - x^4)\,dx = \frac{576\pi}{5}\text{ u}^3"]
+    ]
+  },
+  {
+    id: "D19", block: "D", title: "Miscelánea D (Base 3) — Sólido 3D: y = 4 - x², y = 0 giro en x = 3",
+    fighter: "JIREN FULL POWER", type: "3d_rev", axis: "x=c", axisVal: 3, dom: [-2, 2],
+    exactVal: 64 * Math.PI, exactLabel: "64π ≈ 201.0619 u³",
+    rOuter: x => 4 - x*x, rInner: x => 0,
+    latexProblem: "V = 2\pi \int_{-2}^2 (3-x)(4-x^2)\,dx = 64\pi \approx 201.0619\text{ u}^3",
+    steps: [
+      ["PASO 1: Cascarones cilíndricos alrededor de x = 3", "r(x) = 3 - x, \quad h(x) = 4 - x^2"],
+      ["PASO 2: Evaluación en [-2, 2]", "V = 2\pi \int_{-2}^2 (12 - 4x - 3x^2 + x^3)\,dx = 64\pi\text{ u}^3"]
+    ]
+  },
+
+  // ---------------- BLOQUE E (2 EJERCICIOS DE CIERRE) ----------------
+  {
+    id: "E1", block: "E", title: "Cierre 1 — Longitud de Arco: 6xy = x⁴ + 3 en x ∈ [1, 2]",
+    fighter: "GOGETA SSJ4", type: "arclength", dom: [1, 2], exactVal: 17/12,
+    latexProblem: "L = \int_1^2 \sqrt{1 + \left(f'(x)\right)^2}\,dx = \int_1^2 \left(\frac{x^2}{2} + \frac{1}{2x^2}\right)dx = \frac{17}{12} \approx 1.4167\text{ u}",
+    exactLabel: "17/12 ≈ 1.4167 u",
+    f: x => Math.pow(x,3)/6 + 1/(2*x),
+    df: x => (x*x)/2 - 1/(2*x*x),
+    steps: [
+      ["PASO 1: Despeje y derivada de la curva", "y = \frac{x^3}{6} + \frac{1}{2x} \implies y' = \frac{x^2}{2} - \frac{1}{2x^2}"],
+      ["PASO 2: Cuadrado perfecto dentro del radical", "1 + (y')^2 = \left(\frac{x^2}{2} + \frac{1}{2x^2}\right)^2"],
+      ["PASO 3: Longitud exacta", "L = \left[\frac{x^3}{6} - \frac{1}{2x}\right]_1^2 = \frac{17}{12}\text{ u}"]
+    ]
+  },
+  {
+    id: "E2", block: "E", title: "Cierre 2 — Integral Impropia: Área = ∫[-∞, 0] e^(2x) dx",
+    fighter: "WHIS ANGEL", type: "improper", dom: [-6, 0], exactVal: 0.5,
+    latexProblem: "A = \int_{-\infty}^0 e^{2x}\,dx = \lim_{t \to -\infty} \int_t^0 e^{2x}\,dx = \lim_{t \to -\infty}\left(\frac{1}{2} - \frac{e^{2t}}{2}\right) = 0.5\text{ u}^2",
+    exactLabel: "1/2 = 0.5000 u² (Convergente)",
+    f: x => Math.exp(2*x),
+    steps: [
+      ["PASO 1: Definición como límite impropio", "\lim_{t \to -\infty} \int_t^0 e^{2x}\,dx = \lim_{t \to -\infty}\left[\frac{e^{2x}}{2}\right]_t^0"],
+      ["PASO 2: Evaluación del límite exponencial", "\frac{1}{2}(1 - 0) = 0.5\text{ u}^2 \quad (\text{Converge})"]
+    ]
+  }
+];
+
+// =====================================================================
+// LÓGICA DE NAVEGACIÓN Y RENDERIZADO 2D/3D (PLOTLY + KATEX)
+// =====================================================================
+let currentBlock = "A";
+let currentEx = EXERCISES[0];
+
+const blockTabs = document.querySelectorAll(".tab-card");
+const exerciseSelect = document.getElementById("exerciseSelect");
+const param1Slider = document.getElementById("param1Slider");
+const param2Slider = document.getElementById("param2Slider");
+const param1Val = document.getElementById("param1Val");
+const param2Val = document.getElementById("param2Val");
+const param1Label = document.getElementById("param1Label");
+const param2Label = document.getElementById("param2Label");
+
+function renderMath(el, tex, displayMode = true) {
+  if (window.katex) {
+    katex.render(tex, el, { throwOnError: false, displayMode });
+  } else {
+    el.textContent = tex;
+  }
+}
+
+function populateExerciseSelect(block) {
+  const list = EXERCISES.filter(e => e.block === block);
+  exerciseSelect.innerHTML = "";
+  list.forEach(ex => {
+    const opt = document.createElement("option");
+    opt.value = ex.id;
+    opt.textContent = ex.title;
+    exerciseSelect.appendChild(opt);
+  });
+  if (list.length > 0) {
+    loadExercise(list[0].id);
+  }
+}
+
+function configureSlidersForExercise(ex) {
+  if (ex.type === "3d_rev" || ex.type === "3d_section") {
+    param1Slider.min = 60; param1Slider.max = 360; param1Slider.step = 15; param1Slider.value = 360;
+    param1Label.innerHTML = `ÁNGULO DE REVOLUCIÓN 3D: <span id="param1Val">360°</span>`;
+    param2Slider.min = 12; param2Slider.max = 48; param2Slider.step = 4; param2Slider.value = 28;
+    param2Label.innerHTML = `MALLA / SECCIONES (N): <span id="param2Val">28</span>`;
+  } else if (ex.type === "improper") {
+    param1Slider.min = -10; param1Slider.max = -0.4; param1Slider.step = 0.2; param1Slider.value = -4.0;
+    param1Label.innerHTML = `LÍMITE INFERIOR (t → -∞): <span id="param1Val">-4.0</span>`;
+    param2Slider.min = 10; param2Slider.max = 60; param2Slider.step = 2; param2Slider.value = 30;
+    param2Label.innerHTML = `SUBINTERVALOS (N): <span id="param2Val">30</span>`;
+  } else {
+    param1Slider.min = -4; param1Slider.max = 4; param1Slider.step = 0.5; param1Slider.value = 0;
+    param1Label.innerHTML = `CONSTANTE DE INTEGRACIÓN (C): <span id="param1Val">0.0</span>`;
+    param2Slider.min = 8; param2Slider.max = 60; param2Slider.step = 2; param2Slider.value = 24;
+    param2Label.innerHTML = `SUBINTERVALOS SIMPSON (N): <span id="param2Val">24</span>`;
+  }
+}
+
+function loadExercise(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  if (!ex) return;
+  currentEx = ex;
+  exerciseSelect.value = ex.id;
+  document.getElementById("fighterBadge").textContent = `GUERRERO Z: ${ex.fighter} · [${ex.id}]`;
+  renderMath(document.getElementById("mathProblemRender"), ex.latexProblem, true);
+
+  // Pasos en KaTeX
+  const stepsBox = document.getElementById("stepsContainer");
+  stepsBox.innerHTML = "";
+  ex.steps.forEach(([title, formula]) => {
+    const div = document.createElement("div");
+    div.className = "step-item";
+    const st = document.createElement("strong");
+    st.textContent = title;
+    const mathDiv = document.createElement("div");
+    renderMath(mathDiv, formula, true);
+    div.appendChild(st);
+    div.appendChild(mathDiv);
+    stepsBox.appendChild(div);
+  });
+
+  // Triángulo SVG si aplica
+  const trigBox = document.getElementById("trigTriangleBox");
+  if (ex.trig) {
+    trigBox.style.display = "block";
+    document.getElementById("svgOppText").textContent = `Op: ${ex.trig.opp}`;
+    document.getElementById("svgAdjText").textContent = `Ady: ${ex.trig.adj}`;
+    document.getElementById("svgHypText").textContent = `Hip: ${ex.trig.hyp}`;
+  } else {
+    trigBox.style.display = "none";
+  }
+
+  configureSlidersForExercise(ex);
+  updatePlotAndMetrics();
+}
+
+function updatePlotAndMetrics() {
+  const ex = currentEx;
+  const p1 = parseFloat(param1Slider.value);
+  const p2 = parseInt(param2Slider.value, 10);
+  const p1Span = document.getElementById("param1Val");
+  const p2Span = document.getElementById("param2Val");
+  if (p1Span) p1Span.textContent = (ex.type.startsWith("3d")) ? `${p1}°` : p1.toFixed(1);
+  if (p2Span) p2Span.textContent = p2;
+
+  const layoutBase = {
+    paper_bgcolor: "#050508",
+    plot_bgcolor: "#050508",
+    font: { family: "VT323, monospace", size: 16, color: "#e6edf3" },
+    margin: { l: 48, r: 24, t: 30, b: 42 },
+    xaxis: { gridcolor: "#1a2436", zerolinecolor: "#2a3950" },
+    yaxis: { gridcolor: "#1a2436", zerolinecolor: "#2a3950" },
+    legend: { orientation: "h", y: 1.12, x: 0 }
+  };
+
+  if (ex.type === "2d_indef") {
+    const [a, b] = ex.dom;
+    const xs = [], ysF = [], ysAnt = [];
+    const M = 180;
+    for (let i = 0; i <= M; i++) {
+      const x = a + (b - a) * (i / M);
+      xs.push(x);
+      const yv = ex.f(x);
+      const Yv = ex.F(x) + p1;
+      ysF.push(Number.isFinite(yv) && Math.abs(yv) < 40 ? yv : null);
+      ysAnt.push(Number.isFinite(Yv) && Math.abs(Yv) < 40 ? Yv : null);
+    }
+    const traces = [
+      { x: xs, y: ysF, mode: "lines", name: "Integrando f(x)", line: { color: "#ff9800", width: 3 } },
+      { x: xs, y: ysAnt, mode: "lines", name: `Antiderivada F(x) + ${p1.toFixed(1)}`, line: { color: "#00e5ff", width: 2.5, dash: "dot" } }
+    ];
+    Plotly.react("plotlyCanvas", traces, layoutBase, { responsive: true, displayModeBar: false });
+
+    const xm = (a + b) / 2;
+    const h = 0.0005;
+    const numDeriv = (ex.F(xm + h) - ex.F(xm - h)) / (2 * h);
+    const exactF = ex.f(xm);
+    const err = Math.abs(numDeriv - exactF);
+    document.getElementById("m1Title").textContent = "ANTIDERIVADA EXACTA F(X)";
+    document.getElementById("m1Value").textContent = ex.exactLabel;
+    document.getElementById("m2Title").textContent = `VERIFICACIÓN F'(xₘ) EN x=${xm.toFixed(2)}`;
+    document.getElementById("m2Value").textContent = `${numDeriv.toFixed(5)} ≈ f(xₘ)`;
+    document.getElementById("m3Title").textContent = "ERROR DERIVADA NUMÉRICA";
+    document.getElementById("m3Value").textContent = err.toExponential(2);
+  }
+  else if (ex.type === "area_dx" || ex.type === "area_dy") {
+    const [a, b] = ex.dom;
+    const ts = [], topArr = [], botArr = [];
+    const M = 120;
+    for (let i = 0; i <= M; i++) {
+      const t = a + (b - a) * (i / M);
+      ts.push(t);
+      topArr.push(ex.fTop(t));
+      botArr.push(ex.fBot(t));
+    }
+    let approx = 0;
+    const dt = (b - a) / p2;
+    for (let i = 0; i <= p2; i++) {
+      const t = a + i * dt;
+      const w = (i === 0 || i === p2) ? 0.5 : 1;
+      approx += w * (ex.fTop(t) - ex.fBot(t));
+    }
+    approx *= dt;
+
+    let traces = [];
+    if (ex.type === "area_dx") {
+      traces = [
+        { x: ts, y: botArr, mode: "lines", name: "Curva Inferior", line: { color: "#00e5ff", width: 2.5 } },
+        { x: ts, y: topArr, mode: "lines", name: "Curva Superior", fill: "tonexty", fillcolor: "rgba(0,229,255,0.28)", line: { color: "#ff9800", width: 3 } }
+      ];
+    } else {
+      traces = [
+        { x: botArr, y: ts, mode: "lines", name: "x_izq(y)", line: { color: "#00e5ff", width: 2.5 } },
+        { x: topArr, y: ts, mode: "lines", name: "x_der(y)", fill: "tonextx", fillcolor: "rgba(0,229,255,0.28)", line: { color: "#ff9800", width: 3 } }
+      ];
+    }
+    Plotly.react("plotlyCanvas", traces, layoutBase, { responsive: true, displayModeBar: false });
+
+    document.getElementById("m1Title").textContent = "ÁREA EXACTA (INTEGRAL)";
+    document.getElementById("m1Value").textContent = `${ex.exactVal.toFixed(4)} u²`;
+    document.getElementById("m2Title").textContent = `APROXIMACIÓN (N = ${p2})`;
+    document.getElementById("m2Value").textContent = `${approx.toFixed(4)} u²`;
+    document.getElementById("m3Title").textContent = "ERROR ABSOLUTO";
+    document.getElementById("m3Value").textContent = Math.abs(ex.exactVal - approx).toFixed(5);
+  }
+  else if (ex.type === "arclength" || ex.type === "improper") {
+    const a = ex.type === "improper" ? p1 : ex.dom[0];
+    const b = ex.dom[1];
+    const xs = [], ys = [];
+    const M = 120;
+    for (let i = 0; i <= M; i++) {
+      const x = a + (b - a) * (i / M);
+      xs.push(x);
+      ys.push(ex.f(x));
+    }
+    const traces = [
+      {
+        x: xs, y: ys, mode: "lines",
+        name: ex.type === "arclength" ? "Arco en [1, 2]" : `Región [t=${a.toFixed(1)}, 0]`,
+        fill: ex.type === "improper" ? "tozeroy" : "none",
+        fillcolor: "rgba(0,229,255,0.28)",
+        line: { color: "#00e5ff", width: 4 }
+      }
+    ];
+    Plotly.react("plotlyCanvas", traces, layoutBase, { responsive: true, displayModeBar: false });
+
+    const approx = ex.type === "improper" ? (0.5 - 0.5 * Math.exp(2 * a)) : ex.exactVal;
+    document.getElementById("m1Title").textContent = "VALOR EXACTO TEÓRICO";
+    document.getElementById("m1Value").textContent = ex.exactLabel;
+    document.getElementById("m2Title").textContent = ex.type === "improper" ? `INTEGRAL EN [${a.toFixed(1)}, 0]` : "EVALUACIÓN NUMÉRICA";
+    document.getElementById("m2Value").textContent = approx.toFixed(5);
+    document.getElementById("m3Title").textContent = "DIFERENCIA AL LÍMITE";
+    document.getElementById("m3Value").textContent = Math.abs(ex.exactVal - approx).toFixed(5);
+  }
+  else if (ex.type === "3d_section") {
+    const [a, b] = ex.dom;
+    const N = p2;
+    const xSurf = [], ySurf = [], zSurf = [];
+    for (let i = 0; i <= N; i++) {
+      const x = a + (b - a) * (i / N);
+      if (ex.secType === "triangle") {
+        const yMax = Math.sqrt(Math.max(0, 1 - x*x));
+        const hTri = Math.sqrt(3) * yMax;
+        xSurf.push([x, x, x]);
+        ySurf.push([-yMax, 0, yMax]);
+        zSurf.push([0, hTri, 0]);
+      } else {
+        const side = 1 - (x*x)/4;
+        xSurf.push([x, x, x, x]);
+        ySurf.push([0, 0, side, side]);
+        zSurf.push([0, side, side, 0]);
+      }
+    }
+    const traces = [{
+      type: "surface", x: xSurf, y: ySurf, z: zSurf,
+      colorscale: [[0, "#00e5ff"], [1, "#ff9800"]],
+      opacity: 0.88, showscale: false
+    }];
+    const layout3D = {
+      paper_bgcolor: "#050508",
+      margin: { l: 0, r: 0, t: 20, b: 0 },
+      scene: {
+        xaxis: { title: "X", color: "#ffca28", gridcolor: "#1e293b" },
+        yaxis: { title: "Y", color: "#00e5ff", gridcolor: "#1e293b" },
+        zaxis: { title: "Z (Altura)", color: "#39ff14", gridcolor: "#1e293b" },
+        bgcolor: "#050508"
+      }
+    };
+    Plotly.react("plotlyCanvas", traces, layout3D, { responsive: true });
+
+    document.getElementById("m1Title").textContent = "VOLUMEN EXACTO 3D";
+    document.getElementById("m1Value").textContent = ex.exactLabel;
+    document.getElementById("m2Title").textContent = "VALOR DECIMAL";
+    document.getElementById("m2Value").textContent = `${ex.exactVal.toFixed(4)} u³`;
+    document.getElementById("m3Title").textContent = "SECCIONES RENDERIZADAS";
+    document.getElementById("m3Value").textContent = `${N} LÁMINAS 3D`;
+  }
+  else if (ex.type === "3d_rev") {
+    const [a, b] = ex.dom;
+    const maxAngle = (p1 * Math.PI) / 180;
+    const NX = p2;
+    const NT = 28;
+    const xMat = [], yMat = [], zMat = [];
+
+    for (let i = 0; i <= NX; i++) {
+      const x = a + (b - a) * (i / NX);
+      const rowX = [], rowY = [], rowZ = [];
+      for (let j = 0; j <= NT; j++) {
+        const theta = maxAngle * (j / NT);
+        if (ex.axis === "x=c") {
+          const rad = Math.abs(x - ex.axisVal);
+          rowX.push(ex.axisVal + rad * Math.cos(theta));
+          rowY.push(ex.rOuter(x));
+          rowZ.push(rad * Math.sin(theta));
+        } else {
+          const rad = Math.abs(ex.rOuter(x) - ex.axisVal);
+          rowX.push(x);
+          rowY.push(ex.axisVal + rad * Math.cos(theta));
+          rowZ.push(rad * Math.sin(theta));
+        }
+      }
+      xMat.push(rowX); yMat.push(rowY); zMat.push(rowZ);
+    }
+
+    const traces = [{
+      type: "surface", x: xMat, y: yMat, z: zMat,
+      colorscale: [[0, "#005b66"], [0.5, "#00e5ff"], [1, "#ff9800"]],
+      opacity: 0.88, showscale: false
+    }];
+
+    const layout3D = {
+      paper_bgcolor: "#050508",
+      margin: { l: 0, r: 0, t: 20, b: 0 },
+      scene: {
+        xaxis: { title: "Eje X", color: "#ffca28", gridcolor: "#1e293b" },
+        yaxis: { title: "Eje Y", color: "#00e5ff", gridcolor: "#1e293b" },
+        zaxis: { title: "Eje Z", color: "#39ff14", gridcolor: "#1e293b" },
+        bgcolor: "#050508"
+      }
+    };
+    Plotly.react("plotlyCanvas", traces, layout3D, { responsive: true });
+
+    document.getElementById("m1Title").textContent = "VOLUMEN EXACTO (π)";
+    document.getElementById("m1Value").textContent = ex.exactLabel;
+    document.getElementById("m2Title").textContent = "VOLUMEN DECIMAL (360°)";
+    document.getElementById("m2Value").textContent = `${ex.exactVal.toFixed(4)} u³`;
+    document.getElementById("m3Title").textContent = `BARRIDO ACTUAL (${p1}°)`;
+    document.getElementById("m3Value").textContent = `${(ex.exactVal * (p1/360)).toFixed(4)} u³`;
+  }
+}
+
+// Eventos de UI del Simulador
+blockTabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    blockTabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const blk = tab.dataset.block;
+    currentBlock = blk;
+    if (blk === "PAC") {
+      document.getElementById("simulatorSection").style.display = "none";
+      document.getElementById("pacmathSection").style.display = "grid";
+      if (document.activeElement) document.activeElement.blur();
+      setTimeout(() => document.getElementById("pacmathCanvas").focus(), 60);
+    } else {
+      document.getElementById("pacmathSection").style.display = "none";
+      document.getElementById("simulatorSection").style.display = "block";
+      populateExerciseSelect(blk);
+    }
+  });
+});
+
+exerciseSelect.addEventListener("change", e => loadExercise(e.target.value));
+param1Slider.addEventListener("input", updatePlotAndMetrics);
+param2Slider.addEventListener("input", updatePlotAndMetrics);
+
+document.getElementById("prevExBtn").addEventListener("click", () => {
+  const list = EXERCISES.filter(e => e.block === currentBlock);
+  const idx = list.findIndex(e => e.id === currentEx.id);
+  const prev = list[(idx - 1 + list.length) % list.length];
+  loadExercise(prev.id);
+});
+document.getElementById("nextExBtn").addEventListener("click", () => {
+  const list = EXERCISES.filter(e => e.block === currentBlock);
+  const idx = list.findIndex(e => e.id === currentEx.id);
+  const next = list[(idx + 1) % list.length];
+  loadExercise(next.id);
+});
+
+// =====================================================================
+// MOTOR PAC-MATH DBZ ARCADE (FANTASMAS BFS + TRIVIA CADA 10 SEGUNDOS)
+// =====================================================================
+const TRIVIA_BANK = [
+  {
+    q: "¿Quiénes desarrollaron de forma independiente el Cálculo Infinitesimal en el siglo XVII?",
+    opts: ["Isaac Newton y Gottfried Wilhelm Leibniz", "Leonhard Euler y Carl Friedrich Gauss", "René Descartes y Pierre de Fermat", "Augustin-Louis Cauchy y Bernhard Riemann"],
+    ans: 0,
+    fact: "Newton y Leibniz formularon el Teorema Fundamental del Cálculo; el símbolo ∫ de integral fue introducido por Leibniz en 1675."
+  },
+  {
+    q: "¿Qué representa geométricamente la Suma de Riemann cuando N tiende a infinito?",
+    opts: ["El área neta bajo la curva f(x) en [a, b]", "La pendiente de la recta tangente", "El radio de curvatura en el origen", "La asíntota horizontal de la función"],
+    ans: 0,
+    fact: "Bernhard Riemann formalizó en 1854 la integral definida mediante particiones y sumas límite de rectángulos."
+  },
+  {
+    q: "¿Qué cambio universal transforma cualquier integral racional de sen(x) y cos(x) en una fracción racional?",
+    opts: ["z = tan(x/2) (Sustitución de Weierstrass)", "u = ln(sec x + tan x)", "x = a sen(θ)", "z = cos(2x)"],
+    ans: 0,
+    fact: "La sustitución de Karl Weierstrass z = tan(x/2) permite expresar sen(x) = 2z/(1+z²) y cos(x) = (1-z²)/(1+z²)."
+  },
+  {
+    q: "¿Qué proporción descubrió Arquímedes entre el volumen del cilindro, la esfera inscrita y el cono doble?",
+    opts: ["3 : 2 : 1", "4 : 3 : 2", "2 : 1 : 1", "5 : 3 : 1"],
+    ans: 0,
+    fact: "Arquímedes consideró este descubrimiento tan importante que pidió grabar una esfera inscrita en un cilindro sobre su tumba."
+  },
+  {
+    q: "¿Cuál es el grado del polinomio interpolador que utiliza la Regla de Simpson 1/3 en cada par de subintervalos?",
+    opts: ["Grado 2 (Parábola)", "Grado 1 (Recta secante)", "Grado 0 (Constante)", "Grado 4 (Cuártica)"],
+    ans: 0,
+    fact: "Thomas Simpson (1743) popularizó el método que aproxima la curva mediante arcos parabólicos y requiere N par."
+  },
+  {
+    q: "¿Cuál es el valor exacto de la famosa integral gaussiana ∫[-∞, ∞] e^(-x²) dx?",
+    opts: ["√π", "π / 2", "2e", "1"],
+    ans: 0,
+    fact: "Calculada por Laplace y Gauss, esta integral es la base de la distribución normal en probabilidad y estadística."
+  },
+  {
+    q: "¿Qué método de volúmenes de revolución suma capas cilíndricas concéntricas de radio r y altura h?",
+    opts: ["Método de Cascarones Cilíndricos (2π ∫ r·h dx)", "Método de Discos", "Regla de L'Hôpital", "Teorema de Pappus"],
+    ans: 0,
+    fact: "El método de cascarones cilíndricos es ideal cuando se gira una función y = f(x) alrededor de un eje vertical."
+  },
+  {
+    q: "¿Qué matemático introdujo la notación moderna f(x), el número e y la identidad e^(iπ) + 1 = 0?",
+    opts: ["Leonhard Euler", "Joseph-Louis Lagrange", "Euclides de Alejandría", "Henri Lebesgue"],
+    ans: 0,
+    fact: "Leonhard Euler (1707–1783) es uno de los matemáticos más prolíficos de la historia y estandarizó gran parte de la notación del análisis."
+  }
+];
+
+const RAW_MAZE = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,3,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,3,1],
+  [1,2,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,2,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [1,2,1,1,2,1,2,1,1,1,1,1,2,1,2,1,1,2,1],
+  [1,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,2,1],
+  [1,1,1,1,2,1,1,1,0,1,0,1,1,1,2,1,1,1,1],
+  [0,0,0,1,2,1,0,0,0,0,0,0,0,1,2,1,0,0,0],
+  [1,1,1,1,2,1,0,1,1,0,1,1,0,1,2,1,1,1,1],
+  [1,2,2,2,2,2,2,1,0,0,0,1,2,2,2,2,2,2,1],
+  [1,2,1,1,2,1,2,1,1,1,1,1,2,1,2,1,1,2,1],
+  [1,2,2,1,2,2,2,2,2,0,2,2,2,2,2,1,2,2,1],
+  [1,1,2,1,2,1,2,1,1,1,1,1,2,1,2,1,2,1,1],
+  [1,3,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,3,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+
+const ROWS = 15, COLS = 19, TILE = 30;
+const pacCanvas = document.getElementById("pacmathCanvas");
+const ctx = pacCanvas.getContext("2d");
+
+let maze = [];
+let pacScore = 0, pacLives = 3, quizCountdown = 10.0, powerTimer = 0;
+let gameRunning = false, quizPaused = false;
+let lastFrameTime = performance.now();
+
+const DIRS = {
+  UP:    { dx: 0, dy: -1, name: "ARRIBA ▲" },
+  DOWN:  { dx: 0, dy: 1,  name: "ABAJO ▼" },
+  LEFT:  { dx: -1, dy: 0, name: "IZQUIERDA ◄" },
+  RIGHT: { dx: 1, dy: 0,  name: "DERECHA ►" }
+};
+
+let pacman = { x: 9, y: 11, dir: DIRS.LEFT, nextDir: DIRS.LEFT, speed: 5.2 };
+let ghosts = [];
+
+function isWall(c, r) {
+  if (r < 0 || r >= ROWS) return true;
+  const wc = (c + COLS) % COLS;
+  return maze[r][wc] === 1;
+}
+
+function resetEntities() {
+  pacman = { x: 9, y: 11, dir: DIRS.LEFT, nextDir: DIRS.LEFT, speed: 5.2 };
+  ghosts = [
+    { name: "Freezer", color: "#d500f9", x: 1,  y: 1,  targetX: 2,  targetY: 1,  prevX: 1,  prevY: 1,  speed: 3.6, mode: "direct" },
+    { name: "Cell",    color: "#00e676", x: 17, y: 1,  targetX: 16, targetY: 1,  prevX: 17, prevY: 1,  speed: 3.5, mode: "ambush" },
+    { name: "MajinBuu",color: "#ff4081", x: 1,  y: 13, targetX: 2,  targetY: 13, prevX: 1,  prevY: 13, speed: 3.4, mode: "flank" },
+    { name: "Broly",   color: "#76ff03", x: 17, y: 13, targetX: 16, targetY: 13, prevX: 17, prevY: 13, speed: 3.7, mode: "chase" }
+  ];
+}
+
+function initPacGame() {
+  maze = RAW_MAZE.map(row => [...row]);
+  pacScore = 0; pacLives = 3; quizCountdown = 10.0; powerTimer = 0;
+  quizPaused = false;
+  document.getElementById("quizModal").style.display = "none";
+  resetEntities();
+  gameRunning = true;
+  updatePacHud();
+}
+
+function updatePacHud() {
+  document.getElementById("pacScore").textContent = pacScore;
+  document.getElementById("pacLives").textContent = pacLives;
+  document.getElementById("pacTimer").textContent = `${quizCountdown.toFixed(1)}s`;
+  document.getElementById("pacPower").textContent = powerTimer > 0 ? `SSJ (${powerTimer.toFixed(1)}s)` : "BASE";
+}
+
+function movePacman(dt) {
+  const step = pacman.speed * dt;
+  const cx = Math.round(pacman.x);
+  const cy = Math.round(pacman.y);
+
+  if (pacman.nextDir.dx === -pacman.dir.dx && pacman.nextDir.dy === -pacman.dir.dy) {
+    pacman.dir = pacman.nextDir;
+  } else if (Math.hypot(pacman.x - cx, pacman.y - cy) < 0.42) {
+    if (!isWall(cx + pacman.nextDir.dx, cy + pacman.nextDir.dy)) {
+      if (pacman.dir !== pacman.nextDir) {
+        pacman.x = cx; pacman.y = cy;
+        pacman.dir = pacman.nextDir;
+      }
+    }
+  }
+
+  const nx = pacman.x + pacman.dir.dx * step;
+  const ny = pacman.y + pacman.dir.dy * step;
+  const targetCol = Math.round(pacman.x) + pacman.dir.dx;
+  const targetRow = Math.round(pacman.y) + pacman.dir.dy;
+
+  if (isWall(targetCol, targetRow)) {
+    if ((pacman.dir.dx > 0 && nx > Math.round(pacman.x)) ||
+        (pacman.dir.dx < 0 && nx < Math.round(pacman.x)) ||
+        (pacman.dir.dy > 0 && ny > Math.round(pacman.y)) ||
+        (pacman.dir.dy < 0 && ny < Math.round(pacman.y))) {
+      pacman.x = Math.round(pacman.x);
+      pacman.y = Math.round(pacman.y);
+      return;
+    }
+  }
+  pacman.x = (nx + COLS) % COLS;
+  pacman.y = ny;
+
+  const pr = Math.round(pacman.y);
+  const pc = Math.round(pacman.x) % COLS;
+  if (maze[pr] && maze[pr][pc] === 2) {
+    maze[pr][pc] = 0;
+    pacScore += 10;
+  } else if (maze[pr] && maze[pr][pc] === 3) {
+    maze[pr][pc] = 0;
+    pacScore += 50;
+    powerTimer = 6.0;
+  }
+}
+
+function bfsDistance(startCol, startRow, goalCol, goalRow) {
+  const sc = (startCol + COLS) % COLS;
+  const gc = (goalCol + COLS) % COLS;
+  if (sc === gc && startRow === goalRow) return 0;
+  const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+  const queue = [{ c: sc, r: startRow, d: 0 }];
+  visited[startRow][sc] = true;
+  const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    if (cur.d > 26) return 99;
+    for (const [dx, dy] of dirs) {
+      const nc = (cur.c + dx + COLS) % COLS;
+      const nr = cur.r + dy;
+      if (nr >= 0 && nr < ROWS && !visited[nr][nc] && maze[nr][nc] !== 1) {
+        if (nc === gc && nr === goalRow) return cur.d + 1;
+        visited[nr][nc] = true;
+        queue.push({ c: nc, r: nr, d: cur.d + 1 });
+      }
+    }
+  }
+  return 99;
+}
+
+function chooseNextGhostTile(g) {
+  const curC = g.targetX;
+  const curR = g.targetY;
+  const candidates = [];
+  const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+  for (const [dx, dy] of dirs) {
+    const nc = (curC + dx + COLS) % COLS;
+    const nr = curR + dy;
+    if (!isWall(nc, nr)) {
+      candidates.push({ c: nc, r: nr });
+    }
+  }
+  if (candidates.length === 0) return;
+
+  let filtered = candidates.filter(t => !(t.c === g.prevX && t.r === g.prevY));
+  if (filtered.length === 0) filtered = candidates;
+
+  let goalC = Math.round(pacman.x) % COLS;
+  let goalR = Math.round(pacman.y);
+  if (g.mode === "ambush") {
+    goalC = (goalC + pacman.dir.dx * 2 + COLS) % COLS;
+    goalR = Math.max(1, Math.min(ROWS - 2, goalR + pacman.dir.dy * 2));
+  }
+
+  filtered.sort((a, b) => {
+    const da = bfsDistance(a.c, a.r, goalC, goalR);
+    const db = bfsDistance(b.c, b.r, goalC, goalR);
+    return powerTimer > 0 ? db - da : da - db;
+  });
+
+  const chosen = (g.mode === "flank" && filtered.length > 1 && Math.random() < 0.25) ? filtered[1] : filtered[0];
+  g.prevX = curC;
+  g.prevY = curR;
+  g.targetX = chosen.c;
+  g.targetY = chosen.r;
+}
+
+function moveGhosts(dt) {
+  ghosts.forEach(g => {
+    const spd = (powerTimer > 0 ? g.speed * 0.65 : g.speed) * dt;
+    let dx = g.targetX - g.x;
+    if (dx > COLS / 2) dx -= COLS;
+    if (dx < -COLS / 2) dx += COLS;
+    const dy = g.targetY - g.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist <= spd) {
+      g.x = g.targetX;
+      g.y = g.targetY;
+      chooseNextGhostTile(g);
+    } else {
+      g.x = (g.x + (dx / dist) * spd + COLS) % COLS;
+      g.y = g.y + (dy / dist) * spd;
+    }
+
+    if (Math.hypot(g.x - pacman.x, g.y - pacman.y) < 0.55) {
+      if (powerTimer > 0) {
+        pacScore += 200;
+        g.x = 9; g.y = 7; g.targetX = 9; g.targetY = 6;
+      } else {
+        pacLives--;
+        if (pacLives <= 0) {
+          gameRunning = false;
+        } else {
+          resetEntities();
+        }
+      }
+    }
+  });
+}
+
+function triggerMathQuiz() {
+  quizPaused = true;
+  const item = TRIVIA_BANK[Math.floor(Math.random() * TRIVIA_BANK.length)];
+  const modal = document.getElementById("quizModal");
+  const qText = document.getElementById("quizQuestionText");
+  const optsBox = document.getElementById("quizOptionsBox");
+  const fb = document.getElementById("quizFeedback");
+
+  qText.textContent = item.q;
+  fb.textContent = "";
+  optsBox.innerHTML = "";
+  modal.style.display = "flex";
+
+  item.opts.forEach((optText, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "quiz-option";
+    btn.textContent = `[${idx + 1}] ${optText}`;
+    btn.addEventListener("click", () => {
+      if (idx === item.ans) {
+        pacScore += 250;
+        powerTimer = 6.0;
+        fb.style.color = "#39ff14";
+        fb.textContent = "¡CORRECTO! +250 PTS Y MODO SUPER SAIYAJIN ACTIVADO";
+      } else {
+        fb.style.color = "#ff1744";
+        fb.textContent = `RESPUESTA CORRECTA: ${item.opts[item.ans]}`;
+      }
+      const logBox = document.getElementById("triviaLogBox");
+      const entry = document.createElement("div");
+      entry.className = "step-item";
+      entry.innerHTML = `<strong>CÁPSULA HISTÓRICA</strong>${item.fact}`;
+      logBox.prepend(entry);
+
+      setTimeout(() => {
+        modal.style.display = "none";
+        quizCountdown = 10.0;
+        quizPaused = false;
+        pacCanvas.focus();
+      }, 1300);
+    });
+    optsBox.appendChild(btn);
+  });
+}
+
+function drawPacGame() {
+  ctx.fillStyle = "#03050a";
+  ctx.fillRect(0, 0, pacCanvas.width, pacCanvas.height);
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = maze[r] ? maze[r][c] : 0;
+      const px = c * TILE;
+      const py = r * TILE;
+      if (cell === 1) {
+        ctx.fillStyle = "#0b192c";
+        ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2);
+        ctx.strokeStyle = "#00e5ff";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(px + 2, py + 2, TILE - 4, TILE - 4);
+      } else if (cell === 2) {
+        ctx.fillStyle = "#ffca28";
+        ctx.beginPath();
+        ctx.arc(px + TILE/2, py + TILE/2, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (cell === 3) {
+        ctx.fillStyle = "#ff9800";
+        ctx.beginPath();
+        ctx.arc(px + TILE/2, py + TILE/2, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ff1744";
+        ctx.fillRect(px + TILE/2 - 2, py + TILE/2 - 2, 4, 4);
+      }
+    }
+  }
+
+  const gx = pacman.x * TILE + TILE/2;
+  const gy = pacman.y * TILE + TILE/2;
+  ctx.fillStyle = powerTimer > 0 ? "#39ff14" : "#ffca28";
+  ctx.beginPath();
+  ctx.arc(gx, gy, 11, 0.2 * Math.PI, 1.8 * Math.PI);
+  ctx.lineTo(gx, gy);
+  ctx.fill();
+
+  ghosts.forEach(g => {
+    const fx = g.x * TILE + TILE/2;
+    const fy = g.y * TILE + TILE/2;
+    ctx.fillStyle = powerTimer > 0 ? "#00b0ff" : g.color;
+    ctx.beginPath();
+    ctx.arc(fx, fy - 2, 10, Math.PI, 0, false);
+    ctx.lineTo(fx + 10, fy + 10);
+    ctx.lineTo(fx - 10, fy + 10);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(fx - 5, fy - 4, 3, 3);
+    ctx.fillRect(fx + 2, fy - 4, 3, 3);
+  });
+
+  if (!gameRunning) {
+    ctx.fillStyle = "rgba(0,0,0,0.78)";
+    ctx.fillRect(0, 0, pacCanvas.width, pacCanvas.height);
+    ctx.fillStyle = "#ffca28";
+    ctx.font = "14px 'Press Start 2P', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(pacLives <= 0 ? "GAME OVER - PRESIONA INICIAR" : "PAC-MATH DBZ LISTO (PULSA FLECHAS)", pacCanvas.width/2, pacCanvas.height/2);
+  }
+}
+
+function gameLoop(now) {
+  const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+  lastFrameTime = now;
+
+  if (gameRunning && !quizPaused) {
+    movePacman(dt);
+    moveGhosts(dt);
+    if (powerTimer > 0) powerTimer = Math.max(0, powerTimer - dt);
+    quizCountdown -= dt;
+    if (quizCountdown <= 0) {
+      triggerMathQuiz();
+    }
+    updatePacHud();
+  }
+  drawPacGame();
+  requestAnimationFrame(gameLoop);
+}
+
+function applyDirection(dirKey) {
+  const d = DIRS[dirKey];
+  if (!d) return;
+  if (!gameRunning && currentBlock === "PAC") {
+    initPacGame();
+  }
+  pacman.nextDir = d;
+  document.getElementById("dirTelemetry").textContent = `DIRECCIÓN ACTIVA: ${d.name}`;
+  document.querySelectorAll(".dpad-btn").forEach(b => {
+    b.classList.toggle("pressed", b.dataset.dir === dirKey);
+  });
+}
+
+window.jsdelivrKeydown = window.addEventListener("keydown", e => {
+  if (currentBlock !== "PAC" || quizPaused) return;
+  const keyMap = {
+    ArrowUp: "UP", KeyW: "UP", w: "UP", W: "UP",
+    ArrowDown: "DOWN", KeyS: "DOWN", s: "DOWN", S: "DOWN",
+    ArrowLeft: "LEFT", KeyA: "LEFT", a: "LEFT", A: "LEFT",
+    ArrowRight: "RIGHT", KeyD: "RIGHT", d: "RIGHT", D: "RIGHT"
+  };
+  const mapped = keyMap[e.code] || keyMap[e.key];
+  if (mapped) {
+    e.preventDefault();
+    if (document.activeElement && document.activeElement.tagName === "SELECT") {
+      document.activeElement.blur();
+    }
+    applyDirection(mapped);
+  }
+}, { capture: true, passive: false });
+
+document.querySelectorAll(".dpad-btn").forEach(btn => {
+  btn.addEventListener("click", () => applyDirection(btn.dataset.dir));
+});
+document.getElementById("pacStartBtn").addEventListener("click", initPacGame);
+document.getElementById("pacForceQuizBtn").addEventListener("click", () => {
+  if (!gameRunning) initPacGame();
+  triggerMathQuiz();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  populateExerciseSelect("A");
+  maze = RAW_MAZE.map(row => [...row]);
+  resetEntities();
+  requestAnimationFrame(gameLoop);
+});
+</script>
+</body>
+</html>
